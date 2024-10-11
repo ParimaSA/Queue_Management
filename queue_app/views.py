@@ -10,4 +10,4 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five published questions."""
-        return Business.objects.order_by('name')
+        return Business.objects.order_by("name")
