@@ -1,10 +1,14 @@
-from django.shortcuts import render, redirect
-from django.views import View
-from .models import Business, Queue
-from django.contrib.auth.decorators import login_required
-from django.utils.decorators import method_decorator
-from django.utils import timezone
+"""
+Views for the Queue Management application, handling queue reservations for businesses.
+"""
+
 from django.http import Http404
+from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.views import View
+from django.shortcuts import render, redirect
+from .models import Business, Queue
 
 
 @method_decorator(login_required, name='dispatch')
@@ -12,14 +16,15 @@ class ReserveQueueView(View):
     """
     Handles queue reservation for a business.
     """
+
     def get(self, request, business_id):
         """
         Displays the reservation options for the given business.
         """
         try:
             business = Business.objects.get(id=business_id)
-        except Business.DoesNotExist:
-            raise Http404("Business does not exist.")
+        except Business.DoesNotExist as exc:
+            raise Http404("Business does not exist.") from exc
 
         field_choices = business.field_choice.split(',')
         context = {
@@ -34,8 +39,8 @@ class ReserveQueueView(View):
         """
         try:
             business = Business.objects.get(id=business_id)
-        except Business.DoesNotExist:
-            raise Http404("Business does not exist.")
+        except Business.DoesNotExist as exc:
+            raise Http404("Business does not exist.") from exc
 
         field_choice = request.POST.get('field_choice')
         reserve_time = timezone.now()

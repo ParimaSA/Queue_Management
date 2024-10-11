@@ -1,13 +1,22 @@
+"""
+Test cases for the ReserveQueueView.
+"""
+
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from ..models import Business, Queue, Category
 from django.utils import timezone
+from ..models import Business, Queue, Category
+
 
 User = get_user_model()
 
 
 class ReserveQueueViewTests(TestCase):
+    """
+    Tests for the ReserveQueueView class.
+    """
+
     def setUp(self):
         """
         Create a test user, category, and business. Log in the user.
@@ -43,7 +52,10 @@ class ReserveQueueViewTests(TestCase):
         """
         self.client.logout()
         response = self.client.get(reverse('queue_app:reserve_queue', args=[self.business.id]))
-        self.assertRedirects(response, '/accounts/login/?next=' + reverse('queue_app:reserve_queue', args=[self.business.id]))
+        self.assertRedirects(
+            response,
+            '/accounts/login/?next=' + reverse('queue_app:reserve_queue', args=[self.business.id])
+        )
 
     def test_post_reserve_queue_view(self):
         """
