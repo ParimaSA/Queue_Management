@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from queue_app.views import IndexView
+from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', IndexView.as_view(), name='home'),
+    path('queue_app/', include('queue_app.urls')),
+    path('', RedirectView.as_view(url='queue_app/', permanent=False)),
 ]
