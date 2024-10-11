@@ -6,20 +6,18 @@ from queue_app.models import Category, Business
 
 class BusinessRegisterTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='test1234')
+        """Create a Client object."""
+        self.user = User.objects.create_user(username='testuser',
+                                             password='test1234')
 
     def test_only_authenticated_user_can_register(self):
-        """
-        Test that the view renders the form only for authenticated users.
-        """
+        """Test that the view renders the form only for authenticated users."""
         self.client.login(username='testuser', password='test1234')
         response = self.client.get(reverse('queue_app:bus_register'))
         self.assertEqual(response.status_code, 200)
 
     def test_business_register_create_business_for_valid_post(self):
-        """
-        Test that a valid POST request create a business and redirect.
-        """
+        """Test that a valid POST request create a business and redirect."""
         self.client.login(username='testuser', password='test1234')
         category = Category.objects.create(name='Restaurant')
         form = {
@@ -39,8 +37,10 @@ class BusinessRegisterTests(TestCase):
         business = Business.objects.get(name='demobusiness')
         self.assertEqual(business.user, self.user)
         self.assertEqual(business.approve_status, 'Pending')
+        self.assertEqual(business.open_status, 'Closed')
 
     def test_business_register_create_business_for_invalid_post(self):
+        """Test that an invalid POST request doesn't create a business."""
         self.client.login(username='testuser', password='test1234')
         category = Category.objects.create(name='Restaurant')
         form = {
