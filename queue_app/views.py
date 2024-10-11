@@ -11,7 +11,3 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         return Business.objects.order_by('name')
-
-# def home(request):
-#     context = {'business_list' : Business.objects.all()}
-#     return render(request, 'index.html', context)

@@ -25,7 +25,6 @@ class TestBusiness(TestCase):
                                                 close_time=convert_to_time('18:00:00'),
                                                 open_status="Open", field_name="Table size",
                                                 field_choice="Big, Medium, Small")
-        self.count = 0
 
     @patch('django.utils.timezone.now')
     def test_business_open(self, mock_now: patch):
