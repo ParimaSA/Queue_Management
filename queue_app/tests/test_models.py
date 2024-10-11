@@ -1,18 +1,22 @@
 """Tests for models"""
 
+from datetime import datetime
+from django.utils import timezone
 from unittest.mock import patch
 from django.test import TestCase
-from queue_app.models import Business, Category
-from datetime import datetime
 from django.contrib.auth.models import User
-from django.utils import timezone
+from queue_app.models import Business, Category
 
 
-def convert_to_time(time_str):
+def convert_to_time(time_str: str):
+    """Convert string to time object
+        Return: time object
+    """
     return datetime.strptime(time_str, "%H:%M:%S").time()
 
 
 class TestBusiness(TestCase):
+    """Test for Business model"""
 
     def setUp(self):
         """
@@ -36,7 +40,8 @@ class TestBusiness(TestCase):
 
     @patch("django.utils.timezone.now")
     def test_business_open(self, mock_now: patch):
-        """Test if is_opened() works correctly with same day and different day of open_time and close_time"""
+        """Test if is_opened() works correctly with same day
+         and different day of open_time and close_time"""
         # mock time now to be 8.00 am
         mock_now.return_value = timezone.make_aware(
             timezone.datetime(2024, 10, 10, 8, 0, 0)

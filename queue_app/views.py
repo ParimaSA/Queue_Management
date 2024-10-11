@@ -1,10 +1,10 @@
-from django.shortcuts import render
+"""Views for pages"""
 from django.views import generic
 from .models import Business
-# Create your views here.
 
 
 class IndexView(generic.ListView):
+    """generic index view for page home"""
     template_name = "queue_app/index.html"
     context_object_name = "business_list"
 
