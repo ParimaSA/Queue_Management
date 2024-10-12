@@ -18,10 +18,10 @@
                 <input type="hidden" name="next" value="{{ next }}" />
                 <button type="submit" class="btn">Login</button>
                 <br><br>
-                Don't have an account? <a href = "{% url 'queue_app:home' %}">sign up</a>
+                Don't have an account? <a href = "{% url 'queue_app:signup' %}">sign up</a>
             </form>
         </div>
     </div>
-    <a href="{% url 'queue_app:home' %}" class="index_page_btn"><i class="bi bi-skip-backward-fill"> Index</i></a>
+    <a href="{% url 'queue_app:home' %}" class="index_page_btn"><i class="bi bi-skip-backward-fill"> Home</i></a>
 </body>
 </html>

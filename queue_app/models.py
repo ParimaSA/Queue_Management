@@ -2,8 +2,20 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from django import forms
 from typing import List
+
+
+class RegisterForm(UserCreationForm):
+    """Form for registration."""
+
+    class Meta:
+        """Customize the normal form, adding email field."""
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
