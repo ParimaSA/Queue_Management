@@ -2,7 +2,20 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from django import forms
+from typing import List
+
+
+class RegisterForm(UserCreationForm):
+    """Form for registration."""
+    email = forms.EmailField(required=True)
+
+    class Meta:
+        """Customize the normal form, adding email field."""
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
 
 
 class Category(models.Model):
@@ -35,7 +48,7 @@ class Business(models.Model):
     }
 
     @staticmethod
-    def convert_to_list(my_str) -> list[str]:
+    def convert_to_list(my_str) -> List[str]:
         return [i.strip() for i in my_str.split(",")]
 
     def is_approved(self) -> bool:
