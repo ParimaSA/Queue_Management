@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
-
+from typing import List
 
 class Category(models.Model):
     name = models.CharField(max_length=200)
@@ -35,7 +35,7 @@ class Business(models.Model):
     }
 
     @staticmethod
-    def convert_to_list(my_str) -> list[str]:
+    def convert_to_list(my_str) -> List[str]:
         return [i.strip() for i in my_str.split(",")]
 
     def is_approved(self) -> bool:
