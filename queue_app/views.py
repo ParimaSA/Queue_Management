@@ -53,4 +53,4 @@ class ReserveQueueView(View):
             status="Pending"
         )
 
-        return redirect('queue_app:index')  # To be updated to another page like in_queue
+        return redirect('queue_app:home')  # To be updated to another page like in_queue
