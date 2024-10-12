@@ -24,4 +24,3 @@ urlpatterns = [
     path('', RedirectView.as_view(url='queue_app/', permanent=False)),
 
 ]
-
