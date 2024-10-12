@@ -10,6 +10,7 @@ from typing import List
 
 class RegisterForm(UserCreationForm):
     """Form for registration."""
+    email = forms.EmailField(required=True)
 
     class Meta:
         """Customize the normal form, adding email field."""
