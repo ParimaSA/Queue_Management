@@ -1,4 +1,5 @@
-"""Views for pages"""
+"""Views for pages."""
+
 from django.shortcuts import render, redirect
 from django.views import generic
 from .models import BusinessRegisterForm, Business, RegisterForm
@@ -9,28 +10,36 @@ from django.contrib import messages
 
 def signup(request):
     """Register a new user."""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            email = form.cleaned_data.get('email')
-            username = form.cleaned_data.get('username')
-            raw_passwd = form.cleaned_data.get('password1')
-            user = authenticate(email=email, username=username, password=raw_passwd)
-            login(request, user)
-            messages.success(request, 'Registration successful.')
-            return redirect('queue:index')
+            user = form.save()
+            username = form.cleaned_data.get("username")
+            raw_passwd = form.cleaned_data.get("password1")
+
+            # Authenticate using username and password
+            user = authenticate(username=username, password=raw_passwd)
+
+            if user is not None:
+                login(request, user)
+                messages.success(request, "Registration successful.")
+                return redirect("queue_app:home")
+            else:
+                messages.error(request, "Authentication failed. Please try again.")
+                return redirect("queue_app:signup")
         else:
-            messages.error(request, 'Authentication failed. Please try again.')
-            return redirect('queue:signup')
+            messages.error(
+                request, "Invalid form submission. Please correct the errors."
+            )
+            return render(request, "registration/signup.html", {"form": form})
     else:
-        # create a user form and display it the signup page
         form = RegisterForm()
-        return render(request, 'registration/signup.html', {'form': form})
+        return render(request, "registration/signup.html", {"form": form})
 
 
 class IndexView(generic.ListView):
-    """Generic index view for page home"""
+    """Generic index view for page home."""
+
     template_name = "queue_app/index.html"
     context_object_name = "business_list"
 
@@ -38,7 +47,7 @@ class IndexView(generic.ListView):
         """Return business by their alphabet."""
         return Business.objects.order_by("name")
 
-      
+
 @login_required
 def business_register(request):
     """
