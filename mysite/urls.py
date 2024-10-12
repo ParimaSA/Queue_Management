@@ -22,4 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('queue_app/', include('queue_app.urls')),
     path('', RedirectView.as_view(url='queue_app/', permanent=False)),
+
 ]
+
