@@ -68,4 +68,4 @@ class ReserveQueueViewTests(TestCase):
         self.assertEqual(queue.status, "Pending")
         self.assertTrue(queue.reserve_time <= timezone.now())
 
-        self.assertRedirects(response, reverse("queue_app:index"))
+        self.assertRedirects(response, reverse("queue_app:home"))
