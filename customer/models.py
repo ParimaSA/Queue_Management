@@ -1,0 +1,1 @@
+"""Provide model using in customer app."""

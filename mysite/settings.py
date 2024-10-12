@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'queue_app',
+    'customer',
+    'business',
 ]
 
 MIDDLEWARE = [
@@ -110,9 +111,6 @@ AUTHENTICATION_BACKENDS = [
     # username & password authentication
    'django.contrib.auth.backends.ModelBackend',
 ]
-
-LOGIN_REDIRECT_URL = 'queue_app:home'
-LOGOUT_REDIRECT_URL = 'queue_app:home'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
