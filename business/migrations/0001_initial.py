@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+import django.utils.timezone
 
 
 class Migration(migrations.Migration):
@@ -11,13 +12,11 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("business", "0001_initial"),
-        ("customer", "0004_remove_queue_business_remove_queue_user_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="Customer",
+            name="Business",
             fields=[
                 (
                     "id",
@@ -28,6 +27,7 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
+                ("name", models.CharField(max_length=255)),
                 (
                     "user",
                     models.OneToOneField(
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name="CustomerQueue",
+            name="Entry",
             fields=[
                 (
                     "id",
@@ -49,17 +49,32 @@ class Migration(migrations.Migration):
                         verbose_name="ID",
                     ),
                 ),
+                ("name", models.CharField(max_length=50)),
+                ("tracking_code", models.CharField(max_length=50)),
+                ("time_in", models.DateTimeField(default=django.utils.timezone.now)),
+                ("time_out", models.DateTimeField()),
+                ("status", models.CharField(max_length=20)),
+            ],
+        ),
+        migrations.CreateModel(
+            name="Queue",
+            fields=[
                 (
-                    "customer",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE,
-                        to="customer.customer",
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
                     ),
                 ),
+                ("name", models.CharField(max_length=255)),
+                ("estimated_time", models.IntegerField()),
                 (
-                    "entry",
+                    "business",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="business.entry"
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="business.business",
                     ),
                 ),
             ],
