@@ -9,6 +9,9 @@ class Business(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
 
 class BusinessSignupForm(forms.ModelForm):
     name = forms.CharField(max_length=255)
@@ -31,6 +34,9 @@ class Queue(models.Model):
     name = models.CharField(max_length=255)
     estimated_time = models.IntegerField(default=None)
 
+    def __str__(self):
+        return self.name
+
 
 class Entry(models.Model):
     name = models.CharField(max_length=50)
@@ -39,3 +45,6 @@ class Entry(models.Model):
     time_in = models.DateTimeField(default=timezone.now)
     time_out = models.DateTimeField()
     status = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.name
