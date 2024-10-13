@@ -1,3 +1,8 @@
 from django.contrib import admin
+from business.models import Business, Queue, Entry
 
-# Register your models here.
+
+admin.site.register(Business)
+admin.site.register(Queue)
+admin.site.register(Entry)
+

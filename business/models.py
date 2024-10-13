@@ -29,11 +29,12 @@ class BusinessSignupForm(forms.ModelForm):
 class Queue(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    estimated_time = models.IntegerField()
+    estimated_time = models.IntegerField(default=None)
 
 
 class Entry(models.Model):
     name = models.CharField(max_length=50)
+    queue_name = models.ForeignKey(Queue, on_delete=models.CASCADE, null=True)
     tracking_code = models.CharField(max_length=50)
     time_in = models.DateTimeField(default=timezone.now)
     time_out = models.DateTimeField()
