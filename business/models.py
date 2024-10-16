@@ -71,6 +71,9 @@ class Entry(models.Model):
         self.tracking_code = None
         self.save()
 
+    def is_waiting(self):
+        return self.status == 'waiting'
+
     def __str__(self):
         return self.name
 
@@ -78,8 +81,9 @@ class Entry(models.Model):
 class QueueForm(ModelForm):
     class Meta:
         model = Queue
-        fields = ["name"]
+        fields = ["name", "alphabet"]
 
     def __init__(self, *args, **kwargs):
         super(QueueForm, self).__init__(*args, **kwargs)
         self.fields['name'].widget.attrs.update({'class': 'form-control'})
+        self.fields['alphabet'].widget.attrs.update({'class': 'form-control'})
