@@ -2,7 +2,7 @@
 from django import forms
 from django.db import models
 from django.contrib.auth.models import User
-from business.models import Entry
+from business.models import Entry, LoginForm
 
 class Customer(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -18,7 +18,7 @@ class CustomerSignupForm(forms.ModelForm):
         user.set_password(self.cleaned_data['password'])
         if commit:
             user.save()
-            Customer.objects.create(user=user)  # Create a customer profile
+            Customer.objects.create(user=user)
         return user
 
 
