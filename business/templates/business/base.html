@@ -72,10 +72,17 @@
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         Account
                     </a>
+                    {% if user.is_authenticated %}
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'business:logout' %}">Logout</a></li>
+                            <li><a class="dropdown-item" href="#">Account</a></li>
+                        </ul>
+                    {% else %}
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="{% url 'business:login' %}">Login</a></li>
-                        <li><a class="dropdown-item" href="{% url 'business:signup' %}">Signup</a></li>
+                            <li><a class="dropdown-item" href="{% url 'business:login' %}">Login</a></li>
+                            <li><a class="dropdown-item" href="{% url 'business:signup' %}">Signup</a></li>
                     </ul>
+                    {% endif %}
                 </li>
             </ul>
         </div>

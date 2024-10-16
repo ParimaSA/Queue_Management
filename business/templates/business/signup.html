@@ -1,0 +1,22 @@
+{% extends 'business/base.html' %}
+
+{% block content %}
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Register</h2>
+            {% for message in messages %}
+                <div class="message"> {{ message }} </div>
+            {% endfor %}
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="form-group">
+                    <button type="submit" class="btn">Register</button>
+                </div>
+            </form>
+            <br>
+            Already have an account? <a href="{% url 'business:login' %}">Login</a>
+        </div>
+    </div>
+{% endblock %}
+
