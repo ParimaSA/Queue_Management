@@ -34,7 +34,7 @@ class Queue(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     alphabet = models.CharField(max_length=1, default='A')
-    estimated_time = models.IntegerField(default=None, null=True)
+    estimated_time = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.name
