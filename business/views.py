@@ -30,8 +30,8 @@ def show_entry(request, pk):
     business = Business.objects.get(pk=pk)
     queue_list = Queue.objects.filter(business=business)
     entry_list = Entry.objects.filter(business=business,
-                                      time_in__date=today
-                                      ).order_by('time_in')[:5]
+                                      time_in__date=today,
+                                      ).order_by('time_in')
     return render(request, 'business/show_entry.html',
                   {'queue_list': queue_list,
                    'entry_list': entry_list, 'business': business})
