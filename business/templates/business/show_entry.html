@@ -28,6 +28,16 @@
         font-size: 1.8rem;
         font-weight: bold;
         }
+
+        .entry-name {
+        font-size: 1.2rem;
+        }
+
+        .queue-text {
+        font-family: 'Open Sans';
+        font-size: 1.4rem;
+        font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -87,11 +97,11 @@
                             {% csrf_token %}
                             <div class="mb-3">
                                 <label for="queueName" class="form-label">Queue Name</label>
-                                <input type="text" class="form-control" name="name" id="queueName" required>
+                                <input type="text" class="form-control" name="name" id="queueName" value="{{ queue.name }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="queueAlphabet" class="form-label">Alphabet</label>
-                                <input type="text" class="form-control" name="alphabet" id="queueAlphabet" required>
+                                <input type="text" class="form-control" name="alphabet" id="queueAlphabet" value="{{ queue.alphabet }}" required>
                             </div>
                             <button type="submit" class="btn btn-primary">Save</button>
                         </form>
@@ -101,7 +111,7 @@
         </div>
         <!-- ======= Create Card of Queue ======= -->
         <div class="col-md-3">
-        <div class="card" style="width: 18rem; height: 30rem; border-radius: 0.2;">
+        <div class="card" style="overflow-y: auto; width: 18rem; height: 30rem; border-radius: 0.2;">
             <div class="card-header d-flex justify-content-between align-items-center" style="background-color: #f0f4ff; color: #333;">
                 <label class="queue-text">{{ queue.name }}</label>
                 <a href="#" data-bs-toggle="modal" data-bs-target= "#editQueueModal-{{ queue.id }}">
@@ -114,9 +124,9 @@
             {% for entry in entry_list %}
             {% if entry.queue == queue %}
             {% if entry.is_waiting %}
-            <div class="row mb-2">
-                <div class="col">
-                    <label>{{ entry.name }}</label>
+            <div class="row mb-3 d-flex justify-content-between align-items-center">
+                <div class="col-8">
+                    <label class="entry-name">{{ entry.name }}</label>
                 </div>
                 <div class="col">
                     <form action="{% url 'business:run_queue' entry.id %}" method="POST">
