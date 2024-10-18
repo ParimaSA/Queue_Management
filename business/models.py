@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from nanoid import generate
+from django.forms import ModelForm
 
 
 class Business(models.Model):
@@ -46,7 +47,7 @@ class Entry(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True)
     tracking_code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     time_in = models.DateTimeField(default=timezone.now)
-    time_out = models.DateTimeField(null=True)
+    time_out = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=20, default='waiting')
 
     def save(self, *args, **kwargs):
@@ -70,5 +71,15 @@ class Entry(models.Model):
         self.tracking_code = None
         self.save()
 
+    def is_waiting(self):
+        return self.status == 'waiting'
+
     def __str__(self):
         return self.name
+
+
+class QueueForm(ModelForm):
+    class Meta:
+        model = Queue
+        fields = ["name", "alphabet"]
+
