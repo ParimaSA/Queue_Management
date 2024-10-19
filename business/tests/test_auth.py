@@ -51,7 +51,7 @@ class UserAuthTest(django.test.TestCase):
         form_data = {}
         response = self.client.post(logout_url, form_data)
         self.assertEqual(302, response.status_code)
-        self.assertRedirects(response, reverse("business:home"))
+        self.assertRedirects(response, reverse("business:login"))
 
     def test_login_view_with_business(self):
         """A user can log in using the login view with business account."""

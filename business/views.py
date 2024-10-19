@@ -1,14 +1,10 @@
 """Views for business app."""
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import SignUpForm, LoginForm, Business, Entry, Queue, QueueForm
 from django.utils import timezone
-
-
-def home(request):
-    return render(request, "business/home.html")
 
 
 def add_customer(request):
@@ -63,7 +59,7 @@ def login_view(request):
     return render(request, 'business/login.html', {'form': form})
 
 
-def show_entry(request, pk):
+def show_entry(request):
     """Display the entries for a specific business, filtered by today's date.
 
     Args:
@@ -74,7 +70,12 @@ def show_entry(request, pk):
         Rendered template with queue and entry lists for the business.
     """
     today = timezone.now().date()
-    business = Business.objects.get(pk=pk)
+    if not request.user.is_authenticated:
+        return redirect('business:login')
+    try:
+        business = Business.objects.get(user=request.user)
+    except Business.DoesNotExist:
+        return redirect('business:login')
     queue_list = Queue.objects.filter(business=business)
     entry_list = Entry.objects.filter(
         business=business,
@@ -88,7 +89,7 @@ def show_entry(request, pk):
     )
 
 
-def add_queue(request, pk):
+def add_queue(request):
     """
     Add new queue to the specified business.
 
@@ -99,7 +100,8 @@ def add_queue(request, pk):
     Returns:
         Rendered template or redirect to the entry page with the updated queue.
     """
-    business = get_object_or_404(Business, pk=pk)
+    this_user = request.user
+    business = get_object_or_404(Business, user=this_user)
     if request.method == "POST":
         form = QueueForm(request.POST)
         if form.is_valid():
@@ -111,7 +113,7 @@ def add_queue(request, pk):
                 f"Successfully added the queue '{queue.name}' "
                 f"with alphabet '{queue.alphabet}'.",
             )
-            return redirect("business:businessEntry", pk=business.id)
+            return redirect("business:home")
     return render(request, "business/show_entry.html", {"business": business})
 
 
@@ -126,8 +128,12 @@ def edit_queue(request, pk):
     Returns:
         Rendered template or redirect to the entry page with the updated queue.
     """
-    queue = get_object_or_404(Queue, pk=pk)
-    business = queue.business
+    business = Business.objects.get(user=request.user)
+    try:
+        queue = Queue.objects.get(pk=pk, business=business)
+    except Queue.DoesNotExist:
+        messages.error(request, "Cannot edit this queue.")
+        return redirect('business:home')
     if request.method == "POST":
         form = QueueForm(request.POST, instance=queue)
         if form.is_valid():
@@ -139,7 +145,7 @@ def edit_queue(request, pk):
                 f"Successfully updated the queue '{queue.name}' "
                 f"with the alphabet '{queue.alphabet}'.",
             )
-            return redirect("business:businessEntry", pk=business.id)
+            return redirect("business:home")
     return render(request, "business/show_entry.html", {"business": business})
 
 
@@ -154,10 +160,20 @@ def run_queue(request, pk):
     Returns:
         Rendered template or redirect to the entry page with the updated queue.
     """
-    entry = get_object_or_404(Entry, pk=pk)
-    business = entry.business
+    business = Business.objects.get(user=request.user)
+    try:
+        entry = Entry.objects.get(pk=pk, business=business)
+    except Entry.DoesNotExist:
+        messages.error(request, "Cannot run this entry.")
+        return redirect('business:home')
     if request.method == "POST":
         entry.mark_as_completed()
         messages.success(request, f"{entry.name} marked as completed.")
-        return redirect("business:businessEntry", pk=business.id)
+        return redirect("business:home")
     return render(request, "business/show_entry.html")
+
+
+def logout_view(request):
+    """Logout the user and redirect to login page."""
+    logout(request)
+    return redirect('business:login')

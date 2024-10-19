@@ -84,7 +84,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="addQueueForm" method="POST" action="{% url 'business:add_queue' business.id %}">
+                    <form id="addQueueForm" method="POST" action="{% url 'business:add_queue' %}">
                         {% csrf_token %}
                         <div class="mb-3">
                             <label for="queueName" class="form-label">Queue Name</label>

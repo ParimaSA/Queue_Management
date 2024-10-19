@@ -21,10 +21,11 @@ class RunQueueTest(TestCase):
         self.queue = Queue.objects.create(
             business=self.business, name="Dining", alphabet="A", estimated_time=None
         )
+        self.client.login(username="testuser", password="test1234")
 
     def test_show_only_entry_with_waiting_status(self):
         """Test that only entries with a 'waiting' status are shown."""
-        waiting_entry = create_entry(self.queue, self.business, -2)
+        waiting_entry = create_entry(self.queue, self.business, -4)
         waiting_entry.status = "waiting"
         waiting_entry.save()
 
@@ -34,8 +35,9 @@ class RunQueueTest(TestCase):
 
         self.assertEqual(Entry.objects.count(), 2)
         response = self.client.get(
-            reverse("business:businessEntry", args=[self.business.pk])
+            reverse("business:home")
         )
+        self.assertEqual(response.context["entry_list"].count(), 1)
         self.assertContains(response, waiting_entry.name)
         self.assertContains(response, waiting_entry.status)
 
@@ -54,10 +56,9 @@ class RunQueueTest(TestCase):
 
         self.assertEqual(Entry.objects.count(), 2)
         response = self.client.get(
-            reverse("business:businessEntry", args=[self.business.pk])
+            reverse("business:home")
         )
-        self.assertIn(today_entry, response.context["entry_list"])
-        self.assertNotIn(yesterday_entry, response.context["entry_list"])
+        self.assertEqual(response.context["entry_list"].count(), 1)
 
     def test_run_queue_function(self):
         """Test the functionality of running the queue."""

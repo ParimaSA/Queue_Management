@@ -10,6 +10,7 @@ class EditQueueTest(TestCase):
     def setUp(self):
         """Set up a user, a business and a queue instance for the tests."""
         self.user = User.objects.create_user(username="testuser", password="test1234")
+        self.client.login(username="testuser", password="test1234")
         self.business = Business.objects.create(user=self.user, name="test business")
         self.queue = Queue.objects.create(
             business=self.business, name="Dining", alphabet="A", estimated_time=None
@@ -25,7 +26,7 @@ class EditQueueTest(TestCase):
         self.assertEqual(self.queue.name, "Take Away")
         self.assertEqual(self.queue.alphabet, "B")
         self.assertRedirects(
-            response, reverse("business:businessEntry", args=[self.business.pk])
+            response, reverse("business:home")
         )
 
     def test_invalid_edit_form_not_save(self):
