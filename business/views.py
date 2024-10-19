@@ -165,5 +165,6 @@ def run_queue(request, pk):
 
 
 def logout_view(request):
+    """Logout the user and redirect to login page."""
     logout(request)
     return redirect('business:login')
