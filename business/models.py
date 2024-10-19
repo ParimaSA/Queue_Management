@@ -1,4 +1,5 @@
 """Provide model using in business app."""
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import models
@@ -9,76 +10,27 @@ from django.forms import ModelForm
 
 
 class LoginForm(forms.Form):
-    username = forms.CharField(
-        widget = forms.TextInput(
-            attrs = {
-                "class": "form-control"
-            }
-        )
-
-    )
-    password = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={
-                "class": "form-control"
-            }
-        )
-
-    )
+    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
 
 class SignUpForm(UserCreationForm):
-    username = forms.CharField(
-        widget = forms.TextInput(
-            attrs = {
-                "class": "form-control"
-            }
-        )
-
-    )
-    email = forms.CharField(
-        widget=forms.EmailInput(
-            attrs={
-                "class": "form-control"
-            }
-        )
-
-    )
-    business_name = forms.CharField(
-        widget=forms.TextInput(
-            attrs={
-                "class": "form-control"
-            }
-        )
-
-    )
-    password1 = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={
-                "class": "form-control"
-            }
-        )
-
-    )
-    password2 = forms.CharField(
-        widget=forms.PasswordInput(
-            attrs={
-                "class": "form-control"
-            }
-        )
-
-    )
+    username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
+    email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
+    business_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
+    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
+        fields = ("username", "email", "password1", "password2")
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.email = self.cleaned_data.get('email')
+        user.email = self.cleaned_data.get("email")
         if commit:
             user.save()
-            business_name = self.cleaned_data.get('business_name')
+            business_name = self.cleaned_data.get("business_name")
             Business.objects.create(user=user, name=business_name)
         return user
 
@@ -96,14 +48,16 @@ class BusinessSignupForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'email']
+        fields = ["username", "password", "email"]
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.set_password(self.cleaned_data['password'])
+        user.set_password(self.cleaned_data["password"])
         if commit:
             user.save()
-            Business.objects.create(user=user, business_name=self.cleaned_data['business_name'])
+            Business.objects.create(
+                user=user, business_name=self.cleaned_data["business_name"]
+            )
         return user
 
 

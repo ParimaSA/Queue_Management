@@ -8,7 +8,7 @@ from .models import CustomerSignupForm, Customer, LoginForm
 
 
 def home(request):
-    return render(request, 'customer/home.html')
+    return render(request, "customer/home.html")
 
 
 def profile(request):
@@ -17,43 +17,45 @@ def profile(request):
 
 def signup(request):
     """Register new customer user."""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = CustomerSignupForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('customer:home')
+            return redirect("customer:home")
         else:
-            messages.error(request, 'Form is invalid.')
-            return redirect('customer:signup')
+            messages.error(request, "Form is invalid.")
+            return redirect("customer:signup")
     else:
         form = CustomerSignupForm()
-        return render(request, 'customer/signup.html', {'form': form})
+        return render(request, "customer/signup.html", {"form": form})
 
 
 def login_view(request):
     """Login page for customer user."""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = LoginForm(request.POST)
         if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
 
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 try:
                     Customer.objects.get(user=user)
                 except Customer.DoesNotExist:
-                    messages.error(request, 'Business account can not use with customer.')
-                    return redirect('customer:login')
+                    messages.error(
+                        request, "Business account can not use with customer."
+                    )
+                    return redirect("customer:login")
                 login(request, user)
-                return redirect('customer:home')
+                return redirect("customer:home")
             else:
-                messages.error(request, 'Invalid credentials')
+                messages.error(request, "Invalid credentials")
         else:
-            messages.error(request, 'Form is not valid')
+            messages.error(request, "Form is not valid")
 
     else:
         form = LoginForm()
 
-    return render(request, 'customer/login.html', {'form': form})
+    return render(request, "customer/login.html", {"form": form})
