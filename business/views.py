@@ -3,7 +3,6 @@ from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
-
 from .models import SignUpForm, LoginForm, Business
 
 
@@ -27,7 +26,6 @@ def signup(request):
             login(request, user)
             return redirect('business:home')
         else:
-            print(form.errors)
             messages.error(request, 'Form is invalid.')
             return redirect('business:signup')
     else:
@@ -50,7 +48,7 @@ def login_view(request):
                     messages.error(request, 'Customer account can not use with business.')
                     return redirect('business:login')
                 login(request, user)
-                return redirect('home')
+                return redirect('business:home')
             else:
                 messages.error(request, 'Invalid credentials')
         else:

@@ -22,7 +22,6 @@ def signup(request):
             login(request, user)
             return redirect('customer:home')
         else:
-            print(form.errors)
             messages.error(request, 'Form is invalid.')
             return redirect('customer:signup')
     else:
