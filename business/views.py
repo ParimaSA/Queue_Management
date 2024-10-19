@@ -19,6 +19,7 @@ def queue(request):
 
 
 def signup(request):
+    """Register new business user."""
     if request.method =='POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -34,6 +35,7 @@ def signup(request):
 
 
 def login_view(request):
+    """Login page for business user."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():

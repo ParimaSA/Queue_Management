@@ -1,4 +1,5 @@
 """Views for customer app."""
+
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -15,7 +16,8 @@ def profile(request):
 
 
 def signup(request):
-    if request.method =='POST':
+    """Register new customer user."""
+    if request.method == 'POST':
         form = CustomerSignupForm(request.POST)
         if form.is_valid():
             user = form.save()
@@ -30,6 +32,7 @@ def signup(request):
 
 
 def login_view(request):
+    """Login page for customer user."""
     if request.method == 'POST':
         form = LoginForm(request.POST)
         if form.is_valid():
