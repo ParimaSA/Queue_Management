@@ -36,7 +36,6 @@ class UserAuthTest(django.test.TestCase):
         self.user2.save()
         Business.objects.create(user=self.user2, name=self.business_name)
 
-
     def test_logout(self):
         """A user can log out using the logout url.
 

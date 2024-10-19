@@ -3,8 +3,6 @@
 import django.test
 from django.urls import reverse
 from django.contrib.auth.models import User
-
-from mysite import settings
 from business.models import Business
 from customer.models import Customer
 
@@ -37,7 +35,6 @@ class UserAuthTest(django.test.TestCase):
         )
         self.user1.save()
         Customer.objects.create(user=self.user2)
-
 
     def test_logout(self):
         """A user can log out using the logout url.

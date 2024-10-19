@@ -1,4 +1,5 @@
 """Provide test for signup."""
+
 import django.test
 from django.urls import reverse
 from django.contrib.auth import get_user_model
@@ -8,6 +9,7 @@ User = get_user_model()
 
 
 class SignUpViewTests(django.test.TestCase):
+    """Test Signup View."""
 
     def setUp(self):
         """Set up the signup URL for tests."""
@@ -15,12 +17,11 @@ class SignUpViewTests(django.test.TestCase):
 
     def test_signup_valid(self):
         """Test signup with valid form."""
-        form_data = { 'username': 'testuser',
-                      'email': 'testuser@example.com',
-                      'business_name': 'Test Business',
-                      'password1': 'thispass123',
-                      'password2': 'thispass123',
-                    }
+        form_data = {'username': 'testuser',
+                     'email': 'testuser@example.com',
+                     'business_name': 'Test Business',
+                     'password1': 'thispass123',
+                     'password2': 'thispass123'}
         response = self.client.post(self.signup_url, form_data)
 
         # Check that the user was created
