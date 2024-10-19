@@ -25,7 +25,7 @@ class RunQueueTest(TestCase):
 
     def test_show_only_entry_with_waiting_status(self):
         """Test that only entries with a 'waiting' status are shown."""
-        waiting_entry = create_entry(self.queue, self.business, -2)
+        waiting_entry = create_entry(self.queue, self.business, -4)
         waiting_entry.status = "waiting"
         waiting_entry.save()
 
@@ -37,6 +37,7 @@ class RunQueueTest(TestCase):
         response = self.client.get(
             reverse("business:home")
         )
+        self.assertEqual(response.context["entry_list"].count(), 1)
         self.assertContains(response, waiting_entry.name)
         self.assertContains(response, waiting_entry.status)
 

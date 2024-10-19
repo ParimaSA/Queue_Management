@@ -128,8 +128,12 @@ def edit_queue(request, pk):
     Returns:
         Rendered template or redirect to the entry page with the updated queue.
     """
-    queue = get_object_or_404(Queue, pk=pk)
-    business = queue.business
+    business = Business.objects.get(user=request.user)
+    try:
+        queue = Queue.objects.get(pk=pk, business=business)
+    except Queue.DoesNotExist:
+        messages.error(request, "Cannot edit this queue.")
+        return redirect('business:home')
     if request.method == "POST":
         form = QueueForm(request.POST, instance=queue)
         if form.is_valid():
@@ -156,7 +160,12 @@ def run_queue(request, pk):
     Returns:
         Rendered template or redirect to the entry page with the updated queue.
     """
-    entry = get_object_or_404(Entry, pk=pk)
+    business = Business.objects.get(user=request.user)
+    try:
+        entry = Entry.objects.get(pk=pk, business=business)
+    except Entry.DoesNotExist:
+        messages.error(request, "Cannot run this entry.")
+        return redirect('business:home')
     if request.method == "POST":
         entry.mark_as_completed()
         messages.success(request, f"{entry.name} marked as completed.")
