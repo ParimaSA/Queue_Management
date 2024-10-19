@@ -1,9 +1,8 @@
 """Views for business app."""
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponse
-from .models import Business, Queue, Entry
+from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
+from .models import Business, Queue, Entry
 
 
 def home(request, business_id):
@@ -13,6 +12,7 @@ def home(request, business_id):
 
 
 def add_customer(request, business_id):
+    """Add a customer to a specific business and queue."""
     business = get_object_or_404(Business, id=business_id)
     queues = Queue.objects.filter(business=business)
 
@@ -48,5 +48,3 @@ def signup(request):
 
 def login(request):
     return HttpResponse("Login")
-
-
