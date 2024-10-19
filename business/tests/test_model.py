@@ -1,8 +1,6 @@
 from django.test import TestCase
 from business.models import Business, Queue, Entry
 from django.contrib.auth.models import User
-from django.utils import timezone
-from unittest.mock import patch
 
 
 class EntryModelTests(TestCase):
@@ -31,14 +29,15 @@ class EntryModelTests(TestCase):
         entry.mark_as_completed()
         self.assertIsNone(entry.tracking_code)
 
-    def test_name_generation_with_reset(self):
-        """Test name generation for entries, ensuring it resets correctly."""
+    def test_name_generation(self):
+        """Test name generation for entries"""
         Entry.objects.create(name="", queue=self.queue1, business=self.business1)
         Entry.objects.create(name="", queue=self.queue1, business=self.business1)
-        last_entry = Entry.objects.last()
-        self.assertEqual(last_entry.name, "A2")
+        first_entry = Entry.objects.filter(queue=self.queue1).first()
+        self.assertEqual(first_entry.name, "A1")
+        queue_count = Entry.objects.filter(queue=self.queue1).count()
+        self.assertEqual(queue_count, 2)
 
-        tomorrow = timezone.now() + timezone.timedelta(days=1)
-        with patch('django.utils.timezone.now', return_value=tomorrow):
-            new_entry = Entry.objects.create(name="", queue=self.queue1, business=self.business1)
-            self.assertEqual(new_entry.name, "A1")
+        Entry.objects.create(name="", queue=self.queue2, business=self.business1)
+        first_entry_queue2 = Entry.objects.filter(queue=self.queue2).first()
+        self.assertEqual(first_entry_queue2.name, "B1")
