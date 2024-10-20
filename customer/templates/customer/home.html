@@ -40,21 +40,16 @@
   {% for my_queue in customer_queue_list %}
   <li class="list-group-item d-flex justify-content-between align-items-start">
 
-        {% if user.is_authenticated %}
             <div class="ms-2 me-auto">
               <div class="fw-bold">{{my_queue.entry.business.name}} ({{my_queue.entry.name}}-{{my_queue.entry.queue}})</div>
-                Date: {{my_queue.entry.time_in}}
+                Date: {{my_queue.entry.time_in}}, Status: {{my_queue.entry.status}}
             </div>
               <span class="badge text-bg-primary rounded-pill">{{my_queue.entry.get_queue_position}}</span>
+            {% if user.is_authenticated and my_queue.entry.status == 'waiting' %}
               <a href="{% url 'customer:cancel-queue' my_queue.entry.id %}" id="cancel-home">
                   <i class="bi bi-x-circle-fill"></i>Cancel</a>
-        {% else %}
-            <div class="ms-2 me-auto">
-              <div class="fw-bold">{{my_queue.business.name}} ({{my_queue.name}}-{{my_queue.queue}})</div>
-                Date: {{my_queue.time_in}}
-            </div>
+            {% endif %}
 
-        {% endif %}
   </li>
   {% endfor %}
 </ol>
