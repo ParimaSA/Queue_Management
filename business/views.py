@@ -1,26 +1,38 @@
 """Views for business app."""
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, redirect
+from .models import Business, Entry, Queue
 from django.utils import timezone
-from .models import Business, Queue, Entry
 
 
-def home(request, business_id):
-    business = get_object_or_404(Business, id=business_id)
-    context = {'business': business}
-    return render(request, 'business/home.html', context)
+def home(request):
+    return render(request, 'business/home.html')
 
 
-def add_customer(request, business_id):
+@login_required
+def add_customer(request):
     """Add a customer to a specific business and queue."""
-    business = get_object_or_404(Business, id=business_id)
+    this_user = request.user
+
+    try:
+        business = Business.objects.get(user=this_user)
+    except Business.DoesNotExist:
+        return redirect('business:login')
+
     queues = Queue.objects.filter(business=business)
+    if not queues.exists():
+        return redirect('business:home')
 
     tracking_code = None
 
     if request.method == 'POST':
         queue_id = request.POST.get('queue')
-        selected_queue = get_object_or_404(Queue, id=queue_id)
+
+        try:
+            selected_queue = Queue.objects.get(id=queue_id, business=business)
+        except Queue.DoesNotExist:
+            return redirect('business:home')
 
         entry = Entry(
             queue=selected_queue,
