@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
 from .models import CustomerQueue, Customer, Entry, CustomerSignupForm, LoginForm
 from django.contrib import messages
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -100,6 +100,12 @@ def signup(request):
     else:
         form = CustomerSignupForm()
         return render(request, "customer/signup.html", {"form": form})
+
+
+def logout_view(request):
+    """Logout the user and redirect to login page."""
+    logout(request)
+    return redirect('customer:home')
 
 
 def login_view(request):

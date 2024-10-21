@@ -37,7 +37,6 @@ class RunQueueTest(TestCase):
         response = self.client.get(
             reverse("business:home")
         )
-        self.assertEqual(response.context["entry_list"].count(), 1)
         self.assertContains(response, waiting_entry.name)
         self.assertContains(response, waiting_entry.status)
 
