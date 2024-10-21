@@ -7,8 +7,18 @@ from django.contrib.auth.models import User
 from business.models import Entry, LoginForm
 
 
+
 class Customer(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    """Represents a customer in the system.
+
+    Customer has one-to-one relationship with the User model.
+    """
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Return username of the customer."""
+        return self.user.username
 
 
 class CustomerSignupForm(UserCreationForm):
@@ -32,5 +42,11 @@ class CustomerSignupForm(UserCreationForm):
 
 
 class CustomerQueue(models.Model):
+    """Represents a queue entry for a customer in a specific business."""
+
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Return a string representation of the CustomerQueue instance."""
+        return f"{self.customer.user.username}, {self.entry.business},{self.entry.name}"

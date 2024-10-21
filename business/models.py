@@ -36,10 +36,13 @@ class SignUpForm(UserCreationForm):
 
 
 class Business(models.Model):
+    """Business model to keep track of business owners' information."""
+  
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
     def __str__(self):
+        """Return name of Business."""
         return self.name
 
 
@@ -64,7 +67,7 @@ class BusinessSignupForm(forms.ModelForm):
 class Queue(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    alphabet = models.CharField(max_length=1, default='A')
+    alphabet = models.CharField(max_length=1, default="A")
     estimated_time = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -78,33 +81,53 @@ class Entry(models.Model):
     tracking_code = models.CharField(max_length=50, unique=True, null=True, blank=True)
     time_in = models.DateTimeField(default=timezone.now)
     time_out = models.DateTimeField(null=True, blank=True)
-    status = models.CharField(max_length=20, default='waiting')
+    status = models.CharField(max_length=20, default="waiting")
 
     def save(self, *args, **kwargs):
-        if not self.tracking_code and self.status != 'completed':
+        if not self.tracking_code and self.status != "completed":
             while True:
-                new_tracking_code = generate('1234567890abcdefghijklmnopqrstuvwxyz', size=10)
-                if not Entry.objects.filter(tracking_code=new_tracking_code, time_out__isnull=True).exists():
+                new_tracking_code = generate(
+                    "1234567890abcdefghijklmnopqrstuvwxyz", size=10
+                )
+                if not Entry.objects.filter(
+                    tracking_code=new_tracking_code, time_out__isnull=True
+                ).exists():
                     self.tracking_code = new_tracking_code
                     break
 
         if not self.name:
             today = timezone.now().date()
-            queue_entries_today = Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
+            queue_entries_today = (
+                Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
+            )
             self.name = f"{self.queue.alphabet}{queue_entries_today}"
 
         super().save(*args, **kwargs)
 
     def mark_as_completed(self):
-        self.status = 'completed'
+        self.status = "completed"
         self.time_out = timezone.now()
         self.tracking_code = None
         self.save()
+
+    def get_queue_position(self) -> int:
+        """Calculate the number of people ahead in the queue.
+
+        Return:
+            int: The number of entries ahead of this one in the queue.
+        """
+        return Entry.objects.filter(
+            queue=self.queue,
+            business=self.business,
+            time_in__lt=self.time_in,
+            status="waiting",
+        ).count()
 
     def is_waiting(self):
         return self.status == 'waiting'
 
     def __str__(self):
+        """Return string representation of Entry's model."""
         return self.name
 
 
