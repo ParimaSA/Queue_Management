@@ -3,8 +3,9 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from .models import CustomerQueue, Customer, Entry
+from .models import CustomerQueue, Customer, Entry, CustomerSignupForm, LoginForm
 from django.contrib import messages
+from django.contrib.auth import authenticate, login
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -78,17 +79,54 @@ class HomeListView(ListView):
             my_customer = Customer.objects.get(user=self.request.user)
             CustomerQueue.objects.create(customer=my_customer, entry=my_entry)
             messages.success(request, "This entry is added to your queue history.")
-
         return redirect("customer:home")
-
+      
 
 def profile(request):
     return HttpResponse("Profile")
 
 
 def signup(request):
-    return HttpResponse("Signup")
+    """Register new customer user."""
+    if request.method == "POST":
+        form = CustomerSignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("customer:home")
+        else:
+            messages.error(request, "Form is invalid.")
+            return redirect("customer:signup")
+    else:
+        form = CustomerSignupForm()
+        return render(request, "customer/signup.html", {"form": form})
 
 
-def login(request):
-    return HttpResponse("Login")
+def login_view(request):
+    """Login page for customer user."""
+    if request.method == "POST":
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get("username")
+            password = form.cleaned_data.get("password")
+
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                try:
+                    Customer.objects.get(user=user)
+                except Customer.DoesNotExist:
+                    messages.error(
+                        request, "Business account can not use with customer."
+                    )
+                    return redirect("customer:login")
+                login(request, user)
+                return redirect("customer:home")
+            else:
+                messages.error(request, "Invalid credentials")
+        else:
+            messages.error(request, "Form is not valid")
+
+    else:
+        form = LoginForm()
+
+    return render(request, "customer/login.html", {"form": form})
