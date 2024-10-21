@@ -44,7 +44,9 @@
               <div class="fw-bold">{{my_queue.entry.business.name}} ({{my_queue.entry.name}}-{{my_queue.entry.queue}})</div>
                 Date: {{my_queue.entry.time_in}}, Status: {{my_queue.entry.status}}
             </div>
+            {% if my_queue.entry.status == 'waiting' %}
               <span class="badge text-bg-primary rounded-pill">{{my_queue.entry.get_queue_position}}</span>
+            {% endif %}
             {% if user.is_authenticated and my_queue.entry.status == 'waiting' %}
               <a href="{% url 'customer:cancel-queue' my_queue.entry.id %}" id="cancel-home">
                   <i class="bi bi-x-circle-fill"></i>Cancel</a>
