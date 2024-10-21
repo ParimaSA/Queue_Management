@@ -1,5 +1,4 @@
 """Views for business app."""
-from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Business, Entry, Queue
@@ -10,7 +9,6 @@ def home(request):
     return render(request, 'business/home.html')
 
 
-@login_required
 def add_customer(request):
     """Add a customer to a specific business and queue."""
     this_user = request.user
