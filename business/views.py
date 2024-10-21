@@ -3,12 +3,47 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import SignUpForm, LoginForm, Business, Entry, Queue, QueueForm
 from django.utils import timezone
+from .models import SignUpForm, LoginForm, Business, Entry, Queue, QueueForm
 
 
 def add_customer(request):
-    return render(request, "business/add_customer.html")
+    """Add a customer to a specific business and queue."""
+    this_user = request.user
+
+    try:
+        business = Business.objects.get(user=this_user)
+    except Business.DoesNotExist:
+        return redirect('business:login')
+
+    queues = Queue.objects.filter(business=business)
+    if not queues.exists():
+        return redirect('business:home')
+
+    tracking_code = None
+
+    if request.method == 'POST':
+        queue_id = request.POST.get('queue')
+
+        try:
+            selected_queue = Queue.objects.get(id=queue_id, business=business)
+        except Queue.DoesNotExist:
+            return redirect('business:home')
+
+        entry = Entry(
+            queue=selected_queue,
+            business=business,
+            time_in=timezone.now()
+        )
+        entry.save()
+
+        tracking_code = entry.tracking_code
+
+    return render(request, 'business/add_customer.html', {
+        'business': business,
+        'queues': queues,
+        'tracking_code': tracking_code
+    })
 
 
 def queue(request):
