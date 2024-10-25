@@ -28,12 +28,15 @@ jobs:
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "ALLOWED_HOSTS=${{ secrets.ALLOWED_HOSTS }}" >> .env
           echo "TIME_ZONE=${{ secrets.TIME_ZONE }}" >> .env
+          echo "DJANGO_SETTINGS_MODULE=mysite.settings" >> .env
 
       - name: Apply migrations
         run: |
           python manage.py migrate
   
       - name: Run tests
+        env: 
+          DJANGO_SETTINGS_MODULE: mysite.settings
         run: pytest --cov --cov-report=xml
 
       - name: Upload results to Codecov
