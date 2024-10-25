@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.urls import reverse
+from django.contrib import messages
 from business.models import Business, Queue
 
 
@@ -63,4 +64,17 @@ class EditQueueTest(TestCase):
 
         self.assertIn("business", response.context)
         self.assertEqual(response.context["business"], self.business)
+
+    def test_edit_queue_not_found(self):
+        """Test that if the queue does not exist, an error message is shown and redirects to home."""
+        non_existing_pk = 9999
+
+        response = self.client.post(reverse("business:edit_queue", args=[non_existing_pk]))
+
+        self.assertRedirects(response, reverse("business:home"))
+
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].message, "Cannot edit this queue.")
+        self.assertEqual(messages_list[0].level, messages.ERROR)
 

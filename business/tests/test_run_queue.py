@@ -2,6 +2,7 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
+from django.contrib import messages
 from business.models import User, Business, Queue, Entry
 
 
@@ -93,4 +94,17 @@ class RunQueueTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.assertTemplateUsed(response, "business/show_entry.html")
+
+    def test_run_queue_not_found(self):
+        """Test that if the entry does not exist, an error message is shown and redirects to home."""
+        non_existing_pk = 9999
+
+        response = self.client.post(reverse("business:run_queue", args=[non_existing_pk]))
+
+        self.assertRedirects(response, reverse("business:home"))
+
+        messages_list = list(response.wsgi_request._messages)
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(messages_list[0].message, "Cannot run this entry.")
+        self.assertEqual(messages_list[0].level, messages.ERROR)
 
