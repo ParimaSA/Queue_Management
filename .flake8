@@ -1,18 +1,14 @@
 [flake8]
 max-line-length = 90
 exclude =
-    env/*,  # Ignore virtual environment directory
-    migrations/*
-    migrations/
-    settings.py  # Exclude specific files by name
-    tests/  # Exclude all files in the tests directory
-    static/
-    templates/
+    */migrations/*
+    */__init__.py
+    */urls.py
+    */apps.py
+    */admin.py
     settings.py
-    env/
-    .venv/
-    venv/
-    mysite/
+    */tests/*
+    mysite/*
     **/site-packages/**
     manage.py
 

@@ -21,6 +21,8 @@ class Customer(models.Model):
 
 
 class CustomerSignupForm(UserCreationForm):
+    """Form for signup page, getting data to create a new account for the customer."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
     password1 = forms.CharField(

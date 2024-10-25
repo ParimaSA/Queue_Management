@@ -1,4 +1,4 @@
-"""Provide model using in business app."""
+"""Provide models using in business app."""
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -26,6 +26,7 @@ class SignUpForm(UserCreationForm):
         fields = ("username", "email", "password1", "password2")
 
     def save(self, commit=True):
+        """Create a new Business object for this user."""
         user = super().save(commit=False)
         user.email = self.cleaned_data.get("email")
         if commit:
@@ -53,6 +54,7 @@ class Queue(models.Model):
     estimated_time = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
+        """Return name of Queue."""
         return self.name
 
 
@@ -66,6 +68,7 @@ class Entry(models.Model):
     status = models.CharField(max_length=20, default="waiting")
 
     def save(self, *args, **kwargs):
+        """Generate tracking code and name for new entry."""
         if not self.tracking_code and self.status != "completed":
             while True:
                 new_tracking_code = generate(

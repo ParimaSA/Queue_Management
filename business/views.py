@@ -45,10 +45,6 @@ def add_customer(request):
     })
 
 
-def queue(request):
-    return HttpResponse("Your Queue")
-
-
 def signup(request):
     """Register new business user."""
     if request.method == 'POST':

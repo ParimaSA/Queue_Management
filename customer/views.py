@@ -2,7 +2,8 @@
 
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from .models import CustomerQueue, Customer, Entry, CustomerSignupForm, LoginForm
+from .models import CustomerQueue, Customer, Entry, CustomerSignupForm
+from business.models import LoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
