@@ -3,7 +3,7 @@
 import django.test
 from django.urls import reverse
 from django.contrib.auth import get_user_model
-from business.models import Business
+from business.models import Business, SignUpForm
 
 User = get_user_model()
 
@@ -41,6 +41,22 @@ class SignUpViewTests(django.test.TestCase):
             'password': 'thispass123',
         })
         self.assertRedirects(login_response, reverse('business:home'))
+
+    def test_form_valid_without_commit(self):
+        """Test SignupForm model has correct save method."""
+        valid_data = {'username': 'testuser',
+                      'email': 'testuser@example.com',
+                      'business_name': 'Test Business',
+                      'password1': 'thispass123',
+                      'password2': 'thispass123'}
+        form = SignUpForm(data=valid_data)
+        self.assertTrue(form.is_valid())
+        # Not saving to the database yet, should not create new object
+        user = form.save(commit=False)
+        self.assertEqual(User.objects.count(), 0)
+        # saving to the database, should create new object
+        user.save()
+        self.assertEqual(User.objects.count(), 1)
 
     def test_signup_invalid(self):
         """Test signup with invalid form, missing some fields."""

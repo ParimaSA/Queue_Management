@@ -46,24 +46,6 @@ class Business(models.Model):
         return self.name
 
 
-class BusinessSignupForm(forms.ModelForm):
-    name = forms.CharField(max_length=255)
-
-    class Meta:
-        model = User
-        fields = ["username", "password", "email"]
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])
-        if commit:
-            user.save()
-            Business.objects.create(
-                user=user, business_name=self.cleaned_data["business_name"]
-            )
-        return user
-
-
 class Queue(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)

@@ -80,10 +80,6 @@ class HomeListView(ListView):
             CustomerQueue.objects.create(customer=my_customer, entry=my_entry)
             messages.success(request, "This entry is added to your queue history.")
         return redirect("customer:home")
-      
-
-def profile(request):
-    return HttpResponse("Profile")
 
 
 def signup(request):
