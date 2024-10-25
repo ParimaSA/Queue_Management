@@ -194,6 +194,26 @@ class HomeViewTests(TestCase):
             response, "You can&#x27;t access someone else entry!", status_code=200
         )
 
+
+    def test_cancel(self):
+        """Test that owner can delete entry.
+        """
+        HomeViewTests.create_customer_queue()
+        big_entry_teenoi = Entry.objects.filter(
+            business__name="Teenoi", queue__name="Big"
+        )
+
+        entry_id = big_entry_teenoi.first().id
+        response = self.client.post(
+            reverse(
+                "customer:cancel-queue",
+                kwargs={"entry_id": entry_id},
+            ),
+            follow=True,
+        )
+        self.assertFalse(Entry.objects.filter(id=entry_id).exists(), "Entry should be deleted after cancellation.")
+
+
     def test_cancel_not_owner(self):
         """Test that only the owner of entry can cancel their queue
         and cannot delete entries that haven't been added to customer queue.
