@@ -52,7 +52,6 @@ class HomeListView(ListView):
         If another user tries to access the track code of someone else's entry,
         they cannot view or cancel that entry.
         """
-
         track_code = request.POST.get("track-code")
         try:
             my_entry = Entry.objects.get(tracking_code=str(track_code))

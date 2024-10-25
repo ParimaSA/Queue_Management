@@ -10,16 +10,24 @@ from django.forms import ModelForm
 
 
 class LoginForm(forms.Form):
+    """A form for user login, capturing username and password."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
 
 
 class SignUpForm(UserCreationForm):
+    """A form for user signup, capturing username, password, and business name."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
-    business_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    business_name = forms.CharField(widget=forms.TextInput(
+        attrs={"class": "form-control"}))
+    password1 = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
+    password2 = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
 
     class Meta:
         model = User
@@ -48,6 +56,8 @@ class Business(models.Model):
 
 
 class Queue(models.Model):
+    """Represents a queue associated with a specific business."""
+
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     alphabet = models.CharField(max_length=1, default="A")
@@ -59,6 +69,8 @@ class Queue(models.Model):
 
 
 class Entry(models.Model):
+    """Represents an entry in a queue for a specific business."""
+
     name = models.CharField(max_length=50)
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE, null=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True)
@@ -90,6 +102,7 @@ class Entry(models.Model):
         super().save(*args, **kwargs)
 
     def mark_as_completed(self):
+        """Update the entry's status to 'completed'."""
         self.status = "completed"
         self.time_out = timezone.now()
         self.tracking_code = None
@@ -109,6 +122,7 @@ class Entry(models.Model):
         ).count()
 
     def is_waiting(self):
+        """Check if the entry is in 'waiting' status."""
         return self.status == 'waiting'
 
     def __str__(self):
