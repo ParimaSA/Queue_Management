@@ -1,15 +1,11 @@
 """Views for customer app."""
 
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from .models import CustomerQueue, Customer, Entry, CustomerSignupForm, LoginForm
+from .models import CustomerQueue, Customer, Entry, CustomerSignupForm
+from business.models import LoginForm
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 def cancel_queue(request, entry_id):
@@ -49,13 +45,13 @@ class HomeListView(ListView):
         )
 
     def post(self, request, *args, **kwargs):
-        """Allow an authenticated user to cancel and view their customer queue by inputting track code.
-
-        Visitor can only view a single entry based on track code.
-        In case another user tried to access the track code of others,
-        they cannot view the entry nor cancel it either.
         """
+        Allow customer to cancel and view customer queue use tracking-code.
 
+        Visitors can only view a single entry based on the track code.
+        If another user tries to access the track code of someone else's entry,
+        they cannot view or cancel that entry.
+        """
         track_code = request.POST.get("track-code")
         try:
             my_entry = Entry.objects.get(tracking_code=str(track_code))
@@ -64,7 +60,6 @@ class HomeListView(ListView):
             return redirect("customer:home")
 
         if not self.request.user.is_authenticated:  # visitors
-            logger.info("Visitor tried to see entry.")
             return render(
                 request,
                 self.template_name,

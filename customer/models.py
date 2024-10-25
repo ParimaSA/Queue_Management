@@ -4,8 +4,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from django.contrib.auth.models import User
-from business.models import Entry, LoginForm
-
+from business.models import Entry
 
 
 class Customer(models.Model):
@@ -22,16 +21,23 @@ class Customer(models.Model):
 
 
 class CustomerSignupForm(UserCreationForm):
+    """Form for signup page, getting data to create a new account for the customer."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"})    )
+    password1 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
+    password2 = forms.CharField(
+        widget=forms.PasswordInput(attrs={"class": "form-control"})
+    )
 
     class Meta:
         model = User
         fields = ["username", "password1", "password2", "email"]
 
     def save(self, commit=True):
+        """Create a Customer object for this user."""
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
         user.set_password(self.cleaned_data["password1"])

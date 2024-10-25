@@ -1,7 +1,6 @@
 """Views for business app."""
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from .models import SignUpForm, LoginForm, Business, Entry, Queue, QueueForm
@@ -44,7 +43,7 @@ def add_customer(request):
 
 def signup(request):
     """Register new business user."""
-    if request.method =='POST':
+    if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
             user = form.save()

@@ -1,4 +1,4 @@
-"""Provide model using in business app."""
+"""Provide models using in business app."""
 
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
@@ -10,22 +10,31 @@ from django.forms import ModelForm
 
 
 class LoginForm(forms.Form):
+    """A form for user login, capturing username and password."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    password = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
 
 
 class SignUpForm(UserCreationForm):
+    """A form for user signup, capturing username, password, and business name."""
+
     username = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
     email = forms.CharField(widget=forms.EmailInput(attrs={"class": "form-control"}))
-    business_name = forms.CharField(widget=forms.TextInput(attrs={"class": "form-control"}))
-    password1 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
-    password2 = forms.CharField(widget=forms.PasswordInput(attrs={"class": "form-control"}))
+    business_name = forms.CharField(widget=forms.TextInput(
+        attrs={"class": "form-control"}))
+    password1 = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
+    password2 = forms.CharField(widget=forms.PasswordInput(
+        attrs={"class": "form-control"}))
 
     class Meta:
         model = User
         fields = ("username", "email", "password1", "password2")
 
     def save(self, commit=True):
+        """Create a new Business object for this user."""
         user = super().save(commit=False)
         user.email = self.cleaned_data.get("email")
         if commit:
@@ -37,7 +46,7 @@ class SignUpForm(UserCreationForm):
 
 class Business(models.Model):
     """Business model to keep track of business owners' information."""
-  
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
@@ -47,16 +56,21 @@ class Business(models.Model):
 
 
 class Queue(models.Model):
+    """Represents a queue associated with a specific business."""
+
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     alphabet = models.CharField(max_length=1, default="A")
     estimated_time = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
+        """Return name of Queue."""
         return self.name
 
 
 class Entry(models.Model):
+    """Represents an entry in a queue for a specific business."""
+
     name = models.CharField(max_length=50)
     queue = models.ForeignKey(Queue, on_delete=models.CASCADE, null=True)
     business = models.ForeignKey(Business, on_delete=models.CASCADE, null=True)
@@ -66,6 +80,7 @@ class Entry(models.Model):
     status = models.CharField(max_length=20, default="waiting")
 
     def save(self, *args, **kwargs):
+        """Generate tracking code and name for new entry."""
         if not self.tracking_code and self.status != "completed":
             new_tracking_code = generate("1234567890abcdefghijklmnopqrstuvwxyz", size=10)
             self.tracking_code = new_tracking_code
@@ -80,6 +95,7 @@ class Entry(models.Model):
         super().save(*args, **kwargs)
 
     def mark_as_completed(self):
+        """Update the entry's status to 'completed'."""
         self.status = "completed"
         self.time_out = timezone.now()
         self.tracking_code = None
@@ -99,6 +115,7 @@ class Entry(models.Model):
         ).count()
 
     def is_waiting(self):
+        """Check if the entry is in 'waiting' status."""
         return self.status == 'waiting'
 
     def __str__(self):
@@ -107,7 +124,8 @@ class Entry(models.Model):
 
 
 class QueueForm(ModelForm):
+    """Form for creating and updating Queue instances."""
+
     class Meta:
         model = Queue
         fields = ["name", "alphabet"]
-
