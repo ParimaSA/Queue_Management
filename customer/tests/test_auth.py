@@ -3,6 +3,7 @@
 import django.test
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.contrib import messages
 from business.models import Business
 from customer.models import Customer
 
@@ -76,3 +77,33 @@ class UserAuthTest(django.test.TestCase):
         # after failed login, should redirect to login page
         self.assertEqual(302, response.status_code)
         self.assertRedirects(response, reverse("customer:login"))
+
+    def test_login_view_invalid_form_and_user_none(self):
+        """A user with invalid form should get and error message."""
+        invalid_data = {
+            'username': '',  # Invalid username
+            'password': '',  # Invalid password
+        }
+        login_url = reverse("customer:login")
+        response = self.client.post(login_url, data=invalid_data)
+
+        self.assertEqual(response.status_code, 200)  # Should return to login page
+        self.assertIn('form', response.context)
+        form = response.context['form']
+        self.assertFalse(form.is_valid())
+        self.assertIn('This field is required.', form.errors['username'])
+        self.assertIn('This field is required.', form.errors['password'])
+
+    def test_login_view_invalid_credentials(self):
+        """A user will get an error message when login with invalid credentials."""
+        invalid_data = {
+            'username': 'customer',
+            'password': 'wrongpassword',
+        }
+        login_url = reverse("customer:login")
+        response = self.client.post(login_url, data=invalid_data)
+        # Should return to login page
+        self.assertEqual(response.status_code, 200)
+        messages_list = list(messages.get_messages(response.wsgi_request))
+        self.assertEqual(len(messages_list), 1)
+        self.assertEqual(str(messages_list[0]), 'Invalid credentials')

@@ -9,13 +9,9 @@ from .models import SignUpForm, LoginForm, Business, Entry, Queue, QueueForm
 
 def add_customer(request):
     """Add a customer to a specific business and queue."""
-    this_user = request.user
-
-    try:
-        business = Business.objects.get(user=this_user)
-    except Business.DoesNotExist:
-        return redirect('business:login')
-
+    if not request.user.is_authenticated:
+        return redirect("business:login")
+    business = Business.objects.get(user=request.user)
     queues = Queue.objects.filter(business=business)
     if not queues.exists():
         return redirect('business:home')
@@ -44,10 +40,6 @@ def add_customer(request):
         'queues': queues,
         'tracking_code': tracking_code
     })
-
-
-def queue(request):
-    return HttpResponse("Your Queue")
 
 
 def signup(request):

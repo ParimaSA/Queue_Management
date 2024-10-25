@@ -38,3 +38,27 @@ class AddQueueTest(TestCase):
         response = self.client.post(url, form)
         self.assertEqual(Queue.objects.count(), 0)
         self.assertTemplateUsed(response, "business/show_entry.html")
+
+    def test_add_queue_render_on_get_request(self):
+        """Test that if the request method is GET, it renders the show_entry page."""
+        url = reverse("business:add_queue")
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+
+        self.assertIn("business", response.context)
+        self.assertEqual(response.context["business"], self.business)
+
+    def test_add_queue_render_on_other_request_methods(self):
+        """Test that if the request method is not POST, it renders the show_entry page."""
+        url = reverse("business:add_queue")
+        response = self.client.put(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+
+        self.assertIn("business", response.context)
+        self.assertEqual(response.context["business"], self.business)

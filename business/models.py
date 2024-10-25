@@ -46,24 +46,6 @@ class Business(models.Model):
         return self.name
 
 
-class BusinessSignupForm(forms.ModelForm):
-    name = forms.CharField(max_length=255)
-
-    class Meta:
-        model = User
-        fields = ["username", "password", "email"]
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])
-        if commit:
-            user.save()
-            Business.objects.create(
-                user=user, business_name=self.cleaned_data["business_name"]
-            )
-        return user
-
-
 class Queue(models.Model):
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
@@ -85,15 +67,8 @@ class Entry(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.tracking_code and self.status != "completed":
-            while True:
-                new_tracking_code = generate(
-                    "1234567890abcdefghijklmnopqrstuvwxyz", size=10
-                )
-                if not Entry.objects.filter(
-                    tracking_code=new_tracking_code, time_out__isnull=True
-                ).exists():
-                    self.tracking_code = new_tracking_code
-                    break
+            new_tracking_code = generate("1234567890abcdefghijklmnopqrstuvwxyz", size=10)
+            self.tracking_code = new_tracking_code
 
         if not self.name:
             today = timezone.now().date()

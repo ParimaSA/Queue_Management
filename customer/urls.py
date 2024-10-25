@@ -6,7 +6,6 @@ import customer.views as views
 app_name = 'customer'
 urlpatterns = [
     path('home/', views.HomeListView.as_view(), name='home'),
-    path('profile/', views.profile, name='profile'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('signup/', views.signup, name='signup'),
