@@ -73,3 +73,24 @@ class RunQueueTest(TestCase):
             <= entry.time_out
             <= expected_time_out + datetime.timedelta(seconds=1)
         )
+
+    def test_run_queue_render_on_get_request(self):
+        """Test that if the request method is GET, it renders the show_entry page."""
+        entry = create_entry(self.queue, self.business, -2)
+        url = reverse("business:run_queue", args=[entry.pk])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+
+    def test_run_queue_render_on_other_request_methods(self):
+        """Test that if the request method is not POST, it renders the show_entry page."""
+        entry = create_entry(self.queue, self.business, -2)
+        url = reverse("business:run_queue", args=[entry.pk])
+        response = self.client.put(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+

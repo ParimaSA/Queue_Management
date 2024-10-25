@@ -39,3 +39,28 @@ class EditQueueTest(TestCase):
         self.assertEqual(self.queue.name, "Dining")
         self.assertEqual(self.queue.alphabet, "A")
         self.assertTemplateUsed(response, "business/show_entry.html")
+
+    def test_edit_queue_render_on_get_request(self):
+        """Test that if the request method is GET, it renders the show_entry page."""
+        url = reverse("business:edit_queue", args=[self.queue.pk])
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+
+        self.assertIn("business", response.context)
+        self.assertEqual(response.context["business"], self.business)
+
+    def test_edit_queue_render_on_other_request_methods(self):
+        """Test that if the request method is not POST, it renders the show_entry page."""
+        url = reverse("business:edit_queue", args=[self.queue.pk])
+        response = self.client.put(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertTemplateUsed(response, "business/show_entry.html")
+
+        self.assertIn("business", response.context)
+        self.assertEqual(response.context["business"], self.business)
+
