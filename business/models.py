@@ -67,15 +67,8 @@ class Entry(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.tracking_code and self.status != "completed":
-            while True:
-                new_tracking_code = generate(
-                    "1234567890abcdefghijklmnopqrstuvwxyz", size=10
-                )
-                if not Entry.objects.filter(
-                    tracking_code=new_tracking_code, time_out__isnull=True
-                ).exists():
-                    self.tracking_code = new_tracking_code
-                    break
+            new_tracking_code = generate("1234567890abcdefghijklmnopqrstuvwxyz", size=10)
+            self.tracking_code = new_tracking_code
 
         if not self.name:
             today = timezone.now().date()
