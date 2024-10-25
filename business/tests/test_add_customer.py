@@ -46,3 +46,18 @@ class AddCustomerViewTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("tracking_code", response.context)
+
+    def test_add_customer_redirects_when_not_authenticated(self):
+        """Test that unauthenticated users are redirected to login."""
+        response = self.client.get(reverse('business:add_customer'))
+        self.assertRedirects(response, reverse('business:login'))
+
+    def test_post_request_with_non_existent_queue(self):
+        """Test handling of POST request with a non-existent queue."""
+        self.client.login(username="testuser", password="password")
+
+        # Attempt to add a customer with a queue ID that does not exist
+        response = self.client.post(reverse("business:add_customer"), {"queue": 9999})  # Assuming 9999 does not exist
+
+        # Check that it redirects to the home page
+        self.assertRedirects(response, reverse("business:home"))
