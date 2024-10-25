@@ -37,31 +37,13 @@ class SignUpForm(UserCreationForm):
 
 class Business(models.Model):
     """Business model to keep track of business owners' information."""
-  
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
 
     def __str__(self):
         """Return name of Business."""
         return self.name
-
-
-class BusinessSignupForm(forms.ModelForm):
-    name = forms.CharField(max_length=255)
-
-    class Meta:
-        model = User
-        fields = ["username", "password", "email"]
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])
-        if commit:
-            user.save()
-            Business.objects.create(
-                user=user, business_name=self.cleaned_data["business_name"]
-            )
-        return user
 
 
 class Queue(models.Model):
@@ -132,7 +114,8 @@ class Entry(models.Model):
 
 
 class QueueForm(ModelForm):
+    """Form for creating and updating Queue instances."""
+
     class Meta:
         model = Queue
         fields = ["name", "alphabet"]
-

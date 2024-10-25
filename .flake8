@@ -1,9 +1,5 @@
 [flake8]
 max-line-length = 90
-; ignore = 
-;     D100,  # Ignore missing docstring in public module
-;     D101,  # Ignore missing docstring in public class
-;     D102,  # Ignore missing docstring in public method
 exclude =
     env/*,  # Ignore virtual environment directory
     migrations/*
@@ -19,3 +15,5 @@ exclude =
     mysite/
     **/site-packages/**
     manage.py
+
+extend-ignore = D106
