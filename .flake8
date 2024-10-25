@@ -1,0 +1,21 @@
+[flake8]
+max-line-length = 90
+; ignore = 
+;     D100,  # Ignore missing docstring in public module
+;     D101,  # Ignore missing docstring in public class
+;     D102,  # Ignore missing docstring in public method
+exclude =
+    env/*,  # Ignore virtual environment directory
+    migrations/*
+    migrations/
+    settings.py  # Exclude specific files by name
+    tests/  # Exclude all files in the tests directory
+    static/
+    templates/
+    settings.py
+    env/
+    .venv/
+    venv/
+    mysite/
+    **/site-packages/**
+    manage.py
