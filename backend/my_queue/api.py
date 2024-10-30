@@ -1,6 +1,6 @@
 from importlib.metadata import entry_points
 import helpers
-from ninja_extra import api_controller, http_get, http_post, http_put
+from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .schemas import (CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn,
@@ -112,17 +112,6 @@ class QueueController:
     """Controller for managing queue-related endpoints."""
 
 
-    # @http_get("get_entry/{entry_id}", response=EntryDetailSchema | None)
-    # def get_entry(self, request, entry_id: int):
-    #     """Get information of a specific entry."""
-    #     try:
-    #         entry = Entry.objects.get(pk=entry_id)
-    #     except Entry.DoesNotExist:
-    #         return None
-    #     print(entry)
-    #     return serialize_single_entry(entry)
-    #     # return entry
-
     @http_get("get_entry/{queue_id}", response=List[EntryDetailSchema2], auth=helpers.api_auth_user_required)
     def get_waiting_entry_in_queue(self, request, queue_id: int):
         """Return list of all entry in this queue, which status is waiting and create today ordering by time-in."""
@@ -169,11 +158,11 @@ class QueueController:
 class EntryController:
     """Controller for managing entry-related endpoints."""
 
-    @http_post("cancel-queue/{entry_id}", response=dict, auth=helpers.api_auth_user_required)
-    def cancel_queue(request, entry_id: int):
+    @http_post("cancel-queue/{tracking_code}", response=dict, auth=helpers.api_auth_user_required)
+    def cancel_queue(request, tracking_code: str):
         """When the queue is canceled, the entry is also cancel."""
         try:
-            my_entry = Entry.objects.get(entry__id=entry_id)
+            my_entry = Entry.objects.get(tracking_code=tracking_code)
             if my_entry.entry.status != "waiting":
                 return {"msg": "You cannot to cancel this entry."}
         except Entry.DoesNotExist:
@@ -202,6 +191,16 @@ class EntryController:
         entry.mark_as_completed()
         return {'msg': f'{entry.name} marked as completed.'}
 
+    @http_delete("deleteQueue/{pk}", auth=helpers.api_auth_user_required)
+    def delete_queue(request, pk: int):
+        """Delete queue to the specific business."""
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=pk, business=business)
+            queue.delete()
+        except Queue.DoesNotExist:
+            return {'msg': "Can't delete another business's queue"}
+
     @http_post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
     def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
@@ -212,3 +211,4 @@ class EntryController:
         except Entry.DoesNotExist:
             return {"msg": "Invalid track code"}
         return [serialize_single_entry(my_entry)]
+
