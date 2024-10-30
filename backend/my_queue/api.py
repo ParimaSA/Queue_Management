@@ -170,15 +170,26 @@ class EntryController:
 
     @http_post("cancel-queue/{tracking_code}", response=dict, auth=helpers.api_auth_user_required)
     def cancel_queue(self, request, tracking_code: str):
-        """When the queue is canceled, the entry is also cancel."""
+        """When the queue is canceled, the entry is also cancel.(customer)"""
         try:
             my_entry = Entry.objects.get(tracking_code=tracking_code)
             if my_entry.entry.status != "waiting":
                 return {"msg": "You cannot to cancel this entry."}
         except Entry.DoesNotExist:
-            return {"msg": "Invalid entry id."}
+            return {"msg": "Invalid tracking code."}
         my_entry.delete()
         return {"msg": "Successfully canceled an entry."}
+
+    @http_post("cancelEntry/{pk}", auth=helpers.api_auth_user_required)
+    def cancel_entry(self, request, pk: int):
+        """Cancel entry.(business)"""
+        business = Business.objects.get(user=request.user)
+        try:
+            entry = Entry.objects.get(pk=pk, business=business)
+        except Entry.DoesNotExist:
+            return {'msg': "Can't delete entry of another business's queue"}
+        entry.mark_as_cancel()
+        return {'msg': f'{entry.name} marked as cancel.'}
 
     @http_post("runQueue/{pk}", auth=helpers.api_auth_user_required)
     def run_queue(self, request, pk: int):

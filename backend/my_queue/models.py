@@ -83,6 +83,12 @@ class Entry(models.Model):
             time_in__date=today
         ).count()
 
+    def mark_as_cancel(self):
+        """Update the entry's status to 'canceled'."""
+        self.status = "cancel"
+        self.tracking_code = None
+        self.save()
+
     def is_waiting(self):
         """Check if the entry is in 'waiting' status."""
         return self.status == 'waiting'
