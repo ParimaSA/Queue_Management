@@ -1,5 +1,5 @@
 from importlib.metadata import entry_points
-from backend import helpers
+import helpers
 from ninja_extra import api_controller, http_get, http_post, http_put
 from django.utils import timezone
 from .schemas import CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn
