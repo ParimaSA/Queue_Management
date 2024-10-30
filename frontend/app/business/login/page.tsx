@@ -2,13 +2,16 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { getToken } from '@/lib/auth';
+
+const LOGIN_API_URL = '/api/login/'
 
 interface FormData {
     username: string;
     password: string;
 }
 
-const LoginForm: React.FC = () => {
+const LoginForm = () => {
     const router = useRouter()
     const [formData, setFormData] = useState<FormData>({ username: '', password: '' });
     const [error, setError] = useState<string | null>(null);
@@ -22,7 +25,7 @@ const LoginForm: React.FC = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/login', {
+            const response = await fetch(LOGIN_API_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -34,16 +37,14 @@ const LoginForm: React.FC = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Login failed');
             }
-
-            const data = await response.json();
-            console.log('Login successful:', data);
-            localStorage.setItem('token', data.access); 
-            console.log('Response data:', data);
+            
+            console.log(getToken())
             router.replace('/business')
         } catch (err) {
-            setError((err as Error).message); // Set error message to state
+            setError((err as Error).message);
         }
     };
+
     const loginBackground = {
       backgroundImage: "url('/login_background.png')",
       backgroundSize: 'cover',
