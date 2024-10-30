@@ -55,8 +55,9 @@ INSTALLED_APPS = [
     "ninja_extra",
     "ninja_jwt",
     # internal
-    "business",
-    "customer",
+    'my_queue',
+    # "business",
+    # "customer",
 ]
 
 MIDDLEWARE = [
@@ -72,11 +73,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mysite.urls'
 
-CORS_URLS_REGEX = r"^/api/.*$"
-CORS_ALLOWED_ORIGINS = []
-ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
-for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
-    CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
+# CORS_URLS_REGEX = r"^/api/.*$"
+# CORS_ALLOWED_ORIGINS = []
+# ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
+# for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
+#     CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
 
 
 TEMPLATES = [
