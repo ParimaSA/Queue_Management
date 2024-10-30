@@ -2,8 +2,9 @@ from importlib.metadata import entry_points
 import helpers
 from ninja_extra import api_controller, http_get, http_post, http_put
 from django.utils import timezone
-from .schemas import CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn
+from .schemas import CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn, QueueDetailSchema
 from .models import Entry, Business, Queue
+from typing import List, Union
 
 
 def serialize_queue_entry(entry_list):
@@ -48,6 +49,23 @@ class BusinessController:
             # print('anonymous')
             return None
         return Business.objects.get(user=request.user)
+
+    @http_get("get_entry/{entry_id}", response=EntryDetailSchema | None)
+    def get_entry(self, request, entry_id: int):
+        """Get information of a specific entry."""
+        try:
+            entry = Entry.objects.get(pk=entry_id)
+        except Entry.DoesNotExist:
+            return None
+        return serialize_single_entry(entry)
+
+    @http_get("queue/", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+    def get_business_queues(self, request):
+        """Return list of all queues in the business."""
+        # return Queue.objects.all()
+        business = Business.objects.get(user=request.user)
+        queue_list = Queue.objects.filter(business=business)
+        return queue_list
 
     @http_get("all-customers-entries/", response=dict, auth=helpers.api_auth_user_required)
     def get_all_entries(request):
@@ -149,12 +167,3 @@ class EntryController:
         except Entry.DoesNotExist:
             return {"msg": "Invalid track code"}
         return [serialize_single_entry(my_entry)]
-
-    @http_get("entry/{entry_id}", response=EntryDetailSchema | None)
-    def get_entry(self, request, entry_id: int):
-        """Get information of a specific entry."""
-        try:
-            entry = Entry.objects.get(pk=entry_id)
-        except Entry.DoesNotExist:
-            return None
-        return entry

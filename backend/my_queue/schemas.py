@@ -10,11 +10,16 @@ class BusinessSchema(ModelSchema):
         fields = ('user', 'name')
 
 
+class QueueDetailSchema(Schema):
+    id: int
+    name: str
+
+
 class QueueSchema(Schema):
     # GET
     id: int
     name: str
-    estimated_time: int = None
+    estimated_time: Optional[int]
 
 
 class EntryDetailSchema(Schema):
