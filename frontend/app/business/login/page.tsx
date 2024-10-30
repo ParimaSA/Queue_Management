@@ -1,8 +1,9 @@
 "use client";
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+
 import Link from 'next/link';
-import { getToken } from '@/lib/auth';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/app/components/authProvider';
 
 const LOGIN_API_URL = '/api/login/'
 
@@ -12,9 +13,17 @@ interface FormData {
 }
 
 const LoginForm = () => {
+    const auth = useAuth()
     const router = useRouter()
     const [formData, setFormData] = useState<FormData>({ username: '', password: '' });
     const [error, setError] = useState<string | null>(null);
+
+    // Redirect if the user is authenticated
+    useEffect(() => {
+      if (auth.isAuthenticated) {
+          router.replace('/business')
+      }
+    }, [auth.isAuthenticated, router])
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -37,8 +46,7 @@ const LoginForm = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Login failed');
             }
-            
-            console.log(getToken())
+            auth.login()
             router.replace('/business')
         } catch (err) {
             setError((err as Error).message);

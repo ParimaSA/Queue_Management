@@ -13,12 +13,13 @@ export async function getToken(): Promise<string | undefined> {
 }
 
 
-export async function getRefreshToken(): string | undefined {
+export async function getRefreshToken(): Promise<string | undefined> {
     // Retrieve refresh token for API requests
     const cookie = await cookies()
     const refreshToken = cookie.get(TOKEN_REFRESH_NAME);
-    return refreshToken?.value;
+    return Promise.resolve(refreshToken?.value);
 }
+
 
 export async function setToken(authToken: string): Promise<void> {
     // Set auth token during login
@@ -33,6 +34,7 @@ export async function setToken(authToken: string): Promise<void> {
     });
 }
 
+
 export async function setRefreshToken(authRefreshToken: string): Promise<void> {
     // Set refresh token during login
     const cookie = await cookies()
@@ -46,9 +48,9 @@ export async function setRefreshToken(authRefreshToken: string): Promise<void> {
     });
 }
 
+
 export async function deleteTokens(): Promise<void> {
-    // Delete tokens during logout
-    const cookie = await cookies()
-    cookie.delete(TOKEN_REFRESH_NAME);
+    const cookie = await cookies();
     cookie.delete(TOKEN_NAME);
+    cookie.delete(TOKEN_REFRESH_NAME);
 }

@@ -1,14 +1,14 @@
 "use client";
 
-import { useAuth } from "@/components/authProvider";
+import { useAuth } from '@/app/components/authProvider';
 import { useRouter } from 'next/navigation';
 import { useEffect } from "react";
 
 const LOGOUT_URL = "/api/logout/";
 
-export default function Page(): JSX.Element {
+export default function Page() {
+    const auth = useAuth()
     const router = useRouter();
-    const auth = useAuth();
 
     useEffect(() => {
         async function handleLogout(): Promise<void> {
@@ -17,15 +17,14 @@ export default function Page(): JSX.Element {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({}), // Optional payload
             };
 
-            try {
+            try {                
                 const response = await fetch(LOGOUT_URL, requestOptions);
                 
                 if (response.ok) {
                     console.log("Logged out");
-                    auth.logout();
+                    auth.logout()
                     router.replace('/business/login'); // Redirect to login
                 } else {
                     console.error("Failed to log out");
@@ -34,9 +33,8 @@ export default function Page(): JSX.Element {
                 console.error("Error during logout:", error);
             }
         }
-
-        handleLogout(); // Trigger logout when the page loads
-    }, [auth, router]);
+        handleLogout(); 
+    }, [router]);
 
     return (
         <div className="h-[95vh] flex items-center justify-center">

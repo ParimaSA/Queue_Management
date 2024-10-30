@@ -6,17 +6,17 @@ export async function middleware(request: NextRequest) {
     const path = request.nextUrl.pathname;
 
     const isPublicPath = path === '/business/login' || path === '/business/signup';
-    const token = getToken(); 
+    const token = await getToken();
+    const isAuthenticated = token !== undefined && token !== ''
 
-    // Redirect logged-in users trying to access the login page to the business page
-    if (path === '/business/login' && token !== undefined) {
-        return NextResponse.redirect(new URL('/business', request.nextUrl));
+    // If the user is not logged in and tries to access any protected page, redirect to login
+    if (!isPublicPath && !isAuthenticated) {
+        return NextResponse.redirect(new URL('/business/login', request.nextUrl));
     }
 
-    // Redirect logged-in users from public paths to the home page
-    if (isPublicPath && token !== undefined) {
-        return NextResponse.redirect(new URL('/business', request.nextUrl));
-    }
-
-    
+    return NextResponse.next();
 }
+
+export const config = {
+    matcher: ['/business'],
+};
