@@ -212,14 +212,14 @@ class EntryController:
         entry.mark_as_completed()
         return {'msg': f'{entry.name} marked as completed.'}
 
-    @http_post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
-    def add_customer_queue(self, request, tracking_code: CustomerQueueCreateSchema):
+    @http_post("add-tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
+    def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
 
         try:
             # Check if the tracking code is valid
             my_entry = Entry.objects.get(tracking_code=tracking_code.tracking_code)
         except Entry.DoesNotExist:
-            return {"msg": "Invalid track code"}
+            return {"msg": "Invalid tracking code"}
         return [serialize_single_entry(my_entry)]
 
