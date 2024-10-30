@@ -72,11 +72,15 @@ class Entry(models.Model):
         Return:
             int: The number of entries ahead of this one in the queue.
         """
+        today = timezone.now().date()
+        if self.status != "waiting":
+            return 0
         return Entry.objects.filter(
             queue=self.queue,
             business=self.business,
             time_in__lt=self.time_in,
             status="waiting",
+            time_in__date=today
         ).count()
 
     def is_waiting(self):
