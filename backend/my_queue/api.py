@@ -60,7 +60,7 @@ class BusinessController:
         return queue_list
 
     @http_get("all-customers-entries/", response=dict, auth=helpers.api_auth_user_required)
-    def get_all_entries(request):
+    def get_all_entries(self, request):
         """Show all my business entries."""
         today = timezone.now().date()
         try:
@@ -154,7 +154,7 @@ class QueueController:
         return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
 
     @http_delete("deleteQueue/{pk}", auth=helpers.api_auth_user_required)
-    def delete_queue(request, pk: int):
+    def delete_queue(self, request, pk: int):
         """Delete queue to the specific business."""
         business = Business.objects.get(user=request.user)
         try:
@@ -169,7 +169,7 @@ class EntryController:
     """Controller for managing entry-related endpoints."""
 
     @http_post("cancel-queue/{tracking_code}", response=dict, auth=helpers.api_auth_user_required)
-    def cancel_queue(request, tracking_code: str):
+    def cancel_queue(self, request, tracking_code: str):
         """When the queue is canceled, the entry is also cancel."""
         try:
             my_entry = Entry.objects.get(tracking_code=tracking_code)
@@ -181,7 +181,7 @@ class EntryController:
         return {"msg": "Successfully canceled an entry."}
 
     @http_post("runQueue/{pk}", auth=helpers.api_auth_user_required)
-    def run_queue(request, pk: int):
+    def run_queue(self, request, pk: int):
         """
         Mark a specific entry as completed.
 
@@ -202,7 +202,7 @@ class EntryController:
         return {'msg': f'{entry.name} marked as completed.'}
 
     @http_post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
-    def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
+    def add_customer_queue(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
 
         try:
