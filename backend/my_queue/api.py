@@ -153,6 +153,16 @@ class QueueController:
         new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
         return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
 
+    @http_delete("deleteQueue/{pk}", auth=helpers.api_auth_user_required)
+    def delete_queue(request, pk: int):
+        """Delete queue to the specific business."""
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=pk, business=business)
+            queue.delete()
+        except Queue.DoesNotExist:
+            return {'msg': "Can't delete another business's queue"}
+
 
 @api_controller("/entry")
 class EntryController:
@@ -190,16 +200,6 @@ class EntryController:
 
         entry.mark_as_completed()
         return {'msg': f'{entry.name} marked as completed.'}
-
-    @http_delete("deleteQueue/{pk}", auth=helpers.api_auth_user_required)
-    def delete_queue(request, pk: int):
-        """Delete queue to the specific business."""
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=pk, business=business)
-            queue.delete()
-        except Queue.DoesNotExist:
-            return {'msg': "Can't delete another business's queue"}
 
     @http_post("add-trackcode/{tracking_code}", response=list[EntryDetailSchema] | dict)
     def add_customer_queue(request, tracking_code: CustomerQueueCreateSchema):
