@@ -23,6 +23,7 @@ def serialize_queue_entry(entry_list):
 
 
 def serialize_single_entry(entry):
+    """Serialize json for entry."""
     queue_ahead = entry.get_queue_position() 
     entry_detail = EntryDetailSchema(
         id=entry.id,
@@ -46,14 +47,12 @@ class BusinessController:
     @http_get("my-business/", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
-        # print(request.user)
         return Business.objects.get(user=request.user)
 
 
     @http_get("queue/", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
     def get_business_queues(self, request):
         """Return list of all queues in the business."""
-        # return Queue.objects.all()
         print(request.user)
         business = Business.objects.get(user=request.user)
         queue_list = Queue.objects.filter(business=business)
@@ -129,7 +128,6 @@ class QueueController:
             queue_id: The primary key of the queue.
         Returns: message indicate whether the queue is successfully edit or not
         """
-        # print(request.user)
         business = Business.objects.get(user=request.user)
         try:
             queue = Queue.objects.get(pk=queue_id, business=business)
