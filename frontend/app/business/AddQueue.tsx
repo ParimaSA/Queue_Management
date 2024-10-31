@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-const QUEUE_API_URL = "/api/queue/";
+const QUEUE_API_URL = "/api/business";
 
 const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')

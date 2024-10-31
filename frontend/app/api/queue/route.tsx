@@ -4,7 +4,7 @@ import { DJANGO_API_ENDPOINT } from "@/config/defaults";
 
 
 const DJANGO_API_QUEUE_URL=`${DJANGO_API_ENDPOINT}/business/queue/`
-const DJANGO_API_ADD_QUEUE_URL=`${DJANGO_API_ENDPOINT}/business/`
+const DJANGO_API_ADD_QUEUE_URL=`${DJANGO_API_ENDPOINT}/business`
 
 export async function GET(request: Request){
     const {data, status} = await ApiProxy.get(DJANGO_API_QUEUE_URL, true)
