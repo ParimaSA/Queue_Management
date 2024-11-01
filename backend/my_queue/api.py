@@ -180,7 +180,7 @@ class EntryController:
         my_entry.delete()
         return {"msg": "Successfully canceled an entry."}
 
-    @http_post("/tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
+    @http_get("/tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
     def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
 
@@ -190,4 +190,3 @@ class EntryController:
         except Entry.DoesNotExist:
             return {"msg": "Invalid tracking code"}
         return [serialize_single_entry(my_entry)]
-
