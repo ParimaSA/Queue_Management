@@ -1,5 +1,4 @@
 import type { Config } from "tailwindcss";
-import Business from "./app/business/page";
 
 const config: Config = {
   content: [
@@ -13,6 +12,8 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
         lightBlue: '#D1E9F6',
+        lightBlue2: '#D7ECF6',
+        lightBlue3: '#D4DBF8',
         lightPurple1: '#F7DBF0',
         lightPurple2: '#F4EEFF',
         lightSky: '#BFECFF',
@@ -23,6 +24,9 @@ const config: Config = {
         lightGrey2: '#DDE6ED',
         darkPurple: '#424874',
         cream: '#FAF0E2',
+        cream2: '#FEF9F2',
+        brightPink: '#C869B3',
+        brightPink2: '#DD98D6'
       },
       height: {
         '26': '4rem',
