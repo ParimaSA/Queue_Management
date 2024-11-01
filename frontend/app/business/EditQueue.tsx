@@ -30,7 +30,7 @@ const EditQueue = ({queue}) => {
       handleSubmit(parseInt(QueueId, 10));
       console.log('New Queue:', editedQueue);
       console.log('New Alphabet', editedAlphabet);
-      closeModal();
+      closeModal(QueueId);
     }
     else {
       console.log('No queue added');
@@ -46,10 +46,14 @@ const EditQueue = ({queue}) => {
     }
   }
 
-  const closeModal = () => {
+  const closeModal = (QueueId) => {
     setIsModalOpen(false);
     setEditedQueue('');
     setEditedAlphabet('');
+    const modal = document.getElementById(QueueId);
+    if (modal) {
+      modal.close();
+    }
   }
 
   const handleEditedQueue = (event: React.ChangeEvent<HTMLSelectElement>) => {
