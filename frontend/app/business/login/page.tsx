@@ -109,7 +109,7 @@ const LoginForm: React.FC = () => {
             <div className='pt-7'/>
             <div className='flex items-center space-x-2'>
               <label>Does't have an account?</label>
-              <Link href='/signup' className='text-blue-500 hover:underline'>Sign up</Link>
+              <Link href='/business/signup' className='text-blue-500 hover:underline'>Sign up</Link>
             </div>
           </div>
         </div>
