@@ -104,7 +104,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
             </label>
             <br />
             <label className="input input-bordered flex items-center gap-2">
-              Alphabet
+              Prefix
               <input
                 type="text"
                 className="grow font-light"

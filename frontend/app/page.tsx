@@ -15,10 +15,10 @@ const Home = () => {
           <div className='row-start-6'>
             <div className='grid grid-cols-2 gap-4'>
               <Link href="/customer">
-                <button className='btn btn-primary w-full'>Customer</button>
+                <button className='btn btn-primary w-full text-xl text-white bg-lightPink border-none hover:bg-pink-900'>Customer</button>
               </Link>
               <Link href="/business/login">
-                <button className='btn btn-primary w-full'>Business Owner</button>
+                <button className='btn btn-primary w-full text-xl text-white bg-lightPurple3 border-none hover:bg-purple-900'>Business Owner</button>
               </Link>
             </div>
           </div>
