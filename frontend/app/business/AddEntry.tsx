@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { mutate } from 'swr';
 import QRCode from "qrcode";
 
-const ENTRY_API_URL = (queueID) => `http://127.0.0.1:8000/api/queue/get_entry/${queueID}`;
+const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
+const QUEUE_API_URL = `/api/queue`;
+
 
 const AddEntry = ({ queue }) => {
   const queueID = queue.id
@@ -34,7 +36,7 @@ const AddEntry = ({ queue }) => {
 
   const handleSubmit = async (queueId: number) => {
     try {
-      const response = await fetch(`/api/queue/${queueId}`, {
+      const response = await fetch(`${QUEUE_API_URL}/${queueId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +52,7 @@ const AddEntry = ({ queue }) => {
       console.log("Response:", data)
       setTrackingCode(data.tracking_code)
 
-      mutate(ENTRY_API_URL(queueId));
+      mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
       generate();
     } catch (error) {
       console.log("Error adding entry:", error)
@@ -59,7 +61,7 @@ const AddEntry = ({ queue }) => {
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
-    QRCode.toDataURL(`http://localhost:3000/customer/${trackingCode}`).then(setSrc)
+    QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
   }
 
   return (

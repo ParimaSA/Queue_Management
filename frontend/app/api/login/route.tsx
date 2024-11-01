@@ -24,8 +24,8 @@ export async function POST(request: Request): Promise<Response> {
     if (status === 200) {
         console.log("logged in")
         const { username, access, refresh } = data
-        setToken(access)
-        setRefreshToken(refresh)
+        await setToken(access)
+        await setRefreshToken(refresh)
         return NextResponse.json({ loggedIn: true, username, access}, { status: 200 })
     }
 

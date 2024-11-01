@@ -44,58 +44,12 @@ def serialize_single_entry(entry):
 class BusinessController:
     """Controller for managing business-related endpoints."""
 
-    @http_get("my-business/", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
+    @http_get("", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
         return Business.objects.get(user=request.user)
 
-
-    @http_get("queue/", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
-    def get_business_queues(self, request):
-        """Return list of all queues in the business."""
-        print(request.user)
-        business = Business.objects.get(user=request.user)
-        queue_list = Queue.objects.filter(business=business)
-        return queue_list
-
-    @http_get("all-customers-entries/", response=dict, auth=helpers.api_auth_user_required)
-    def get_all_entries(self, request):
-        """Show all my business entries."""
-        today = timezone.now().date()
-        try:
-            business = Business.objects.get(user=request.user)
-        except Business.DoesNotExist:
-            return {"detail": "Business not found"}, 404
-        queue_list = Queue.objects.filter(business=business)
-        entry_list = Entry.objects.filter(
-            business=business,
-            time_in__date=today,
-        ).order_by("time_in")
-
-        serialized_queues = [QueueSchema.from_orm(queue) for queue in queue_list]
-        serialized_entries = serialize_queue_entry(entry_list)
-
-        # Serialize the business object
-        serialized_business = BusinessSchema.from_orm(business)
-
-        return {
-            "queues": serialized_queues,
-            "entries": serialized_entries,
-            "business": serialized_business
-        }
-
-    @http_get("get_entry/{entry_id}", response=EntryDetailSchema2 | None)
-    def get_entry(self, request, entry_id: int):
-        """Get information of a specific entry."""
-        try:
-            entry = Entry.objects.get(pk=entry_id)
-        except Entry.DoesNotExist:
-            return None
-        print(entry)
-        # return serialize_single_entry(entry)
-        return entry
-
-    @http_post("", response=dict, auth=helpers.api_auth_user_required)
+    @http_post("/queues", response=dict, auth=helpers.api_auth_user_required)
     def create_business_queue(self, request, data: QueueCreateSchema):
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
@@ -106,20 +60,19 @@ class BusinessController:
         new_queue.save()
         return {'msg': f'Queue {new_queue.name} is successfully created.'}
 
+    @http_get("/queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+    def get_business_queues(self, request):
+        """Return list of all queues in the business."""
+        business = Business.objects.get(user=request.user)
+        queue_list = Queue.objects.filter(business=business)
+        return queue_list
+
+
 @api_controller("/queue")
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
-
-    @http_get("get_entry/{queue_id}", response=List[EntryDetailSchema2], auth=helpers.api_auth_user_required)
-    def get_waiting_entry_in_queue(self, request, queue_id: int):
-        """Return list of all entry in this queue, which status is waiting and create today ordering by time-in."""
-        today = timezone.now().date()
-        queue = get_object_or_404(Queue, business__user=request.user, pk=queue_id)
-        entry = Entry.objects.filter(queue=queue, status='waiting', time_in__date=today).order_by("time_in")
-        return entry
-
-    @http_put("editQueue/{queue_id}", auth=helpers.api_auth_user_required)
+    @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):
         """
         Edit queue to the specified business.
@@ -139,8 +92,18 @@ class QueueController:
         return {'msg': f"Successfully updated the queue '{queue.name}' "
                        f"with the alphabet '{queue.alphabet}'."}
 
-    @http_post("add_entry/{queue_id}", auth=helpers.api_auth_user_required)
-    def add_entry(self, request, queue_id: int):
+    @http_delete("/{queue_id}", auth=helpers.api_auth_user_required)
+    def delete_queue(self, request, queue_id: int):
+        """Delete queue to the specific business."""
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=queue_id, business=business)
+            queue.delete()
+        except Queue.DoesNotExist:
+            return {'msg': "Can't delete another business's queue"}
+
+    @http_post("/new-entry/{queue_id}", auth=helpers.api_auth_user_required)
+    def add_entry_to_queue(self, request, queue_id: int):
         """Adding new entry into the queue."""
         business = Business.objects.get(user=request.user)
         try:
@@ -151,46 +114,41 @@ class QueueController:
         new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
         return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
 
-    @http_delete("deleteQueue/{pk}", auth=helpers.api_auth_user_required)
-    def delete_queue(self, request, pk: int):
-        """Delete queue to the specific business."""
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=pk, business=business)
-            queue.delete()
-        except Queue.DoesNotExist:
-            return {'msg': "Can't delete another business's queue"}
+    @http_get("/{queue_id}/entries", response=List[EntryDetailSchema2], auth=helpers.api_auth_user_required)
+    def get_waiting_entry_in_queue(self, request, queue_id: int):
+        """Return list of all entry in this queue, which status is waiting and create today ordering by time-in."""
+        today = timezone.now().date()
+        queue = get_object_or_404(Queue, business__user=request.user, pk=queue_id)
+        entry = Entry.objects.filter(queue=queue, status='waiting', time_in__date=today).order_by("time_in")
+        return entry
 
 
 @api_controller("/entry")
 class EntryController:
     """Controller for managing entry-related endpoints."""
 
-    @http_post("cancel-queue/{tracking_code}", response=dict, auth=helpers.api_auth_user_required)
-    def cancel_queue(self, request, tracking_code: str):
-        """When the queue is canceled, the entry is also cancel.(customer)"""
+    @http_get("/{entry_id}", response=EntryDetailSchema2 | None)
+    def get_entry(self, request, entry_id: int):
+        """Get information of a specific entry."""
         try:
-            my_entry = Entry.objects.get(tracking_code=tracking_code)
-            if my_entry.entry.status != "waiting":
-                return {"msg": "You cannot to cancel this entry."}
+            entry = Entry.objects.get(pk=entry_id)
         except Entry.DoesNotExist:
-            return {"msg": "Invalid tracking code."}
-        my_entry.delete()
-        return {"msg": "Successfully canceled an entry."}
+            return None
+        return entry
 
-    @http_post("cancelEntry/{pk}", auth=helpers.api_auth_user_required)
-    def cancel_entry(self, request, pk: int):
+    @http_post("/{entry_id}/status/cancel", auth=helpers.api_auth_user_required)
+    def cancel_entry(self, request, entry_id: int):
         """Cancel entry.(business)"""
         business = Business.objects.get(user=request.user)
         try:
-            entry = Entry.objects.get(pk=pk, business=business)
+            entry = Entry.objects.get(pk=entry_id, business=business)
         except Entry.DoesNotExist:
             return {'msg': "Can't delete entry of another business's queue"}
         entry.mark_as_cancel()
         return {'msg': f'{entry.name} marked as cancel.'}
 
-    @http_post("runQueue/{pk}", auth=helpers.api_auth_user_required)
-    def run_queue(self, request, pk: int):
+    @http_post("/{entry_id}/status/complete", auth=helpers.api_auth_user_required)
+    def run_queue(self, request, entry_id: int):
         """
         Mark a specific entry as completed.
 
@@ -203,14 +161,26 @@ class EntryController:
         """
         business = Business.objects.get(user=request.user)
         try:
-            entry = Entry.objects.get(pk=pk, business=business)
+            entry = Entry.objects.get(pk=entry_id, business=business)
         except Entry.DoesNotExist:
             return {'msg': 'Deletion failed.'}
 
         entry.mark_as_completed()
         return {'msg': f'{entry.name} marked as completed.'}
 
-    @http_post("add-tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
+    @http_post("/tracking-code/{tracking_code}/cancel", response=dict, auth=helpers.api_auth_user_required)
+    def cancel_tracking_code(self, request, tracking_code: str):
+        """When the queue is canceled, the entry is also cancel.(customer)"""
+        try:
+            my_entry = Entry.objects.get(tracking_code=tracking_code)
+            if my_entry.entry.status != "waiting":
+                return {"msg": "You cannot to cancel this entry."}
+        except Entry.DoesNotExist:
+            return {"msg": "Invalid tracking code."}
+        my_entry.delete()
+        return {"msg": "Successfully canceled an entry."}
+
+    @http_post("/tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
     def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
 

@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-const QUEUE_API_URL = "/api/business";
+const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
 const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
@@ -25,6 +25,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
       console.log('New Alphabet:', newAlphabet);
       const success = await createNewQueue(newQueue, newAlphabet);
       if (success) {
+        console.log("success add queue")
         onQueueAdded();
         closeModal();
       }
@@ -41,7 +42,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
         alphabet: alphabet,
       };
 
-      const response = await fetch('/api/queue', {
+      const response = await fetch(BUSINESS_QUEUE_API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

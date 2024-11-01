@@ -1,4 +1,5 @@
 import { getToken } from "@/lib/auth"
+import { cookies } from "next/headers"
 
 interface FetchResponse {
     data: any
@@ -12,7 +13,7 @@ export default class ApiProxy {
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-        const authToken = getToken()
+        const authToken = await getToken()
         if (authToken && requireAuth) {
             headers["Authorization"] = `Bearer ${authToken}`
         }
@@ -63,7 +64,6 @@ export default class ApiProxy {
             headers,
             body: jsonData
         }
-        console.log(headers)
         return await ApiProxy.handleFetch(endpoint, requestOptions)
     }
 

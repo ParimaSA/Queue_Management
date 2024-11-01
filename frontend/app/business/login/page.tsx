@@ -1,6 +1,8 @@
 "use client";
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/authProvider';
+import { useEffect } from 'react';
 import Link from 'next/link';
 
 interface FormData {
@@ -9,15 +11,22 @@ interface FormData {
 }
 
 const LoginForm: React.FC = () => {
-    const router = useRouter()
-    const [formData, setFormData] = useState<FormData>({ username: '', password: '' });
-    const [error, setError] = useState<string | null>(null);
+  const auth = useAuth()
+  const router = useRouter()
+  const [formData, setFormData] = useState<FormData>({ username: '', password: '' });
+  const [error, setError] = useState<string | null>(null);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
+  // Redirect if the user is authenticated
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+        router.replace('/business')
+    }
+  }, [auth.isAuthenticated, router])
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({ ...prevData, [name]: value }));
+  };
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -34,11 +43,7 @@ const LoginForm: React.FC = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Login failed');
             }
-
-            const data = await response.json();
-            console.log('Login successful:', data);
-            localStorage.setItem('token', data.access); 
-            console.log('Response data:', data);
+            auth.login()
             router.replace('/business')
         } catch (err) {
             setError((err as Error).message); // Set error message to state
