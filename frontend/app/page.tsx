@@ -14,7 +14,7 @@ const Home = () => {
         <div className='grid grid-rows-6 grid-flow-col gap-4'>
           <div className='row-start-6'>
             <div className='grid grid-cols-2 gap-4'>
-              <Link href="/customer/login">
+              <Link href="/customer">
                 <button className='btn btn-primary w-full'>Customer</button>
               </Link>
               <Link href="/business/login">
