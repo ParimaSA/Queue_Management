@@ -1,42 +1,23 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
+import fetcher from "@/lib/fetcher";
+import useSWR from "swr";
+
+const ENTRY_TRACKING_CODE_URL = '/api/entry'
 
 const CustomerPage: React.FC = () => {
+  const router = useRouter()
   const { trackingCode } = useParams();
-  const [data, setData] = useState<any[]>([]);
-  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (trackingCode) {
-        try {
-          const response = await fetch(`http://127.0.0.1:8000/api/entry/add-tracking-code/${trackingCode}`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          });
+  if (!trackingCode){
+    router.replace('/customer')
+  }
 
-          if (!response.ok) {
-            throw new Error('Failed to fetch data');
-          }
-
-          const result = await response.json();
-          setData(Array.isArray(result) ? result : [result]);
-
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          setError('An error occurred while fetching data');
-        }
-      } else {
-        setError('Tracking code is not defined in the URL');
-      }
-    };
-
-    fetchData();
-  }, [trackingCode]);
+  const { data, error } = useSWR(`${ENTRY_TRACKING_CODE_URL}/${trackingCode}`, fetcher);
+  if (error) return <div>Failed to load entry</div>;
+  if (!data) return <div>Loading entry...</div>;
 
   const formatDate = (isoDate: string | number | Date) => {
     const date = new Date(isoDate);
