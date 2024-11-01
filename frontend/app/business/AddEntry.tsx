@@ -61,7 +61,7 @@ const AddEntry = ({ queue }) => {
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
-    QRCode.toDataURL(`http://localhost:3000/customer/${trackingCode}`).then(setSrc)
+    QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
   }
 
   return (
