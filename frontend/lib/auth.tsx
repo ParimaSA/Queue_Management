@@ -1,27 +1,30 @@
+"use server"
 import { cookies } from "next/headers";
 
 const TOKEN_AGE = 3600;
 const TOKEN_NAME = "auth-token";
 const TOKEN_REFRESH_NAME = "auth-refresh-token";
 
-export function getToken(): string | undefined {
+export async function getToken(): Promise<string | undefined> {
     // Retrieve auth token for API requests
-    const cookieJar = cookies(); 
-    const myAuthToken = cookieJar.get(TOKEN_NAME);
-    return myAuthToken?.value;
+    const cookie = await cookies();
+    const authToken = cookie.get(TOKEN_NAME);
+    return Promise.resolve(authToken?.value);
 }
 
-export function getRefreshToken(): string | undefined {
+
+export async function getRefreshToken(): Promise<string | undefined> {
     // Retrieve refresh token for API requests
-    const cookieJar = cookies(); 
-    const myRefreshToken = cookieJar.get(TOKEN_REFRESH_NAME);
-    return myRefreshToken?.value;
+    const cookie = await cookies()
+    const refreshToken = cookie.get(TOKEN_REFRESH_NAME);
+    return Promise.resolve(refreshToken?.value);
 }
+
 
 export async function setToken(authToken: string): Promise<void> {
     // Set auth token during login
-    const cookieJar = cookies();
-    cookieJar.set({
+    const cookie = await cookies()
+    cookie.set({
         name: TOKEN_NAME,
         value: authToken,
         httpOnly: true, 
@@ -31,10 +34,11 @@ export async function setToken(authToken: string): Promise<void> {
     });
 }
 
+
 export async function setRefreshToken(authRefreshToken: string): Promise<void> {
     // Set refresh token during login
-    const cookieJar = cookies(); 
-    cookieJar.set({
+    const cookie = await cookies()
+    cookie.set({
         name: TOKEN_REFRESH_NAME,
         value: authRefreshToken,
         httpOnly: true, 
@@ -44,9 +48,9 @@ export async function setRefreshToken(authRefreshToken: string): Promise<void> {
     });
 }
 
+
 export async function deleteTokens(): Promise<void> {
-    // Delete tokens during logout
-    const cookieJar = cookies(); 
-    cookieJar.delete(TOKEN_REFRESH_NAME);
-    cookieJar.delete(TOKEN_NAME);
+    const cookie = await cookies();
+    cookie.delete(TOKEN_NAME);
+    cookie.delete(TOKEN_REFRESH_NAME);
 }

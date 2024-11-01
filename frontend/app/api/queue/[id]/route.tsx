@@ -4,10 +4,8 @@ import { DJANGO_API_ENDPOINT } from "@/config/defaults";
 import { NextResponse } from "next/server";
 import ApiProxy from "../../proxy";
 
-const DJANGO_API_GET_ENTRY_URL = `${DJANGO_API_ENDPOINT}/queue/get_entry/`;
-const DJANGO_API_ADD_ENTRY_URL = `${DJANGO_API_ENDPOINT}/queue/add_entry/`;
-const DJANGO_API_EDIT_QUEUE_URL = `${DJANGO_API_ENDPOINT}/queue/editQueue/`;
-const DJANGO_API_DELETE_QUEUE_URL = `${DJANGO_API_ENDPOINT}/queue/deleteQueue/`;
+const DJANGO_API_QUEUE_URL = `${DJANGO_API_ENDPOINT}/queue/`;
+const DJANGO_API_ADD_ENTRY_URL = `${DJANGO_API_ENDPOINT}/queue/new-entry/`;
 
 
 interface ErrorResponse {
@@ -15,8 +13,7 @@ interface ErrorResponse {
 }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_GET_ENTRY_URL}${params.id}` : null;
-
+    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -32,7 +29,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
     const endpoint = params?.id ? `${DJANGO_API_ADD_ENTRY_URL}${params.id}` : null;
-
     if (!endpoint) {
         return NextResponse.json<{ error: string }>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -47,8 +43,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_EDIT_QUEUE_URL}${params.id}` : null;
-
+    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -64,8 +59,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_DELETE_QUEUE_URL}${params.id}` : null;
-
+    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
