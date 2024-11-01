@@ -58,10 +58,10 @@ const LoginForm: React.FC = () => {
         {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
         
         <div className='grid grid-cols-8 gap-4'>
-          <div className='col-start-2 col-span-3 flex flex-col'>
-            <label className='text-4xl text-center font-bold'>Login</label>
+          <div className='col-start-2 col-span-3 flex flex-col mt-12'>
+            <label className='text-4xl text-center text-darkPurple2 font-bold ml-16'>Login</label>
             <div className='pt-7'/>
-              <div className="input input-bordered flex items-center gap-2">
+              <div className="input input-bordered flex items-center gap-2 ml-20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -81,7 +81,7 @@ const LoginForm: React.FC = () => {
               />
             </div>
             <div className='pt-8'/>
-            <div className="input input-bordered flex items-center gap-2">
+            <div className="input input-bordered flex items-center gap-2 ml-20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 16 16"
@@ -105,11 +105,11 @@ const LoginForm: React.FC = () => {
               />
             </div>
             <div className='pt-12'/>
-            <button type="submit" className='btn btn-primary w-full rounded-full'>Login</button>
+            <button type="submit" className='btn btn-primary w-auto rounded-full ml-20 bg-darkPurple2 text-white text-base border-none hover:bg-purple-900'>Login</button>
             <div className='pt-7'/>
-            <div className='flex items-center space-x-2'>
+            <div className='flex items-center space-x-2 ml-20'>
               <label>Does't have an account?</label>
-              <Link href='/signup' className='text-blue-500 hover:underline'>Sign up</Link>
+              <Link href='/business/signup' className='text-blue-500 hover:underline'>Sign up</Link>
             </div>
           </div>
         </div>
