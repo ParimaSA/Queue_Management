@@ -13,7 +13,8 @@ interface ErrorResponse {
 }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
+    const { id } = await params
+    const endpoint = id ? `${DJANGO_API_QUEUE_URL}${id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -28,7 +29,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
 }
 
 export async function POST(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_ADD_ENTRY_URL}${params.id}` : null;
+    const { id } = await params
+    const endpoint = id ? `${DJANGO_API_ADD_ENTRY_URL}${id}` : null;
     if (!endpoint) {
         return NextResponse.json<{ error: string }>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -43,7 +45,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
 }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
+    const { id } = await params
+    const endpoint = id ? `${DJANGO_API_QUEUE_URL}${id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
@@ -59,7 +62,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}${params.id}` : null;
+    const { id } = await params
+    const endpoint = id ? `${DJANGO_API_QUEUE_URL}${id}` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }

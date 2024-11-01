@@ -11,7 +11,8 @@ interface ErrorResponse {
 }
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const endpoint = params?.id ? `${DJANGO_API_QUEUE_URL}/${params.id}/entries` : null;
+    const { id } = await params
+    const endpoint = id? `${DJANGO_API_QUEUE_URL}/${id}/entries` : null;
     if (!endpoint) {
         return NextResponse.json<ErrorResponse>({ error: "ID parameter is missing" }, { status: 400 });
     }
