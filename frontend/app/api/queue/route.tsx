@@ -2,13 +2,21 @@ import { NextResponse } from "next/server";
 import ApiProxy from "../proxy";
 import { DJANGO_API_ENDPOINT } from "@/config/defaults";
 
-
-const DJANGO_API_QUEUE_URL=`${DJANGO_API_ENDPOINT}/business/queue/`
+const DJANGO_API_QUEUE_URL=`${DJANGO_API_ENDPOINT}/queue`
 const DJANGO_API_ADD_QUEUE_URL=`${DJANGO_API_ENDPOINT}/business`
 
-export async function GET(request: Request){
-    const {data, status} = await ApiProxy.get(DJANGO_API_QUEUE_URL, true)
-    return NextResponse.json(data, {status: status})
+interface ErrorResponse {
+    error: string;
+}
+
+export async function GET(request: Request) {
+    try {
+        const { data, status }: { data: any; status: number } = await ApiProxy.get(DJANGO_API_QUEUE_URL, true);
+        return NextResponse.json<any>(data, { status });
+    } catch (error) {
+        console.error("Error fetching business:", error);
+        return NextResponse.json<ErrorResponse>({ error: "Failed to fetch business" }, { status: 500 });
+    }
 }
 
 export async function POST(request: Request) {

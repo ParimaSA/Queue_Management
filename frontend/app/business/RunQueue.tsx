@@ -3,11 +3,12 @@ import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
 import { useState } from 'react';
 
-const ENTRY_API_URL = (queueID) => `http://127.0.0.1:8000/api/queue/get_entry/${queueID}`;
+const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
+const ENTRY_API_URL = `/api/entry`;
 
 const RunQueue = ({queue}) => {
   const queueId = queue.id
-  const { data: entry, error: entryError } = useSWR(queueId ? ENTRY_API_URL(queueId) : null, fetcher);
+  const { data: entry, error: entryError } = useSWR(`${QUEUE_ENTRY_API_URL}/${queueId}`, fetcher);
 
   if (entryError) return <div>Failed to load entries</div>;
   if (!entry) return <div>Loading entries...</div>;
@@ -15,7 +16,7 @@ const RunQueue = ({queue}) => {
   const handleCompleteClick = async (entryId: number) => {
     
     try {
-      const response = await fetch(`/api/entry/${entryId}`, {
+      const response = await fetch(`${ENTRY_API_URL}/complete/${entryId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -27,22 +28,16 @@ const RunQueue = ({queue}) => {
         console.error("Failed to run queue:", errorData);
         return;
       }
-  
       const data = await response.json();
-      console.log("Response:", data);
-      
-      mutate(ENTRY_API_URL(queueId));
-
+      mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
     } catch (error) {
       console.error("Error completing entry:", error);
     }
   };
 
   const handleCancelClick = async (entryId: number) => {
-    console.log('Click cancel')
-    console.log('entryId: ', entryId)
     try {
-      const response = await fetch(`/api/entry/cancel/${entryId}`, {
+      const response = await fetch(`${ENTRY_API_URL}/cancel/${entryId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -55,10 +50,8 @@ const RunQueue = ({queue}) => {
         return;
       }
     const data = await response.json();
-    console.log("Response:", data);
-
-    mutate(ENTRY_API_URL(queueId));
-    } catch (error) {
+    mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
+  } catch (error) {
       console.error("Error completing entry:", error);
     }
   };

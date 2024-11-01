@@ -4,6 +4,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 
+const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
 
 const EditQueue = ({queue}) => {
@@ -85,16 +86,15 @@ const EditQueue = ({queue}) => {
       const data = await response.json()
       console.log("Response:", data)
 
-      mutate(QUEUE_API_URL);
+      mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
       console.log("Error save edited queue:", error)
     }
   };
 
   const handleDeleteClick = async (queueId: number) => {
-    console.log('Before delete: ', queueId)
     try {
-      const response = await fetch(`/api/queue/${queueId}`, {
+      const response = await fetch(`${QUEUE_API_URL}/${queueId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -105,11 +105,8 @@ const EditQueue = ({queue}) => {
         console.log("Failed to delete queue")
         return
       }
-      
       const data = await response.json()
-      console.log("Response:", data)
-
-      mutate(QUEUE_API_URL);
+      mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
       console.log("Error save delete queue:", error)
     }

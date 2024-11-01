@@ -7,17 +7,18 @@ import EditQueue from "./EditQueue";
 import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
 
-const QUEUE_API_URL = "/api/queue/";
+const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 
 
 const BusinessPage = () => {
   // Initial fetch to get the list of queue IDs
-  const { data: queue, error: queueError } = useSWR(QUEUE_API_URL, fetcher);
+  const { data: queue, error: queueError } = useSWR(BUSINESS_QUEUES_API_URL, fetcher);
   if (queueError) return <div>Failed to load queues</div>;
   if (!queue) return <div>Loading queues...</div>;
 
   const handleQueueAdded = () => {
-    mutate(QUEUE_API_URL); 
+    console.log("in handle queue add")
+    mutate(BUSINESS_QUEUES_API_URL); 
   };
 
   if (queueError) return <div>Failed to load queues</div>;
