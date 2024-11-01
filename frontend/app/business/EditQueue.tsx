@@ -136,7 +136,7 @@ const EditQueue = ({queue}) => {
             </label>
             <br></br>
             <label className="input input-bordered flex items-center gap-2">
-            Alphabet
+            Prefix
             <input type="text" 
                   className="grow font-light" 
                   placeholder="A" 
