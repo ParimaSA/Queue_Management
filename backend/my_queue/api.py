@@ -4,7 +4,7 @@ from ninja_extra import api_controller, http_get, http_post, http_put, http_dele
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .schemas import (CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn,
-                      QueueDetailSchema, EntryDetailSchema2, QueueCreateSchema)
+                      QueueDetailSchema, EntryDetailSchema2, QueueCreateSchema, BusinessRegisterSchema)
 from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from typing import List, Union
@@ -51,9 +51,9 @@ class BusinessController:
         return Business.objects.get(user=request.user)
 
     @http_post("/register", response=dict, auth=helpers.api_auth_user_or_guest)
-    def business_register(selfs, request, data):
+    def business_register(selfs, request, data: BusinessRegisterSchema):
         """Register new business user."""
-        form = SignUpForm(request.POST)
+        form = SignUpForm(data)
         if form.is_valid():
             user = form.save()
             return {'msg': 'Business account is successfully created.'}
