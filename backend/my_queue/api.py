@@ -10,19 +10,6 @@ from .models import Entry, Business, Queue
 from typing import List, Union
 
 
-def serialize_queue_entry(entry_list):
-    """Get a serialized entry list with the number of queues ahead."""
-    serialized_entries = []
-    if len(entry_list) == 0:
-        return []
-    if len(entry_list) == 1:
-        return serialize_single_entry(entry_list)
-    for entry in entry_list:
-        entry_detail = serialize_single_entry(entry)
-        serialized_entries.append(entry_detail)
-    return serialized_entries
-
-
 def serialize_single_entry(entry):
     """Serialize json for entry."""
     queue_ahead = entry.get_queue_position() 
@@ -48,7 +35,11 @@ class BusinessController:
     @http_get("", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
-        return Business.objects.get(user=request.user)
+        try:
+            my_business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        return my_business
 
     @http_post("/queues", response=dict, auth=helpers.api_auth_user_required)
     def create_business_queue(self, request, data: QueueCreateSchema):
@@ -64,7 +55,10 @@ class BusinessController:
     @http_get("/queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
     def get_business_queues(self, request):
         """Return list of all queues in the business."""
-        business = Business.objects.get(user=request.user)
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
         queue_list = Queue.objects.filter(business=business)
         return queue_list
 
@@ -184,10 +178,9 @@ class EntryController:
     @http_get("/tracking-code/{tracking_code}", response=list[EntryDetailCustomerSchema] | dict)
     def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
-
+        today = timezone.now().date()
         try:
-            # Check if the tracking code is valid
-            my_entry = Entry.objects.get(tracking_code=tracking_code.tracking_code)
+            my_entry = Entry.objects.get(tracking_code=tracking_code.tracking_code, time_in__date=today)
         except Entry.DoesNotExist:
-            return {"msg": "Invalid tracking code"}
+            return JsonResponse({"msg": "Invalid tracking code"}, status=404)
         return [serialize_single_entry(my_entry)]
