@@ -72,7 +72,7 @@ class Entry(models.Model):
         Return:
             int: The number of entries ahead of this one in the queue.
         """
-        today = timezone.now().date()
+        today = timezone.localdate()
         if self.status != "waiting":
             return 0
         return Entry.objects.filter(
