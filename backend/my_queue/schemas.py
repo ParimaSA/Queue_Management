@@ -10,6 +10,13 @@ class BusinessSchema(ModelSchema):
         fields = ('user', 'name')
 
 
+class BusinessRegisterSchema(Schema):
+    username: str
+    password1: str
+    password2: str
+    business_name: str
+
+
 class QueueDetailSchema(Schema):
     id: int
     name: str
@@ -33,6 +40,7 @@ class EntryDetailSchema(Schema):
     status: str = "waiting"
     queue_ahead: int
 
+
 class EntryDetailSchema2(Schema):
     id: int                    # Auto-generated ID
     name: str                   # Name of the entry
@@ -51,6 +59,7 @@ class EditIn(Schema):
 
 class CustomerQueueCreateSchema(Schema):
     tracking_code: str
+
 
 class QueueCreateSchema(Schema):
     name: str
