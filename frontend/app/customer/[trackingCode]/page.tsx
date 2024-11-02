@@ -18,7 +18,15 @@ const CustomerPage: React.FC = () => {
     }
   }, [trackingCode, router]);
 
-  const { data, error } = useSWR(trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null, fetcher);
+  const { data, error } = useSWR(
+    trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null,
+    fetcher,
+    {
+      refreshInterval: 5000, // Refresh every 5 seconds
+      revalidateOnFocus: true, // Re-fetch when user focuses on the page
+    }
+  );
+
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
@@ -52,7 +60,7 @@ const CustomerPage: React.FC = () => {
       if (response.ok) {
         setCancelMessage('Entry successfully canceled.');
 
-        // Redirect to /customer after 2 seconds
+        // Redirect to /customer 2 seconds after the customer cancels
         setTimeout(() => {
           router.push('/customer');
         }, 2000);
@@ -120,7 +128,6 @@ const CustomerPage: React.FC = () => {
                 >
                   {isCancelling ? 'Canceling...' : 'Cancel'}
                 </button>
-
 
                 {cancelMessage && (
                   <p className="mt-4 text-lg text-red-600 font-semibold">
