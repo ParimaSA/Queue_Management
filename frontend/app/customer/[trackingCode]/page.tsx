@@ -5,21 +5,32 @@ import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
 
-const ENTRY_TRACKING_CODE_URL = '/api/entry'
+const ENTRY_TRACKING_CODE_URL = '/api/entry';
 
 const CustomerPage: React.FC = () => {
   const router = useRouter();
   const { trackingCode } = useParams();
 
-  if (!trackingCode) {
-    router.replace('/customer');
-  }
+  // Redirect to /customer if trackingCode is missing
+  useEffect(() => {
+    if (!trackingCode) {
+      router.replace('/customer');
+    }
+  }, [trackingCode, router]);
 
-  const { data, error, mutate } = useSWR(`${ENTRY_TRACKING_CODE_URL}/${trackingCode}`, fetcher);
+  const { data, error } = useSWR(trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null, fetcher);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
+  // Redirect if there's a 404 error
+  useEffect(() => {
+    if (error?.status === 404) {
+      router.replace('/customer');
+    }
+  }, [error, router]);
+
   if (error) return <div>Failed to load entry</div>;
+
   if (!data) return <div>Loading entry...</div>;
 
   const formatDate = (isoDate: string | number | Date) => {
@@ -40,6 +51,11 @@ const CustomerPage: React.FC = () => {
 
       if (response.ok) {
         setCancelMessage('Entry successfully canceled.');
+
+        // Redirect to /customer after 2 seconds
+        setTimeout(() => {
+          router.push('/customer');
+        }, 2000);
       } else {
         setCancelMessage(result.error || 'Failed to cancel the entry.');
       }
@@ -66,14 +82,14 @@ const CustomerPage: React.FC = () => {
                   <div className="flex flex-row space-x-4 w-full max-w-4xl">
                     <div className="flex-auto text-cyan-900 bg-lightBlue2 p-4 md:p-6 rounded-lg shadow-lg">
                       <h3 className="text-center text-lg md:text-xl font-semibold">
-                        Entry Name <br/>
+                        Entry Name <br />
                         {item.name}
                       </h3>
                     </div>
 
                     <div className="flex-auto text-blue-900 bg-lightBlue3 p-4 md:p-6 rounded-lg shadow-lg">
                       <h3 className="text-center text-lg md:text-xl font-semibold">
-                        Queue Name <br/>
+                        Queue Name <br />
                         {item.queue.name}
                       </h3>
                     </div>
