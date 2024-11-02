@@ -22,7 +22,7 @@ const CustomerPage: React.FC = () => {
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [isCancelling, setIsCancelling] = useState(false);
 
-  // Redirect if there's a 404 error
+  // Redirect if there's a 404 error (Tracking code is invalid.)
   useEffect(() => {
     if (error?.status === 404) {
       router.replace('/customer');
@@ -82,7 +82,7 @@ const CustomerPage: React.FC = () => {
                   <div className="flex flex-row space-x-4 w-full max-w-4xl">
                     <div className="flex-auto text-cyan-900 bg-lightBlue2 p-4 md:p-6 rounded-lg shadow-lg">
                       <h3 className="text-center text-lg md:text-xl font-semibold">
-                        Entry Name <br />
+                        Queue Number <br />
                         {item.name}
                       </h3>
                     </div>
@@ -116,10 +116,11 @@ const CustomerPage: React.FC = () => {
                 <button
                   onClick={handleCancel}
                   disabled={isCancelling}
-                  className="mt-6 p-2 bg-red-500 text-white rounded-md hover:bg-red-600 disabled:bg-gray-400"
+                  className={`btn btn-error text-white text-base md:text-lg mt-10 px-20 ${isCancelling ? 'btn-disabled' : ''}`}
                 >
-                  {isCancelling ? 'Canceling...' : 'Cancel Entry'}
+                  {isCancelling ? 'Canceling...' : 'Cancel'}
                 </button>
+
 
                 {cancelMessage && (
                   <p className="mt-4 text-lg text-red-600 font-semibold">
