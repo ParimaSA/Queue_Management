@@ -33,19 +33,25 @@ const CustomerPage: React.FC = () => {
         <div className="mt-10 md:mt-20 px-4 md:px-20 w-full max-w-5xl">
           {data.map(item => (
             <div key={item.id} className="mb-8 md:mb-10 text-center">
-              <h3 className="text-xl md:text-2xl font-semibold mb-4 md:mb-5 text-blue-950">
+              <h3 className="text-2xl md:text-3xl font-semibold mb-4 md:mb-5 text-blue-950">
                 {item.business}
               </h3>
 
               <div className="flex justify-center mt-6 md:mt-10">
                 <div className="flex flex-row space-x-4 w-full max-w-4xl">
 
-                  <div className="flex-auto bg-lightBlue2 p-4 md:p-6 rounded-lg shadow-lg">
-                    <h3 className="text-center text-lg md:text-xl font-semibold">{item.name}</h3>
+                  <div className="flex-auto text-cyan-900 bg-lightBlue2 p-4 md:p-6 rounded-lg shadow-lg">
+                    <h3 className="text-center text-lg md:text-xl font-semibold">
+                      Entry Name <br/>
+                      {item.name}
+                      </h3>
                   </div>
 
-                  <div className="flex-auto bg-lightBlue3 p-4 md:p-6 rounded-lg shadow-lg">
-                    <h3 className="text-center text-lg md:text-xl font-semibold">{item.queue.name}</h3>
+                  <div className="flex-auto text-blue-900 bg-lightBlue3 p-4 md:p-6 rounded-lg shadow-lg">
+                    <h3 className="text-center text-lg md:text-xl font-semibold">
+                      Queue Name <br/>
+                      {item.queue.name}
+                    </h3>
                   </div>
                 </div>
               </div>
@@ -55,14 +61,14 @@ const CustomerPage: React.FC = () => {
                   <h1 className="text-9xl md:text-9xl mt-7 text-darkPurple">
                     {item.queue_ahead}
                   </h1>
-                  <p className="text-sm md:text-lg font-semibold text-darkPurple">
+                  <p className="text-lg md:text-xl font-semibold text-darkPurple">
                     Ahead of you
                   </p>
                 </div>
               </div>
 
               <div className="p-4 md:p-6 rounded-lg shadow-lg bg-lightPurple1 mt-8 md:mt-10">
-                <p className="text-sm md:text-lg text-pink-900 font-semibold">
+                <p className="text-lg md:text-xl text-pink-900 font-semibold">
                   Time In: {formatDate(item.time_in)}
                 </p>
               </div>
