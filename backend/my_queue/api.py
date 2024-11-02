@@ -1,10 +1,11 @@
 from importlib.metadata import entry_points
 import helpers
+from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .schemas import (CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn,
-                      QueueDetailSchema, EntryDetailSchema2, QueueCreateSchema)
+from .schemas import (CustomerQueueCreateSchema, EntryDetailSchema, BusinessSchema, EditIn,
+                      QueueDetailSchema, EntryDetailCustomerSchema, QueueCreateSchema)
 from .models import Entry, Business, Queue
 from typing import List, Union
 
@@ -25,7 +26,7 @@ def serialize_queue_entry(entry_list):
 def serialize_single_entry(entry):
     """Serialize json for entry."""
     queue_ahead = entry.get_queue_position() 
-    entry_detail = EntryDetailSchema(
+    entry_detail = EntryDetailCustomerSchema(
         id=entry.id,
         name=entry.name,
         queue=entry.queue,
@@ -114,7 +115,7 @@ class QueueController:
         new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
         return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
 
-    @http_get("/{queue_id}/entries", response=List[EntryDetailSchema2], auth=helpers.api_auth_user_required)
+    @http_get("/{queue_id}/entries", response=List[EntryDetailSchema], auth=helpers.api_auth_user_required)
     def get_waiting_entry_in_queue(self, request, queue_id: int):
         """Return list of all entry in this queue, which status is waiting and create today ordering by time-in."""
         today = timezone.now().date()
@@ -127,7 +128,7 @@ class QueueController:
 class EntryController:
     """Controller for managing entry-related endpoints."""
 
-    @http_get("/{entry_id}", response=EntryDetailSchema2 | None)
+    @http_get("/{entry_id}", response=EntryDetailSchema | None)
     def get_entry(self, request, entry_id: int):
         """Get information of a specific entry."""
         try:
@@ -168,19 +169,19 @@ class EntryController:
         entry.mark_as_completed()
         return {'msg': f'{entry.name} marked as completed.'}
 
-    @http_post("/tracking-code/{tracking_code}/cancel", response=dict, auth=helpers.api_auth_user_required)
+    @http_post("/tracking-code/{tracking_code}/cancel", response=dict)
     def cancel_tracking_code(self, request, tracking_code: str):
         """When the queue is canceled, the entry is also cancel.(customer)"""
         try:
             my_entry = Entry.objects.get(tracking_code=tracking_code)
-            if my_entry.entry.status != "waiting":
+            if my_entry.status != "waiting":
                 return {"msg": "You cannot to cancel this entry."}
         except Entry.DoesNotExist:
             return {"msg": "Invalid tracking code."}
-        my_entry.delete()
+        my_entry.mark_as_cancel()
         return {"msg": "Successfully canceled an entry."}
 
-    @http_get("/tracking-code/{tracking_code}", response=list[EntryDetailSchema] | dict)
+    @http_get("/tracking-code/{tracking_code}", response=list[EntryDetailCustomerSchema] | dict)
     def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
 
