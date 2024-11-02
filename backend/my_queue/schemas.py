@@ -22,7 +22,7 @@ class QueueSchema(Schema):
     estimated_time: Optional[int]
 
 
-class EntryDetailSchema(Schema):
+class EntryDetailCustomerSchema(Schema):
     id: int
     name: str
     queue: QueueSchema
@@ -33,25 +33,27 @@ class EntryDetailSchema(Schema):
     status: str = "waiting"
     queue_ahead: int
 
-class EntryDetailSchema2(Schema):
-    id: int                    # Auto-generated ID
-    name: str                   # Name of the entry
-    queue:QueueSchema     # ForeignKey to Queue
-    business: BusinessSchema  # ForeignKey to Business (optional)
+
+class EntryDetailSchema(Schema):
+    id: int
+    name: str
+    queue: QueueSchema
+    business: BusinessSchema
     tracking_code: Optional[str]
-    time_in: datetime             # Time in (auto-populated)
-    time_out: Optional[datetime]  # Time out (optional)
+    time_in: datetime
+    time_out: Optional[datetime]
     status: str = "waiting"
 
 
 class EditIn(Schema):
     name: str
-    alphabet: str
+    prefix: str
 
 
 class CustomerQueueCreateSchema(Schema):
     tracking_code: str
 
+
 class QueueCreateSchema(Schema):
     name: str
-    alphabet: str
+    prefix: str

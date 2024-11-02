@@ -2,7 +2,7 @@
 
 import { DJANGO_API_ENDPOINT } from "@/config/defaults";
 import { NextResponse } from "next/server";
-import ApiProxy from "../../proxy";
+import ApiProxy from "@/app/api/proxy";
 
 const DJANGO_API_QUEUE_URL = `${DJANGO_API_ENDPOINT}/queue/`;
 const DJANGO_API_ADD_ENTRY_URL = `${DJANGO_API_ENDPOINT}/queue/new-entry/`;

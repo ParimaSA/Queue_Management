@@ -39,7 +39,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     try {
       const requestData = {
         name: queue,
-        alphabet: alphabet,
+        prefix: alphabet,
       };
 
       const response = await fetch(BUSINESS_QUEUE_API_URL, {
