@@ -1,5 +1,6 @@
 from datetime import timedelta
 from django.utils import timezone
+from django.test import TestCase
 from django.contrib.auth.models import User
 from my_queue.models import Entry, Business, Queue
 from .base import BaseTestCase
@@ -51,8 +52,8 @@ class ShowEntryTestCase(BaseTestCase):
 
 
 
-class HomeViewTests(BaseTestCase):
-    """Test HomeView."""
+class CustomerTestCase(TestCase):
+    """Test api route related to customer."""
 
     @classmethod
     def setUpTestData(cls):
@@ -107,7 +108,7 @@ class HomeViewTests(BaseTestCase):
 
 
 
-    def test_enter_tracking_code(self): #TODO
+    def test_enter_tracking_code(self):
         """Test that visitor can see queue based on tracking code.
         """
 
@@ -149,7 +150,7 @@ class HomeViewTests(BaseTestCase):
         response = self.client.get(
             f'/api/entry/tracking-code/{self.big_entry_teenoi.tracking_code}'
         )
-        self.assertEqual(response.status_code, 404) # TODO
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"msg": "Invalid tracking code"})
 
 
@@ -199,3 +200,97 @@ class HomeViewTests(BaseTestCase):
         self.assertEqual(response.json(), {"msg": "You cannot cancel this entry."})
         self.assertEqual(response.status_code,  400)
 
+
+def create_entry(queue, business, hours):
+    """Create an entry instance."""
+    time = timezone.now() + timedelta(hours=hours)
+    return Entry.objects.create(queue=queue, business=business, time_in=time)
+
+
+class RunQueueTest(BaseTestCase):
+    """Test case for running a queue in the business application."""
+
+    def test_run_queue_function(self):
+        """Test the functionality of running the queue."""
+        token = self.login(username='testuser', password='test1234')
+        entry = create_entry(self.queue, self.business, -2)
+        self.assertEqual(Entry.objects.count(), 1)
+
+        response = self.client.post(f"/api/entry/{entry.id}/status/complete", headers={"Authorization": f"Bearer {token}"})
+        self.assertTrue(response.status_code, 200)
+
+        entry.refresh_from_db()
+        self.assertEqual(entry.status, "completed")
+        expected_time_out = timezone.now()
+        self.assertTrue(
+            expected_time_out - timedelta(seconds=1)
+            <= entry.time_out
+            <= expected_time_out + timedelta(seconds=1)
+        )
+        self.assertEqual(response.json(), {'msg': f'{entry.name} marked as completed.'})
+
+
+    def test_run_queue_not_found(self):
+        """Test that if the entry does not exist, an error message is shown and redirects to home."""
+        non_existing_pk = 9999
+        token = self.login(username='testuser', password='test1234')
+        response = self.client.post(f"/api/entry/{non_existing_pk}/status/complete", headers={"Authorization": f"Bearer {token}"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'msg': 'Deletion failed.'})
+
+
+class CancelEntryTestCase(BaseTestCase):
+    """Test case for cancel entries for business."""
+
+    def setUp(self):
+        """Set up test data."""
+        # Create two users and businesses
+        super().setUp()
+
+        self.user2 = User.objects.create_user(username='testuser2', password='test1234')
+        self.business2 = Business.objects.create(user=self.user2, name="Business Two")
+
+        # Create an entry for business1
+        self.entry1 = Entry.objects.create(
+            business=self.business,
+            name="Test Entry 1"
+        )
+
+
+
+    def test_successful_cancel_entry(self):
+        """Test that a business owner can successfully cancel an entry."""
+        token = self.login(username='testuser', password='test1234')
+        entry_id = self.entry1.id
+        response = self.client.post(f'/api/entry/{entry_id}/status/cancel', headers={"Authorization": f"Bearer {token}"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"msg": f"{self.entry1.name} marked as cancel."})
+
+        # Refresh the entry from the database and check the status
+        self.entry1.refresh_from_db()
+        self.assertEqual(self.entry1.status, "cancel")
+
+    def test_cancel_non_existent_entry(self):
+        """Test that attempting to cancel a non-existent entry returns a 404."""
+        token = self.login(username='testuser2', password='test1234')
+        response = self.client.post(f'/api/entry/999/status/cancel', headers={"Authorization": f"Bearer {token}"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'msg': "This entry does not exist."})
+
+    def test_cancel_entry_of_another_business(self):
+        """Test that a business owner cannot cancel an entry belonging to another business."""
+        token = self.login(username='testuser2', password='test1234')  # Authenticate as user2
+        entry_id = self.entry1.id
+
+        # Entry belongs to business1
+        response = self.client.post(f'/api/entry/{entry_id}/status/cancel', headers={"Authorization": f"Bearer {token}"})
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {'msg': "This entry does not exist."})
+
+        # Ensure that the entry status is still "waiting"
+        self.entry1.refresh_from_db()
+        self.assertEqual(self.entry1.status, "waiting")
