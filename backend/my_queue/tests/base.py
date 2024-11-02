@@ -12,7 +12,7 @@ class BaseTestCase(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='testuser', password='test1234')
         self.business = Business.objects.create(user=self.user, name='sushiro')
-        self.queue = Queue.objects.create(name='Test Queue', business=self.business)
+        self.queue = Queue.objects.create(name='Test Queue', business=self.business, prefix="A")
 
     def login(self, username, password):
         response_token = self.client.post(
