@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from .schemas import (CustomerQueueCreateSchema, EntryDetailSchema, QueueSchema, BusinessSchema, EditIn,
                       QueueDetailSchema, EntryDetailSchema2, QueueCreateSchema)
+from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from typing import List, Union
 
@@ -48,6 +49,17 @@ class BusinessController:
     def my_business(self, request):
         """Return information of the business."""
         return Business.objects.get(user=request.user)
+
+    @http_post("/register", response=dict, auth=helpers.api_auth_user_or_guest)
+    def business_register(selfs, request, data):
+        """Register new business user."""
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return {'msg': 'Business account is successfully created.'}
+        else:
+            return  {'msg': 'Business account can not created.'}
+
 
     @http_post("/queues", response=dict, auth=helpers.api_auth_user_required)
     def create_business_queue(self, request, data: QueueCreateSchema):
