@@ -53,9 +53,9 @@ class BusinessController:
     def create_business_queue(self, request, data: QueueCreateSchema):
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
-        all_alphabet = Queue.objects.filter(business=business).values_list('alphabet', flat=True)
-        if data_dict['alphabet'] in all_alphabet:
-            return {'msg': 'This alphabet has been used.'}
+        all_alphabet = Queue.objects.filter(business=business).values_list('prefix', flat=True)
+        if data_dict['prefix'] in all_alphabet:
+            return {'msg': 'This prefix has been used.'}
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {'msg': f'Queue {new_queue.name} is successfully created.'}
@@ -90,7 +90,7 @@ class QueueController:
             setattr(queue, attr, value)
         queue.save()
         return {'msg': f"Successfully updated the queue '{queue.name}' "
-                       f"with the alphabet '{queue.alphabet}'."}
+                       f"with the alphabet '{queue.prefix}'."}
 
     @http_delete("/{queue_id}", auth=helpers.api_auth_user_required)
     def delete_queue(self, request, queue_id: int):
