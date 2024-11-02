@@ -257,8 +257,6 @@ class CancelEntryTestCase(BaseTestCase):
             name="Test Entry 1"
         )
 
-
-
     def test_successful_cancel_entry(self):
         """Test that a business owner can successfully cancel an entry."""
         token = self.login(username='testuser', password='test1234')

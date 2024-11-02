@@ -82,4 +82,3 @@ class BusinessQueueTestCase(BaseTestCase):
         self.assertEqual(queue.prefix, "NQ")
         self.assertEqual(queue.business, self.business)
         self.assertEqual(queue.estimated_time, None)
-
