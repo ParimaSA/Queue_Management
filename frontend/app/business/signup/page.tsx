@@ -7,12 +7,12 @@ interface FormData {
     username: string;
     password: string;
     confirmpassword: string;
-    businessname: string;
+    business_name: string;
 }
 
 const SignUpForm = () => {
     const router = useRouter()
-    const [formData, setFormData] = useState<FormData>({ username: '', businessname: '', password: '', confirmpassword: ''});
+    const [formData, setFormData] = useState<FormData>({ username: '', business_name: '', password1: '', password2: ''});
     const [error, setError] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -37,11 +37,8 @@ const SignUpForm = () => {
                 throw new Error(errorData.message || 'Signup failed');
             }
 
-            const data = await response.json();
-            console.log('Login successful:', data);
-            localStorage.setItem('token', data.access); 
-            console.log('Response data:', data);
-            router.replace('/business')
+            console.log('Signup successful:', data);
+            router.replace('/business/login')
         } catch (err) {
             setError((err as Error).message);
         }
@@ -90,9 +87,9 @@ const SignUpForm = () => {
             </svg>
             <input
                 type="text"
-                id="businessname"
-                name="businessname"
-                value={formData.businessname}
+                id="business_name"
+                name="business_name"
+                value={formData.business_name}
                 onChange={handleChange}
                 required
                 placeholder="Business Name"
@@ -114,9 +111,9 @@ const SignUpForm = () => {
               </svg>
               <input
                 type="password"
-                id="password"
-                name="password"
-                value={formData.password}
+                id="password1"
+                name="password1"
+                value={formData.password1}
                 onChange={handleChange}
                 required
                 placeholder="Password"
@@ -138,9 +135,9 @@ const SignUpForm = () => {
               </svg>
               <input
                 type="password"
-                id="confirmpassword"
-                name="confirmpassword"
-                value={formData.confirmpassword}
+                id="password2"
+                name="password2"
+                value={formData.password2}
                 onChange={handleChange}
                 required
                 placeholder="Confirm Password"
