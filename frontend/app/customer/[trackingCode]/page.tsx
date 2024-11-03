@@ -102,7 +102,7 @@ const CustomerPage: React.FC = () => {
               <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
                 <div>
                   <p>Estimated Time</p>
-                  <p>{item.Estimated}</p>
+                  <p>{item.Estimated ?? "null"}</p>
                 </div>
                 <div>
                   <p>Ahead of you</p>
