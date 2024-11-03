@@ -53,7 +53,15 @@ class BusinessQueueTestCase(BaseTestCase):
                                    headers={"Authorization": f"Bearer {token}"})
         self.assertEqual(response.json(), [{'id': 2, 'name': 'New Queue'}, {'id': 3, 'name': 'New Queue2'}])
 
+    def test_get_no_business(self):
+        """Test to see non existent business info of authenticated user."""
+        new_user = User.objects.create_user(username='testuser2', password='test1234')
 
+        token = self.login(username='testuser2', password='test1234')
+        response = self.client.get("/api/business/queues",
+                                   headers={"Authorization": f"Bearer {token}"})
+        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
+        self.assertEqual(response.status_code, 404)
 
     def test_get_business_queues_unauthenticated(self):
         """Test to retrieve queue lists for unauthenticated users."""
@@ -61,6 +69,7 @@ class BusinessQueueTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 401)
 
     def test_create_business_queue(self):
+        """Test to create new queue for business."""
         token = self.login(username='testuser', password='test1234')
         queue_data = {
             "name": "New Queue",
@@ -82,3 +91,12 @@ class BusinessQueueTestCase(BaseTestCase):
         self.assertEqual(queue.prefix, "NQ")
         self.assertEqual(queue.business, self.business)
         self.assertEqual(queue.estimated_time, None)
+
+        # Same prefix
+        response = self.client.post(
+            "/api/business/queues",
+            data=json.dumps(queue_data),  # Convert the dictionary to a JSON string
+            content_type='application/json',
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        self.assertEqual(response.json(), {'msg': 'This prefix has been used.'})
