@@ -1,3 +1,5 @@
+"""Schemas for api endpoints."""
+
 from typing import Optional
 from datetime import datetime
 from ninja import Schema, ModelSchema
@@ -5,9 +7,11 @@ from .models import Business
 
 
 class BusinessSchema(ModelSchema):
+    """Schema for the Business model."""
+
     class Meta:
         model = Business
-        fields = ('user', 'name')
+        fields = ("user", "name")
 
 
 class BusinessRegisterSchema(Schema):
@@ -18,18 +22,23 @@ class BusinessRegisterSchema(Schema):
 
 
 class QueueDetailSchema(Schema):
+    """Schema for Queue model."""
+
     id: int
     name: str
 
 
 class QueueSchema(Schema):
-    # GET
+    """Schema for queue-related get method."""
+
     id: int
     name: str
     estimated_time: Optional[int]
 
 
-class EntryDetailSchema(Schema):
+class EntryDetailCustomerSchema(Schema):
+    """Schema for detailed entry information, including queue ahead."""
+
     id: int
     name: str
     queue: QueueSchema
@@ -40,27 +49,35 @@ class EntryDetailSchema(Schema):
     status: str = "waiting"
     queue_ahead: int
 
+      
+class EntryDetailSchema(Schema):
+    """Schema for detailed entry information."""
 
-class EntryDetailSchema2(Schema):
-    id: int                    # Auto-generated ID
-    name: str                   # Name of the entry
-    queue:QueueSchema     # ForeignKey to Queue
-    business: BusinessSchema  # ForeignKey to Business (optional)
+    id: int
+    name: str
+    queue: QueueSchema
+    business: BusinessSchema
     tracking_code: Optional[str]
-    time_in: datetime             # Time in (auto-populated)
-    time_out: Optional[datetime]  # Time out (optional)
+    time_in: datetime
+    time_out: Optional[datetime]
     status: str = "waiting"
 
 
 class EditIn(Schema):
+    """Schema for editing queue information."""
+
     name: str
-    alphabet: str
+    prefix: str
 
 
 class CustomerQueueCreateSchema(Schema):
+    """Schema for customer when add tracking code."""
+
     tracking_code: str
 
 
 class QueueCreateSchema(Schema):
+    """Schema for creating a new queue."""
+
     name: str
-    alphabet: str
+    prefix: str
