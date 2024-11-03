@@ -74,7 +74,7 @@ const EditQueue = ({queue}) => {
         },
         body: JSON.stringify({
             name: editedQueue,
-            alphabet: editedAlphabet
+            prefix: editedAlphabet
         })
       })
 

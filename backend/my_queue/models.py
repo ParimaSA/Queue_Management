@@ -25,7 +25,7 @@ class Queue(models.Model):
 
     business = models.ForeignKey(Business, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    alphabet = models.CharField(max_length=1, default="A")
+    prefix = models.CharField(max_length=1, default="A")
     estimated_time = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
@@ -55,7 +55,7 @@ class Entry(models.Model):
             queue_entries_today = (
                 Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
             )
-            self.name = f"{self.queue.alphabet}{queue_entries_today}"
+            self.name = f"{self.queue.prefix}{queue_entries_today}"
 
         super().save(*args, **kwargs)
 
@@ -72,7 +72,7 @@ class Entry(models.Model):
         Return:
             int: The number of entries ahead of this one in the queue.
         """
-        today = timezone.now().date()
+        today = timezone.localdate()
         if self.status != "waiting":
             return 0
         return Entry.objects.filter(
@@ -103,4 +103,4 @@ class QueueForm(ModelForm):
 
     class Meta:
         model = Queue
-        fields = ["name", "alphabet"]
+        fields = ["name", "prefix"]
