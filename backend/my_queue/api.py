@@ -80,12 +80,13 @@ class QueueController:
         try:
             queue = Queue.objects.get(pk=queue_id, business=business)
         except Queue.DoesNotExist:
-            return {'msg': 'Cannot edit this queue.'}
+            return JsonResponse({'msg': 'Cannot edit this queue.'}, status=404)
         for attr, value in edit_attrs.dict().items():
             setattr(queue, attr, value)
         queue.save()
-        return {'msg': f"Successfully updated the queue '{queue.name}' "
-                       f"with the alphabet '{queue.prefix}'."}
+        return JsonResponse({
+            'msg': f"Successfully updated the queue '{queue.name}' with the prefix '{queue.prefix}'."
+        }, status=200)
 
     @http_delete("/{queue_id}", auth=helpers.api_auth_user_required)
     def delete_queue(self, request, queue_id: int):
@@ -95,7 +96,7 @@ class QueueController:
             queue = Queue.objects.get(pk=queue_id, business=business)
             queue.delete()
         except Queue.DoesNotExist:
-            return {'msg': "Can't delete another business's queue"}
+            return JsonResponse({'msg': "Can't delete another business's queue"}, status=404)
 
     @http_post("/new-entry/{queue_id}", auth=helpers.api_auth_user_required)
     def add_entry_to_queue(self, request, queue_id: int):
@@ -104,15 +105,18 @@ class QueueController:
         try:
             queue = Queue.objects.get(business=business, pk=queue_id)
         except Queue.DoesNotExist:
-            return {'msg': 'This queue does not exist'}
+            return JsonResponse({'msg': 'This queue does not exist'}, status=404)
 
         new_entry = Entry.objects.create(business=business, queue=queue, status='waiting')
-        return {'msg': f'New entry successfully add to queue {queue.name}.', 'tracking_code': new_entry.tracking_code}
+        return JsonResponse({
+            'msg': f'New entry successfully added to queue {queue.name}.',
+            'tracking_code': new_entry.tracking_code
+        }, status=200)
 
     @http_get("/{queue_id}/entries", response=List[EntryDetailSchema], auth=helpers.api_auth_user_required)
     def get_waiting_entry_in_queue(self, request, queue_id: int):
         """Return list of all entry in this queue, which status is waiting and create today ordering by time-in."""
-        today = timezone.now().date()
+        today = timezone.localdate()
         queue = get_object_or_404(Queue, business__user=request.user, pk=queue_id)
         entry = Entry.objects.filter(queue=queue, status='waiting', time_in__date=today).order_by("time_in")
         return entry
@@ -128,7 +132,7 @@ class EntryController:
         try:
             entry = Entry.objects.get(pk=entry_id)
         except Entry.DoesNotExist:
-            return None
+            return JsonResponse({"msg": "This entry does not exist."}, status=404)
         return entry
 
     @http_post("/{entry_id}/status/cancel", auth=helpers.api_auth_user_required)
@@ -138,9 +142,10 @@ class EntryController:
         try:
             entry = Entry.objects.get(pk=entry_id, business=business)
         except Entry.DoesNotExist:
-            return {'msg': "Can't delete entry of another business's queue"}
+            return JsonResponse({'msg': "This entry does not exist."}, status=404)
+
         entry.mark_as_cancel()
-        return {'msg': f'{entry.name} marked as cancel.'}
+        return JsonResponse({'msg': f'{entry.name} marked as cancel.'}, status=200)
 
     @http_post("/{entry_id}/status/complete", auth=helpers.api_auth_user_required)
     def run_queue(self, request, entry_id: int):
@@ -158,10 +163,10 @@ class EntryController:
         try:
             entry = Entry.objects.get(pk=entry_id, business=business)
         except Entry.DoesNotExist:
-            return {'msg': 'Deletion failed.'}
+            return JsonResponse({'msg': 'Deletion failed.'}, status=404)
 
         entry.mark_as_completed()
-        return {'msg': f'{entry.name} marked as completed.'}
+        return JsonResponse({'msg': f'{entry.name} marked as completed.'}, status=200)
 
     @http_post("/tracking-code/{tracking_code}/cancel", response=dict)
     def cancel_tracking_code(self, request, tracking_code: str):
@@ -169,16 +174,16 @@ class EntryController:
         try:
             my_entry = Entry.objects.get(tracking_code=tracking_code)
             if my_entry.status != "waiting":
-                return {"msg": "You cannot to cancel this entry."}
+                return JsonResponse({"msg": "You cannot cancel this entry."}, status=400)
         except Entry.DoesNotExist:
-            return {"msg": "Invalid tracking code."}
+            return JsonResponse({"msg": "Invalid tracking code."}, status=404)
         my_entry.mark_as_cancel()
-        return {"msg": "Successfully canceled an entry."}
+        return JsonResponse({"msg": "Successfully canceled an entry."}, status=200)
 
     @http_get("/tracking-code/{tracking_code}", response=list[EntryDetailCustomerSchema] | dict)
     def add_tracking_code(self, request, tracking_code: CustomerQueueCreateSchema):
         """Add a queue to the customer queue."""
-        today = timezone.now().date()
+        today = timezone.localdate()
         try:
             my_entry = Entry.objects.get(tracking_code=tracking_code.tracking_code, time_in__date=today)
         except Entry.DoesNotExist:
