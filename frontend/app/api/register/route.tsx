@@ -18,12 +18,5 @@ export async function POST(request: Request): Promise<Response> {
     const requestData: SignupRequest = await request.json()
     const { data, status } = await ApiProxy.post(DJANGO_API_REGISTER_URL, requestData, false)
 
-    if (status === 200) {
-        console.log("signed in")
-        console.log(data)
-        return NextResponse.json(data, { status: 200 })
-    }
-
-    const responseData = { message: "Signed up failed" }
-    return NextResponse.json({ ...responseData }, { status: 400 })
+    return NextResponse.json(data, { status: status })
 }

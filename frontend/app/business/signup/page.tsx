@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from "react-toastify";
 
 interface FormData {
     username: string;
@@ -14,6 +15,17 @@ const SignUpForm = () => {
     const router = useRouter()
     const [formData, setFormData] = useState<FormData>({ username: '', business_name: '', password1: '', password2: ''});
     const [error, setError] = useState<string | null>(null);
+
+    const alert_success = () => {
+        toast.success("Successfully create your account.")
+    }
+
+    const alert_error = (errorMessage) => {
+        const errorData = JSON.parse(errorMessage.error)
+        const firstErrorKey = Object.keys(errorData)[0]
+        errorMessage = errorData[firstErrorKey][0].message
+        toast.error(errorMessage)
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -32,14 +44,16 @@ const SignUpForm = () => {
                 body: JSON.stringify(formData),
             });
 
-            console.log("here1")
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Signup failed');
+            const data = await response.json()
+            console.log("DATA: ", data)
+            if (data.error) {
+                alert_error(data)
+            } else {
+                alert_success();
+                router.replace('/business/login');
             }
-            console.log("here2")
-            router.replace('/business/login')
         } catch (err) {
+            console.log("Catch the error")
             setError((err as Error).message);
         }
     };

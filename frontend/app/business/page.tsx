@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/components/authProvider'
+import { useAuth } from '@/components/AuthProvider'
 import BusinessPage from './ShowEntry'
 import BusinessNavbar from './components/BusinessNavbar'
 

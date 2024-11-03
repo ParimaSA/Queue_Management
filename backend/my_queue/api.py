@@ -1,5 +1,6 @@
 from importlib.metadata import entry_points
 import helpers
+from ninja.errors import HttpError
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -63,8 +64,8 @@ class BusinessController:
             Business.objects.create(user=new_user, name=data_dict["business_name"])
             return {'msg': 'Business account is successfully created.'}
         else:
-            return  {'msg': 'Business account can not created.'}
-
+            error_details = form.errors.as_json()
+            return {'msg': "Can not create this account", "error": error_details}
 
     @http_post("/queues", response=dict, auth=helpers.api_auth_user_required)
     def create_business_queue(self, request, data: QueueCreateSchema):
