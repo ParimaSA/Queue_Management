@@ -10,18 +10,17 @@ class BaseTestCase(TestCase):
     client = TestClient(api)
 
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='test1234')
-        self.business = Business.objects.create(user=self.user, name='sushiro')
-        self.queue = Queue.objects.create(name='Test Queue', business=self.business, prefix="A")
+        self.user = User.objects.create_user(username="testuser", password="test1234")
+        self.business = Business.objects.create(user=self.user, name="sushiro")
+        self.queue = Queue.objects.create(
+            name="Test Queue", business=self.business, prefix="A"
+        )
 
     def login(self, username, password):
         response_token = self.client.post(
-            '/api/token/pair',
-            data=json.dumps({
-                'username': username,
-                'password': password
-            }),
-            content_type='application/json'
+            "/api/token/pair",
+            data=json.dumps({"username": username, "password": password}),
+            content_type="application/json",
         )
-        token = response_token.json().get('access')
+        token = response_token.json().get("access")
         return token

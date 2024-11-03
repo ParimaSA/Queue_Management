@@ -1,3 +1,5 @@
+"""Schemas for api endpoints."""
+
 from typing import Optional
 from datetime import datetime
 from ninja import Schema, ModelSchema
@@ -5,24 +7,31 @@ from .models import Business
 
 
 class BusinessSchema(ModelSchema):
+    """Schema for the Business model."""
+
     class Meta:
         model = Business
-        fields = ('user', 'name')
+        fields = ("user", "name")
 
 
 class QueueDetailSchema(Schema):
+    """Schema for Queue model."""
+
     id: int
     name: str
 
 
 class QueueSchema(Schema):
-    # GET
+    """Schema for queue-related get method."""
+
     id: int
     name: str
     estimated_time: Optional[int]
 
 
 class EntryDetailCustomerSchema(Schema):
+    """Schema for detailed entry information, including queue ahead."""
+
     id: int
     name: str
     queue: QueueSchema
@@ -35,6 +44,8 @@ class EntryDetailCustomerSchema(Schema):
 
 
 class EntryDetailSchema(Schema):
+    """Schema for detailed entry information."""
+
     id: int
     name: str
     queue: QueueSchema
@@ -46,14 +57,20 @@ class EntryDetailSchema(Schema):
 
 
 class EditIn(Schema):
+    """Schema for editing queue information."""
+
     name: str
     prefix: str
 
 
 class CustomerQueueCreateSchema(Schema):
+    """Schema for customer when add tracking code."""
+
     tracking_code: str
 
 
 class QueueCreateSchema(Schema):
+    """Schema for creating a new queue."""
+
     name: str
     prefix: str
