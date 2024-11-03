@@ -4,7 +4,7 @@ import { setRefreshToken, setToken } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import ApiProxy from '../proxy';
 
-const DJANGO_API_SIGNUP_URL = `${DJANGO_API_ENDPOINT}/business/signup`
+const DJANGO_API_REGISTER_URL = `${DJANGO_API_ENDPOINT}/business/register`
 
 interface SignupRequest {
     username: string
@@ -16,12 +16,12 @@ interface SignupRequest {
 
 export async function POST(request: Request): Promise<Response> {
     const requestData: SignupRequest = await request.json()
-    const { data, status } = await ApiProxy.post(DJANGO_API_SIGNUP_URL, requestData, false)
+    const { data, status } = await ApiProxy.post(DJANGO_API_REGISTER_URL, requestData, false)
 
     if (status === 200) {
         console.log("signed in")
-        // const { username, access, refresh } = data
-        return NextResponse.json({ data: data}, { status: 200 })
+        console.log(data)
+        return NextResponse.json(data, { status: 200 })
     }
 
     const responseData = { message: "Signed up failed" }

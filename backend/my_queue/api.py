@@ -51,11 +51,16 @@ class BusinessController:
         return Business.objects.get(user=request.user)
 
     @http_post("/register", response=dict, auth=helpers.api_auth_user_or_guest)
-    def business_register(selfs, request, data: BusinessRegisterSchema):
+    def business_register(self, request, data: BusinessRegisterSchema):
         """Register new business user."""
-        form = SignUpForm(data)
+        data_dict = data.dict()
+        signup_user = {"username": data_dict["username"],
+                       "password1": data_dict["password1"],
+                       "password2": data_dict["password2"]}
+        form = SignUpForm(signup_user)
         if form.is_valid():
-            user = form.save()
+            new_user = form.save()
+            Business.objects.create(user=new_user, name=data_dict["business_name"])
             return {'msg': 'Business account is successfully created.'}
         else:
             return  {'msg': 'Business account can not created.'}

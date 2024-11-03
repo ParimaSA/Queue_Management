@@ -24,7 +24,7 @@ const SignUpForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/signup', {
+            const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,12 +32,12 @@ const SignUpForm = () => {
                 body: JSON.stringify(formData),
             });
 
+            console.log("here1")
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || 'Signup failed');
             }
-
-            console.log('Signup successful:', data);
+            console.log("here2")
             router.replace('/business/login')
         } catch (err) {
             setError((err as Error).message);

@@ -12,12 +12,3 @@ class SignUpForm(UserCreationForm):
     class Meta:
         model = User
         fields = ("username", "password1", "password2")
-
-    def save(self, commit=True):
-        """Create a new Business object for this user."""
-        user = super().save(commit=False)
-        if commit:
-            user.save()
-            business_name = self.cleaned_data.get("business_name")
-            Business.objects.create(user=user, name=business_name)
-        return user
