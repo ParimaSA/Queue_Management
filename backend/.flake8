@@ -1,0 +1,15 @@
+[flake8]
+max-line-length = 90
+exclude =
+    */migrations/*
+    */__init__.py
+    */urls.py
+    */apps.py
+    */admin.py
+    settings.py
+    */tests/*
+    mysite/*
+    **/site-packages/**
+    manage.py
+
+extend-ignore = D106
