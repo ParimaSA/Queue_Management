@@ -2,18 +2,30 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from "react-toastify";
 
 interface FormData {
     username: string;
     password: string;
     confirmpassword: string;
-    businessname: string;
+    business_name: string;
 }
 
 const SignUpForm = () => {
     const router = useRouter()
-    const [formData, setFormData] = useState<FormData>({ username: '', businessname: '', password: '', confirmpassword: ''});
+    const [formData, setFormData] = useState<FormData>({ username: '', business_name: '', password1: '', password2: ''});
     const [error, setError] = useState<string | null>(null);
+
+    const alert_success = () => {
+        toast.success("Successfully create your account.")
+    }
+
+    const alert_error = (errorMessage) => {
+        const errorData = JSON.parse(errorMessage.error)
+        const firstErrorKey = Object.keys(errorData)[0]
+        errorMessage = errorData[firstErrorKey][0].message
+        toast.error(errorMessage)
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -24,7 +36,7 @@ const SignUpForm = () => {
         e.preventDefault();
 
         try {
-            const response = await fetch('/api/signup', {
+            const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -32,17 +44,16 @@ const SignUpForm = () => {
                 body: JSON.stringify(formData),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Signup failed');
+            const data = await response.json()
+            console.log("DATA: ", data)
+            if (data.error) {
+                alert_error(data)
+            } else {
+                alert_success();
+                router.replace('/business/login');
             }
-
-            const data = await response.json();
-            console.log('Login successful:', data);
-            localStorage.setItem('token', data.access); 
-            console.log('Response data:', data);
-            router.replace('/business')
         } catch (err) {
+            console.log("Catch the error")
             setError((err as Error).message);
         }
     };
@@ -90,9 +101,9 @@ const SignUpForm = () => {
             </svg>
             <input
                 type="text"
-                id="businessname"
-                name="businessname"
-                value={formData.businessname}
+                id="business_name"
+                name="business_name"
+                value={formData.business_name}
                 onChange={handleChange}
                 required
                 placeholder="Business Name"
@@ -114,9 +125,9 @@ const SignUpForm = () => {
               </svg>
               <input
                 type="password"
-                id="password"
-                name="password"
-                value={formData.password}
+                id="password1"
+                name="password1"
+                value={formData.password1}
                 onChange={handleChange}
                 required
                 placeholder="Password"
@@ -138,9 +149,9 @@ const SignUpForm = () => {
               </svg>
               <input
                 type="password"
-                id="confirmpassword"
-                name="confirmpassword"
-                value={formData.confirmpassword}
+                id="password2"
+                name="password2"
+                value={formData.password2}
                 onChange={handleChange}
                 required
                 placeholder="Confirm Password"

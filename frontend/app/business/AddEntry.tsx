@@ -106,7 +106,7 @@ const AddEntry = ({ queue }) => {
           <div className="card bg-base-100 shadow-xl col-span-1 h-60 overflow-hidden w-full bg-cream">
           <div className="card-body">
             {src ? (
-              <img src={src} alt="QR Code" />
+              <img src={src} alt="QR Code" className='h-50'/>
             ) : (
               <div className="flex flex-col items-center justify-center h-full">
                 <p className="text-gray-500">No QR Code generated</p>

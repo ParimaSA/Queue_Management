@@ -11,9 +11,11 @@
   "dependencies": {
     "next": "15.0.2",
     "peer": "^1.0.2",
+    "primereact": "^10.8.4",
     "qrcode": "^1.5.4",
     "react": "19.0.0-rc-02c0e824-20241028",
     "react-dom": "19.0.0-rc-02c0e824-20241028",
+    "react-toastify": "^10.0.6",
     "swr": "^2.2.5"
   },
   "devDependencies": {
