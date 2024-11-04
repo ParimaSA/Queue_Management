@@ -5,18 +5,40 @@ import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
 
-const ENTRY_TRACKING_CODE_URL = '/api/entry'
+const ENTRY_TRACKING_CODE_URL = '/api/entry';
 
 const CustomerPage: React.FC = () => {
-  const router = useRouter()
+  const router = useRouter();
   const { trackingCode } = useParams();
 
-  if (!trackingCode){
-    router.replace('/customer')
-  }
+  // Redirect to /customer if trackingCode is missing
+  useEffect(() => {
+    if (!trackingCode) {
+      router.replace('/customer');
+    }
+  }, [trackingCode, router]);
 
-  const { data, error } = useSWR(`${ENTRY_TRACKING_CODE_URL}/${trackingCode}`, fetcher);
+  const { data, error } = useSWR(
+    trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null,
+    fetcher,
+    {
+      refreshInterval: 5000, // Refresh every 5 seconds
+      revalidateOnFocus: true, // Re-fetch when user focuses on the page
+    }
+  );
+
+  const [cancelMessage, setCancelMessage] = useState<string | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
+
+  // Redirect if there's a 404 error (Tracking code is invalid.)
+  useEffect(() => {
+    if (error?.status === 404) {
+      router.replace('/customer');
+    }
+  }, [error, router]);
+
   if (error) return <div>Failed to load entry</div>;
+
   if (!data) return <div>Loading entry...</div>;
 
   const formatDate = (isoDate: string | number | Date) => {
@@ -24,58 +46,94 @@ const CustomerPage: React.FC = () => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
   };
 
-  if (error) return <div>{error}</div>;
+  const handleCancel = async () => {
+    setIsCancelling(true);
+    setCancelMessage(null);
+
+    try {
+      const response = await fetch(`/api/entry/cancel-customer/${trackingCode}`, {
+        method: 'POST',
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setCancelMessage('Entry successfully canceled.');
+
+        // Redirect to /customer 2 seconds after the customer cancels
+        setTimeout(() => {
+          router.push('/customer');
+        }, 2000);
+      } else {
+        setCancelMessage(result.error || 'Failed to cancel the entry.');
+      }
+    } catch (error) {
+      console.error("Error canceling entry:", error);
+      setCancelMessage('Failed to cancel the entry.');
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   return (
-    <div className="bg-cream2 w-screen h-screen overflow-hidden">
-    {data.length > 0 ? (
-      <div className="flex justify-center">
-        <div className="mt-10 md:mt-20 px-4 md:px-20 w-full max-w-5xl">
-          {data.map(item => (
-            <div key={item.id} className="mb-8 md:mb-10 text-center">
-              <h3 className="text-xl md:text-2xl font-semibold mb-4 md:mb-5 text-blue-950">
-                {item.business}
-              </h3>
-
-              <div className="flex justify-center mt-6 md:mt-10">
-                <div className="flex flex-row space-x-4 w-full max-w-4xl">
-
-                  <div className="flex-auto bg-lightBlue2 p-4 md:p-6 rounded-lg shadow-lg">
-                    <h3 className="text-center text-lg md:text-xl font-semibold">{item.name}</h3>
-                  </div>
-
-                  <div className="flex-auto bg-lightBlue3 p-4 md:p-6 rounded-lg shadow-lg">
-                    <h3 className="text-center text-lg md:text-xl font-semibold">{item.queue.name}</h3>
-                  </div>
+    <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
+      {data.length > 0 ? (
+        <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
+          {data.map((item) => (
+            <div key={item.id}>
+              {/* Business Name */}
+              <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
+  
+              {/* Queue Name and Time In */}
+              <div className="text-brown mb-6 text-lg">
+                <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
+                <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
+              </div>
+  
+              {/* Queue Number */}
+              <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
+  
+              {/* QR Code */}
+              <div className="bg-gray-300 rounded-lg mx-auto w-32 h-32 flex items-center justify-center text-lg text-gray-700 mb-8">
+                QR code
+              </div>
+  
+              {/* Estimated Time and Queue Position */}
+              <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
+                <div>
+                  <p>Estimated Time</p>
+                  <p>{item.Estimated ?? "null"}</p>
+                </div>
+                <div>
+                  <p>Ahead of you</p>
+                  <p>{item.queue_ahead}</p>
                 </div>
               </div>
+  
+              {/* Cancel Button */}
+              <button
+                onClick={handleCancel}
+                disabled={isCancelling}
+                className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-6 ${isCancelling ? 'btn-disabled' : ''}`}
+              >
+                {isCancelling ? 'Canceling...' : 'cancel'}
+              </button>
 
-              <div className="min-h-64 p-4 md:p-6 rounded-lg shadow-lg mt-8 md:mt-10 bg-lightPurple2">
-                <div className="text-center">
-                  <h1 className="text-9xl md:text-9xl mt-7 text-darkPurple">
-                    {item.queue_ahead}
-                  </h1>
-                  <p className="text-sm md:text-lg font-semibold text-darkPurple">
-                    Ahead of you
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-4 md:p-6 rounded-lg shadow-lg bg-lightPurple1 mt-8 md:mt-10">
-                <p className="text-sm md:text-lg text-pink-900 font-semibold">
-                  Time In: {formatDate(item.time_in)}
+  
+              {/* Cancel Message */}
+              {cancelMessage && (
+                <p className="mt-6 text-xl text-red-600 font-semibold">
+                  {cancelMessage}
                 </p>
-              </div>
+              )}
             </div>
           ))}
         </div>
-      </div>
-    ) : (
-      <p>Loading...</p>
-    )}
-  </div>
-
+      ) : (
+        <p className="text-xl">Loading...</p>
+      )}
+    </div>
   );
-}  
-
-export default CustomerPage;
+} 
+  export default CustomerPage;
+  
