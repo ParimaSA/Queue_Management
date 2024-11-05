@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { useEffect } from 'react';
+import { NavBar } from  '@/components/NavBar';
 import Link from 'next/link';
 
 interface FormData {
@@ -57,7 +58,8 @@ const LoginForm: React.FC = () => {
     }
 
     return (
-      <form onSubmit={handleSubmit} 
+//         <Navbar/>
+      <form onSubmit={handleSubmit}
       className="flex flex-col grid gird-cols-7 gap-4 pt-40" style={loginBackground}>
         
         {error && <p className="text-red-500">{error}</p>} {/* Display error message */}
