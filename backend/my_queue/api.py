@@ -122,8 +122,6 @@ class BusinessController:
                                          ).values("time_in__week_day"
                                                   ).annotate(entry_count=Count("id"), 
                                                              week_count=Count("time_in__week", distinct=True))
-            print("-----------------")
-            print(weekly_entry)
             avg_weekly_entry = {entry["time_in__week_day"]: entry["entry_count"]/entry["week_count"] for entry in weekly_entry}
             return JsonResponse({"avg_weekly_entry": avg_weekly_entry}, status=200)
         except Entry.DoesNotExist:
