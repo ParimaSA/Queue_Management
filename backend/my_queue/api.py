@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.db.models import Count, Avg
 from .schemas import (
     CustomerQueueCreateSchema,
     EntryDetailSchema,
@@ -92,6 +93,42 @@ class BusinessController:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         queue_list = Queue.objects.filter(business=business)
         return queue_list
+    
+    @http_get("/top_queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+    def get_top_queue(self, request):
+        """Return top 3 queues in the business."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        top_queue_list = Queue.objects.filter(business=business).annotate(entry_count=Count('entry')).order_by('-entry_count')[:3]
+        return top_queue_list
+    
+    @http_get("/avg_weekly_entry", auth=helpers.api_auth_user_required)
+    def get_average_weekly_entry(self, request):
+        """Return a list of the average number of entries for each day of the week."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+        
+        try:
+            weekly_entry = Entry.objects.filter(business=business, queue__in=queues
+                                         ).values("time_in__week_day"
+                                                  ).annotate(entry_count=Count("id"), 
+                                                             week_count=Count("time_in__week", distinct=True))
+            print("-----------------")
+            print(weekly_entry)
+            avg_weekly_entry = {entry["time_in__week_day"]: entry["entry_count"]/entry["week_count"] for entry in weekly_entry}
+            return JsonResponse({"avg_weekly_entry": avg_weekly_entry}, status=200)
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+        
 
 
 @api_controller("/queue")
