@@ -1,11 +1,12 @@
 """Api routes for business and customer."""
 
 import helpers
+import math
 from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.db.models import Count, Avg
+from django.db.models import Count, Avg, Min, Max
 from .schemas import (
     CustomerQueueCreateSchema,
     EntryDetailSchema,
@@ -118,11 +119,19 @@ class BusinessController:
             return JsonResponse({"msg": "No queue found for this business."}, status=404)
         
         try:
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"), 
+                                                           last_entry=Max("time_in"))
+            
+            if date_range["first_entry"] and date_range["last_entry"]:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+                
             weekly_entry = Entry.objects.filter(business=business, queue__in=queues
                                          ).values("time_in__week_day"
-                                                  ).annotate(entry_count=Count("id"), 
-                                                             week_count=Count("time_in__week", distinct=True))
-            avg_weekly_entry = {entry["time_in__week_day"]: entry["entry_count"]/entry["week_count"] for entry in weekly_entry}
+                                                  ).annotate(entry_count=Count("id"))
+            avg_weekly_entry = {entry["time_in__week_day"]: math.ceil(entry["entry_count"]/total_week) for entry in weekly_entry}
             return JsonResponse({"avg_weekly_entry": avg_weekly_entry}, status=200)
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
