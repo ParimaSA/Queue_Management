@@ -8,12 +8,14 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 
 const TOP_QUEUE_API_URL = "/api/business/top_queues";
+const MY_BUSINESS_API_URL = "/api/business/";
 
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
   const [businessEmail, setBusinessEmail] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: top_queue, error: topQueueError } = useSWR(TOP_QUEUE_API_URL, fetcher);
+  const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
   console.log(top_queue, topQueueError);
   useEffect(() => {
     if (topQueueError) {
@@ -25,13 +27,19 @@ const ProfilePage = () => {
     }
   }, [top_queue, topQueueError]);
 
+  useEffect(() => {
+    if (myBusinessError) {
+      console.log("Failed to load business", myBusinessError);
+    } else if (!my_business) {
+      console.log("Loading business...");
+    } else {
+      console.log("Business data:", my_business);
+    }
+  }, [my_business, myBusinessError]);
+
 
   const handleBusinessNameChange = (event) => {
     setBusinessName(event.target.value);
-  }
-
-  const handleBusinessEmailChange = (event) => {
-    setBusinessEmail(event.target.value);
   }
 
   const handleEditClick = () => {
@@ -74,8 +82,20 @@ const ProfilePage = () => {
             <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>
               ✕
             </button>
-            <h3 className="font-bold text-lg">Edit Profile</h3>
-            <br />
+            <div className='mb-2'>
+              <h3 className="font-bold text-lg">Edit Profile</h3>
+            </div>
+            <div className='flex justify-center items-center'>
+              <div className="avatar">
+                <div className="w-34 rounded-xl">
+                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                </div>
+              </div>
+            </div>
+            <br/>
+            <div className='mb-4'>
+              <input type="file" className="file-input file-input-bordered file-input-sm w-full" />
+            </div>
             <label className="input input-bordered flex items-center gap-2">
               Business Name
               <input
@@ -84,17 +104,6 @@ const ProfilePage = () => {
                 placeholder="TeeNoi"
                 value={businessName}
                 onChange={handleBusinessNameChange}
-              />
-            </label>
-            <br />
-            <label className="input input-bordered flex items-center gap-2">
-              Alphabet
-              <input
-                type="text"
-                className="grow font-light"
-                placeholder="A"
-                value={businessEmail}
-                onChange={handleBusinessEmailChange}
               />
             </label>
             <br />
@@ -124,7 +133,16 @@ const ProfilePage = () => {
                           </div>
                       </div>
                     </div>
-                    <div className='text-xl flex justify-center py-4 bg-lightPurple5 rounded-full font-bold'>Business Name</div>
+                    {my_business ? (
+                      my_business.map(business => (
+                        <div
+                          key={business.id}
+                          className='text-xl flex justify-center py-4 bg-lightPurple5 rounded-full font-bold'
+                        >
+                          {business.name}
+                        </div>
+                      ))
+                    ) : null}
                 </div>
               </div>
               <div className='py-6'/>
@@ -158,7 +176,7 @@ const ProfilePage = () => {
             <div className="card bg-cream w-full h-76 shadow-xl">
               <div className="card-body">
               <h2 className="card-title">Avarage Weekly Entries Chart</h2>
-                <div className='h-56 flex justify-center items-center'>
+                <div className='h-56 w-full flex justify-center items-center'>
                   <WeeklyEntryChart />
                 </div>
               </div>
