@@ -16,6 +16,7 @@ from .schemas import (
     QueueDetailSchema,
     EntryDetailCustomerSchema,
     QueueCreateSchema,
+    BusinessDataSchema,
 )
 from .models import Entry, Business, Queue
 from .forms import SignUpForm
@@ -44,11 +45,11 @@ def serialize_single_entry(entry):
 class BusinessController:
     """Controller for managing business-related endpoints."""
 
-    @http_get("", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
+    @http_get("", response=List[BusinessDataSchema] | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
         try:
-            my_business = Business.objects.get(user=request.user)
+            my_business = Business.objects.filter(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         return my_business

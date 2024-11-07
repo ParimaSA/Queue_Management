@@ -14,6 +14,11 @@ class BusinessSchema(ModelSchema):
         fields = ("user", "name")
 
 
+class BusinessDataSchema(Schema):
+    id: int
+    name: str
+
+
 class BusinessRegisterSchema(Schema):
     username: str
     password1: str
