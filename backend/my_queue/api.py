@@ -133,8 +133,10 @@ class BusinessController:
             weekly_entry = Entry.objects.filter(business=business, queue__in=queues
                                          ).values("time_in__week_day"
                                                   ).annotate(entry_count=Count("id"))
-            avg_weekly_entry = {entry["time_in__week_day"]: math.ceil(entry["entry_count"]/total_week) for entry in weekly_entry}
-            return JsonResponse({"avg_weekly_entry": avg_weekly_entry}, status=200)
+            avg_weekly_entry = []
+            for entry in weekly_entry:
+                avg_weekly_entry.append({"day":entry["time_in__week_day"], "entry_count": math.ceil(entry["entry_count"]/total_week)})
+            return avg_weekly_entry
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
         
@@ -163,7 +165,7 @@ class BusinessController:
             entry_in_slot = entry.filter(time_in__gte=start_time, time_in__lt=end_time)
             num_entry_in_slot = entry_in_slot.count()
 
-            time_slot_list.append({"start_time": start_time, "entry_count": num_entry_in_slot})
+            time_slot_list.append({"start_time": start_time.hour, "entry_count": num_entry_in_slot})
         return time_slot_list
 
 
