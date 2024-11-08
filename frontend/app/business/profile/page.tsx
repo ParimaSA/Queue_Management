@@ -6,6 +6,7 @@ import useSWR, { mutate } from "swr";
 import { useEffect, useState } from 'react';
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
+import QueueVolumeChart from '../QueueVolumeChart';
 
 const TOP_QUEUE_API_URL = "/api/business/top_queues";
 const MY_BUSINESS_API_URL = "/api/business/";
@@ -184,6 +185,10 @@ const ProfilePage = () => {
             <div className='pt-8'/>
             <div className="card bg-cream w-full h-76 shadow-xl">
               <div className="card-body">
+                <h2 className="card-title">Queue Volume by Time Slot Chart</h2>
+                  <div className='h-56 w-full flex justify-center items-center'>
+                    <QueueVolumeChart />
+                  </div>
               </div>
             </div>
           </div>
