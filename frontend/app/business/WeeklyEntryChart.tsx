@@ -20,20 +20,8 @@ const WeeklyEntryChart: React.FC = () => {
             console.log("Loading business...");
         } else {
             console.log("Avg data:", avg_weekly_entry);
-            const entries = avg_weekly_entry.avg_weekly_entry;
-            if (entries && typeof entries === 'object') {
-                const updatedEntryData = [0, 0, 0, 0, 0, 0, 0];
-                for (const [key, value] of Object.entries(entries)) {
-                    const dayIndex = parseInt(key) - 2;
-                    if (dayIndex >= 0 && dayIndex < updatedEntryData.length) {
-                        updatedEntryData[dayIndex] = value;
-                    }
-                }
-                console.log("Entry data populated:", updatedEntryData);
-                setEntryData(updatedEntryData);
-            } else {
-                console.error("Unexpected structure for entries:", entries);
-            }
+            const updatedEntryData = avg_weekly_entry.map(entry => entry.entry_count || 0);
+            setEntryData(updatedEntryData);
         }
     }, [avg_weekly_entry, entryError]);
 
@@ -48,7 +36,7 @@ const WeeklyEntryChart: React.FC = () => {
                         datasets: [
                             {
                                 label: 'Number of Entry',
-                                backgroundColor: 'rgba(255, 187, 186)',
+                                backgroundColor: 'rgba(246, 185, 157)',
                                 data: entryData,
                             },
                         ],
