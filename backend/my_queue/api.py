@@ -153,8 +153,8 @@ class BusinessController:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
         
         date = datetime.today().date()
-        open_time = datetime.combine(date, business.open_time)
-        close_time = datetime.combine(date, business.close_time)
+        open_time = timezone.make_aware(datetime.combine(date, business.open_time))
+        close_time = timezone.make_aware(datetime.combine(date, business.close_time))
         total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
 
         time_slot_list = []
