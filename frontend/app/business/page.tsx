@@ -5,9 +5,10 @@ import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
 import BusinessPage from './ShowEntry'
 import BusinessNavbar from './components/BusinessNavbar'
-
+import { useSession } from 'next-auth/react'
 const Business = () => {
   const auth = useAuth()
+  const { data: session } = useSession()
   const router = useRouter()
 
   // Redirect if the user is not authenticated

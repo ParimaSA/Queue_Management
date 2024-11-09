@@ -18,7 +18,7 @@ const LoginPage: React.FC = () => {
 
   // Redirect if the user is authenticated
   useEffect(() => {
-    if (auth.isAuthenticated || !session) {
+    if (auth.isAuthenticated) {
         router.replace('/business')
     }
   }, [auth.isAuthenticated, router])
