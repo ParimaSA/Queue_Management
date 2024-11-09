@@ -2,12 +2,13 @@
 
 import helpers
 import math
-from datetime import timedelta, date, datetime
+from datetime import timedelta, datetime
 from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.db.models import Count, Avg, Min, Max
+from django.db.models import Count, Min, Max
+from django.db.models.functions import TruncTime
 from .schemas import (
     CustomerQueueCreateSchema,
     EntryDetailSchema,
@@ -124,8 +125,8 @@ class BusinessController:
             date_range = Entry.objects.filter(business=business, queue__in=queues
                                               ).aggregate(first_entry=Min("time_in"), 
                                                            last_entry=Max("time_in"))
-            
-            if date_range["first_entry"] and date_range["last_entry"]:
+
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
                 first_entry = date_range["first_entry"]
                 last_entry = date_range["last_entry"]
                 total_week = ((last_entry - first_entry).days // 7) + 1
@@ -142,31 +143,47 @@ class BusinessController:
         
     @http_get("/entry_in_time_slot", auth=helpers.api_auth_user_required)
     def get_entry_in_time_slot(self, request):
+        """Return a list of the average number of entries in time slot."""
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         
         try:
-            entry = Entry.objects.filter(business=business)
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+        
+        try:
+            entry = Entry.objects.filter(business=business, queue__in=queues)
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"), 
+                                                           last_entry=Max("time_in"))
+            date = datetime.today().date()
+            open_time = timezone.make_aware(datetime.combine(date, business.open_time))
+            close_time = timezone.make_aware(datetime.combine(date, business.close_time))
+            total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+            
+                time_slot_list = []
+                for i in range(math.ceil(total_hours/2) - 1):
+                    start_time = open_time + timedelta(hours=2 * i)
+                    end_time = start_time + timedelta(hours=2)
+
+                    entry_in_slot = entry.annotate(time_in_time=TruncTime('time_in')).filter(
+                        time_in_time__gte=start_time,
+                        time_in_time__lt=end_time
+                    )
+                    num_entry_in_slot = math.ceil(entry_in_slot.count()/total_week)
+
+                    time_slot_list.append({"start_time": start_time.hour, "entry_count": num_entry_in_slot})
+                return time_slot_list
+            
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
-        
-        date = datetime.today().date()
-        open_time = timezone.make_aware(datetime.combine(date, business.open_time))
-        close_time = timezone.make_aware(datetime.combine(date, business.close_time))
-        total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
-
-        time_slot_list = []
-        for i in range(math.ceil(total_hours/2)):
-            start_time = open_time + timedelta(hours=2 * i)
-            end_time = start_time + timedelta(hours=2)
-
-            entry_in_slot = entry.filter(time_in__gte=start_time, time_in__lt=end_time)
-            num_entry_in_slot = entry_in_slot.count()
-
-            time_slot_list.append({"start_time": start_time.hour, "entry_count": num_entry_in_slot})
-        return time_slot_list
 
 
 @api_controller("/queue")
