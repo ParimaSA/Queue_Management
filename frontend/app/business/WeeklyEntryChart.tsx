@@ -20,8 +20,12 @@ const WeeklyEntryChart: React.FC = () => {
             console.log("Loading business...");
         } else {
             console.log("Avg data:", avg_weekly_entry);
-            const updatedEntryData = avg_weekly_entry.map(entry => entry.entry_count || 0);
+            const updatedEntryData = entryData.map((_, dayIndex) => {
+                const entry = avg_weekly_entry.find(entry => entry.day - 1 === dayIndex);
+                return entry ? entry.entry_count || 0 : 0;
+            });
             setEntryData(updatedEntryData);
+            console.log("Avg data2:", entryData);
         }
     }, [avg_weekly_entry, entryError]);
 
@@ -32,7 +36,7 @@ const WeeklyEntryChart: React.FC = () => {
                 chartInstanceRef.current = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                         datasets: [
                             {
                                 label: 'Number of Entry',
