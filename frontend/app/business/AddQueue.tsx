@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import Preview from './Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
@@ -108,12 +109,16 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
               <input
                 type="text"
                 className="grow font-light"
-                placeholder="A"
+                placeholder="eg. A, B, C"
                 value={newAlphabet}
                 onChange={handleAlphabetChange}
               />
             </label>
             <br />
+
+          <Preview newQueue newAlphabet />
+
+
             <button type="submit" className="btn btn-primary">Add</button>
           </form>
         </div>
