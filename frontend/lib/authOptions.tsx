@@ -1,41 +1,53 @@
 import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { setToken } from "./auth";
+import { DJANGO_API_ENDPOINT } from "@/config/defaults";
+import { getAuthToken, setRefreshToken, setToken } from "./auth";
+
+const createUserInDjango = async (email: string) => {
+  const response = await fetch(`${DJANGO_API_ENDPOINT}/business/email-register`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+
+  const data = await response.json();
+  return data;
+};
+
 
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET as string,
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async jwt({ token, account, profile }) {
-        if (account?.provider === "google") {
-            token.accessToken = account.access_token;
-            token.email = profile?.email;
-            token.idToken = account.id_token;
-            token.refreshToken = account.refresh_token || token.refreshToken;
-            token.accessTokenExpires = Date.now() + 3600 * 1000;
-            console.log("Token expires at: " + new Date(token.accessTokenExpires).toLocaleString())
-        }
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        console.log(user, token, account);
 
-        if (Date.now() < token.accessTokenExpires) {
-            return token;
+        // Create the user in Django if the user doesn't exist
+        const userData = await createUserInDjango(user.email as string);
+        if(!userData.error){
+          setToken(userData.access_token)
+          setRefreshToken(userData.setRefreshToken)
         }
-
-        console.log("Access token has expired, refreshing...");
-        return await refreshAccessToken(token);
+      }
+      return token;
     },
     async session({ session, token }) {
-        session.email = token.email;
-        session.idToken = token.idToken;
-        session.accessToken = token.accessToken;
-
-        return session;
+      console.log(`authtoken: ${getAuthToken()}`)
+      return session;
     },
-},
+    async redirect({ url, baseUrl }) {
+      return `${baseUrl}/business`;
+    },
+  },
 };
