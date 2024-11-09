@@ -20,6 +20,13 @@ const CustomerPage: React.FC = () => {
     }
   }, [trackingCode, router]);
 
+  // Ask permission for sending a notification
+  useEffect(() => {
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  }, []);
+
   const { data, error } = useSWR(
     trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null,
     fetcher,
@@ -38,6 +45,18 @@ const CustomerPage: React.FC = () => {
       router.replace('/customer');
     }
   }, [error, router]);
+
+  // Show notification
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const firstInQueue = data[0].queue_ahead === 0;
+      console.log("Queue ahead:", data[0].queue_ahead);
+      if (firstInQueue) {
+        console.log("Sending notification...");
+        new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
+      }
+    }
+  }, [data]);
 
   if (error) return <div>Failed to load entry</div>;
 
