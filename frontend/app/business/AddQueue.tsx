@@ -116,7 +116,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
             </label>
             <br />
 
-          <Preview newQueue newAlphabet />
+          <Preview newQueue={newQueue} newAlphabet={newAlphabet} />
 
 
             <button type="submit" className="btn btn-primary">Add</button>
