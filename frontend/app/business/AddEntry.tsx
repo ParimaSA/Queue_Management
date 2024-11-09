@@ -1,9 +1,10 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { mutate } from 'swr';
-import QRCode from "qrcode";
+import QRCode from 'qrcode';
+import { useReactToPrint } from 'react-to-print'
+import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 
-const ENTRY_TRACKING_CODE_URL = '/api/entry';
 const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
 const QUEUE_API_URL = `/api/queue`;
 
@@ -72,8 +73,15 @@ const AddEntry = ({ queue }) => {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
   };
 
+  const getPageMargins = () => {
+    return `@page { margin: 600 0 0 0 !important; }`;
+  };
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const reactToPrintFn = useReactToPrint({ contentRef });
+
   return (
-    <>
+    <>  
         <div className="grid grid-cols-10 gap-4 w-full">
           <div className="card bg-base-100 shadow-xl col-span-8 h-90 overflow-hidden w-full bg-lightPurple1">
             <div className="card-body">
@@ -113,7 +121,9 @@ const AddEntry = ({ queue }) => {
           </div>
           <div className="card bg-base-100 shadow-xl col-span-2 h-90 overflow-hidden w-full">
           {entryData ? (
-          <div className="card-body text-center">
+          <div ref={ contentRef }>
+            <div className="card-body text-center">
+              <style>{getPageMargins()}</style>
               {/* Queue Name and Time In */}
               <div className="text-brown mb-6 text-lg">
                 <p className="text-amber-700 font-semibold text-1g">Queue Name: {entryData.queue_name}</p>
@@ -122,7 +132,7 @@ const AddEntry = ({ queue }) => {
 
               {/* Queue Number */}
               <h1 className="text-4xl font-bold text-amber-900">{entryData.name}</h1>
-
+              
               {/* QR Code */}
               <div className="mx-auto w-40 h-40 flex items-center justify-center">
                 {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
@@ -133,11 +143,15 @@ const AddEntry = ({ queue }) => {
                 <p className="text-amber-700 font-semibold text-1g"> Ahead of you: {entryData.queue_ahead}</p>
               </div>
             </div>
+            <div className="flex justify-end">
+              <button className='btn h-20 w-20 ml-auto m-3' onClick={ reactToPrintFn } > <LocalPrintshopIcon style={{ fontSize: 30 }}/> </button>
+            </div>
+          </div>
               ) : (
                 <p className="text-xl text-center mt-10 text-gray-500">No QR code generated</p>
               )}
           </div>
-        </div>
+      </div>
     </>
   )
 }

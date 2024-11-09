@@ -14,6 +14,42 @@
   }
 }
 
+@media print {
+  @page {
+    size: 100mm 130mm;
+  }
+
+  /* .card-body * {
+    visibility: visible;
+    text-align: center;
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20mm;
+    height: 100vh;
+  }
+
+  .text-brown,
+  .text-amber-700,
+  .text-4xl {
+    margin: 0 auto;
+  }
+
+  img {
+    margin: 0 auto;
+    display: block;
+  } */
+
+  .btn {
+    display: none;
+  }
+
+}
+
 body {
   color: var(--foreground);
   background: var(--background);
