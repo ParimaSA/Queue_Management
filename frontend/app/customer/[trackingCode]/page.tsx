@@ -52,8 +52,10 @@ const CustomerPage: React.FC = () => {
       const firstInQueue = data[0].queue_ahead === 0;
       console.log("Queue ahead:", data[0].queue_ahead);
       if (firstInQueue) {
-        console.log("Sending notification...");
-        new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
+        if (Notification.permission === "granted") {
+          console.log("Sending notification...");
+          new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
+        } 
       }
     }
   }, [data]);
