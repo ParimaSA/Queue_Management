@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
+import QRCode from "qrcode";
 import useSWR from "swr";
 
 const ENTRY_TRACKING_CODE_URL = '/api/entry';
@@ -10,6 +11,7 @@ const ENTRY_TRACKING_CODE_URL = '/api/entry';
 const CustomerPage: React.FC = () => {
   const router = useRouter();
   const { trackingCode } = useParams();
+  const [src, setSrc] = useState<string | null>(null);
 
   // Redirect to /customer if trackingCode is missing
   useEffect(() => {
@@ -75,6 +77,11 @@ const CustomerPage: React.FC = () => {
     }
   };
 
+  const generate = () => {
+    QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
+  }
+  generate()
+
   return (
     <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
       {data.length > 0 ? (
@@ -94,8 +101,8 @@ const CustomerPage: React.FC = () => {
               <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
   
               {/* QR Code */}
-              <div className="bg-gray-300 rounded-lg mx-auto w-32 h-32 flex items-center justify-center text-lg text-gray-700 mb-8">
-                QR code
+              <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
+                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
               </div>
   
               {/* Estimated Time and Queue Position */}
@@ -135,5 +142,5 @@ const CustomerPage: React.FC = () => {
     </div>
   );
 } 
-  export default CustomerPage;
-  
+
+export default CustomerPage;
