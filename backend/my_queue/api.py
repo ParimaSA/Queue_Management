@@ -169,7 +169,7 @@ class BusinessController:
                 total_week = ((last_entry - first_entry).days // 7) + 1
             
                 time_slot_list = []
-                for i in range(math.ceil(total_hours/2) - 1):
+                for i in range(math.ceil(total_hours/2)):
                     start_time = open_time + timedelta(hours=2 * i)
                     end_time = start_time + timedelta(hours=2)
 
