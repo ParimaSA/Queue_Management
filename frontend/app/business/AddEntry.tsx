@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { mutate } from 'swr';
 import QRCode from "qrcode";
 
+const ENTRY_TRACKING_CODE_URL = '/api/entry';
 const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
 const QUEUE_API_URL = `/api/queue`;
 
@@ -11,7 +12,8 @@ const AddEntry = ({ queue }) => {
   const queueID = queue.id
   const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || '');
   const [trackingCode, setTrackingCode] = useState(null);
-  const [src, setSrc] = useState<string | null>(null); 
+  const [entryData, setEntryData] = useState(null);
+  const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
     if (trackingCode !== null) {
@@ -51,7 +53,8 @@ const AddEntry = ({ queue }) => {
       const data = await response.json()
       console.log("Response:", data)
       setTrackingCode(data.tracking_code)
-
+      setEntryData(data)
+      console.log("entry: ", entryData)
       mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
       generate();
     } catch (error) {
@@ -64,12 +67,17 @@ const AddEntry = ({ queue }) => {
     QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
   }
 
+  const formatDate = (isoDate: string | number | Date) => {
+    const date = new Date(isoDate);
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}:${String(date.getSeconds()).padStart(2, '0')}`;
+  };
+
   return (
     <>
-        <div className="grid grid-cols-5 gap-4 w-full">
-          <div className="card bg-base-100 shadow-xl col-span-4 h-60 overflow-hidden w-full bg-lightPurple1">
+        <div className="grid grid-cols-10 gap-4 w-full">
+          <div className="card bg-base-100 shadow-xl col-span-8 h-90 overflow-hidden w-full bg-lightPurple1">
             <div className="card-body">
-            <h1 className="card-title text-xl">Add Entry</h1>
+            <h1 className="card-title text-3xl text-bold mt-7 mb-10">Add Entry</h1>
             {trackingCode && (
               <div role="alert" className="alert shadow-lg">
               <svg
@@ -83,13 +91,13 @@ const AddEntry = ({ queue }) => {
                   strokeWidth="2"
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
-              <div className='flex space-x-6'>
+              <div className='flex space-x-3'>
                 <h3 className="font-bold">Tracking Code</h3>
                 <h3 className="font-bold text-red-500">{trackingCode}</h3>
               </div>
             </div>
             )}
-          <div className='space-x-3 flex py-6'>
+          <div className='space-x-3 flex py-7'>
             <select className="select select-bordered w-100 h-26" onChange={handleSelectedChange}>
               {queue.map(q => (
                 <option key={q.id} value={q.id}>{q.name}</option>
@@ -103,18 +111,31 @@ const AddEntry = ({ queue }) => {
           </div>
           </div>
           </div>
-          <div className="card bg-base-100 shadow-xl col-span-1 h-60 overflow-hidden w-full bg-cream">
-          <div className="card-body">
-            {src ? (
-              <div className="flex flex-col items-center justify-center h-full">
-              <img src={src} alt="QR Code" className='h-42 w-42'/>
+          <div className="card bg-base-100 shadow-xl col-span-2 h-90 overflow-hidden w-full">
+          {entryData ? (
+          <div className="card-body text-center">
+              {/* Queue Name and Time In */}
+              <div className="text-brown mb-6 text-lg">
+                <p className="text-amber-700 font-semibold text-1g">Queue Name: {entryData.queue_name}</p>
+                <p className="text-amber-700 font-semibold text-1g">Time in: {formatDate(entryData.time_in)}</p>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full">
-                <p className="text-gray-500">No QR Code generated</p>
+
+              {/* Queue Number */}
+              <h1 className="text-4xl font-bold text-amber-900">{entryData.name}</h1>
+
+              {/* QR Code */}
+              <div className="mx-auto w-40 h-40 flex items-center justify-center">
+                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
               </div>
-            )}
-          </div>
+
+              {/* Estimated Time and Queue Position */}
+              <div className="text-brown text-lg">
+                <p className="text-amber-700 font-semibold text-1g"> Ahead of you: {entryData.queue_ahead}</p>
+              </div>
+            </div>
+              ) : (
+                <p className="text-xl text-center mt-10 text-gray-500">No QR code generated</p>
+              )}
           </div>
         </div>
     </>
