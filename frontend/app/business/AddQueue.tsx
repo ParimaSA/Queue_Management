@@ -1,14 +1,12 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
-const AddQueue = ({ business_data, onQueueAdded }) => {
+const AddQueue = ({ onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
@@ -65,7 +63,6 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   };
 
   const openModal = () => {
-    setIsModalOpen(true);
     const modal = document.getElementById('my_modal_3');
     if (modal) {
       modal.showModal();
@@ -73,7 +70,6 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   };
 
   const closeModal = () => {
-    setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
     const modal = document.getElementById('my_modal_3');

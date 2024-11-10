@@ -15,6 +15,8 @@ class BusinessSchema(ModelSchema):
 
 
 class BusinessRegisterSchema(Schema):
+    """Schema for register new business."""
+
     username: str
     password1: str
     password2: str
@@ -49,7 +51,7 @@ class EntryDetailCustomerSchema(Schema):
     status: str = "waiting"
     queue_ahead: int
 
-      
+
 class EntryDetailSchema(Schema):
     """Schema for detailed entry information."""
 

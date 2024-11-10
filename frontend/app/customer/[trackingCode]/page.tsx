@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
+import { toast } from 'react-toastify';
 
 const ENTRY_TRACKING_CODE_URL = '/api/entry';
 
@@ -33,6 +34,7 @@ const CustomerPage: React.FC = () => {
   // Redirect if there's a 404 error (Tracking code is invalid.)
   useEffect(() => {
     if (error?.status === 404) {
+      toast.warning("This tracking code is invalid.")
       router.replace('/customer');
     }
   }, [error, router]);

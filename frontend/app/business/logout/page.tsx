@@ -34,7 +34,7 @@ export default function Page() {
             }
         }
         handleLogout(); 
-    }, [router]);
+    }, [router, auth]);
 
     return (
         <div className="h-[95vh] flex items-center justify-center">

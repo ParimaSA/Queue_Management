@@ -8,7 +8,6 @@ const QUEUE_API_URL = `/api/queue`;
 
 
 const AddEntry = ({ queue }) => {
-  const queueID = queue.id
   const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || '');
   const [trackingCode, setTrackingCode] = useState(null);
   const [src, setSrc] = useState<string | null>(null); 
@@ -18,7 +17,7 @@ const AddEntry = ({ queue }) => {
       console.log("Updated tracking code:", trackingCode);
       generate();
     }
-  }, [trackingCode]);
+  });
 
   const handleSelectedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedQueue(event.target.value);

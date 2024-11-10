@@ -113,7 +113,7 @@ const LoginForm: React.FC = () => {
             <button type="submit" className='btn btn-primary w-auto rounded-full ml-20 bg-darkPurple2 text-white text-base border-none hover:bg-purple-900'>Login</button>
             <div className='pt-7'/>
             <div className='flex items-center space-x-2 ml-20'>
-              <label>Does't have an account?</label>
+              <label>Does not have an account?</label>
               <Link href='/business/signup' className='text-blue-500 hover:underline'>Sign up</Link>
             </div>
           </div>

@@ -6,7 +6,6 @@ from ninja_extra import NinjaExtraAPI
 from ninja_jwt.controller import NinjaJWTDefaultController
 from my_queue.api import BusinessController, QueueController, EntryController
 
-
 api = NinjaExtraAPI()
 api.register_controllers(NinjaJWTDefaultController)
 api.register_controllers(BusinessController, QueueController, EntryController)

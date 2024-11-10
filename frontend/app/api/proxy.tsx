@@ -1,5 +1,4 @@
 import { getToken } from "@/lib/auth"
-import { cookies } from "next/headers"
 
 interface FetchResponse {
     data: any

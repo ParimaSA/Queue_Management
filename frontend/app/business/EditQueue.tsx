@@ -11,7 +11,6 @@ const EditQueue = ({queue}) => {
   const [QueueId, setQueueId] = useState('');
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     setQueueId(queue.id);
@@ -26,7 +25,7 @@ const EditQueue = ({queue}) => {
     setEditedAlphabet(event.target.value);
   }
 
-  const handleAddClick = (queueID) => {
+  const handleAddClick = () => {
     if (editedQueue && editedAlphabet) {
       handleSubmit(parseInt(QueueId, 10));
       console.log('New Queue:', editedQueue);
@@ -39,7 +38,6 @@ const EditQueue = ({queue}) => {
   }
 
   const openModal = (queueId) => {
-    setIsModalOpen(true);
     setQueueId(queueId);
     const modal = document.getElementById(QueueId);
     if (modal) {
@@ -48,21 +46,12 @@ const EditQueue = ({queue}) => {
   }
 
   const closeModal = (QueueId) => {
-    setIsModalOpen(false);
     setEditedQueue('');
     setEditedAlphabet('');
     const modal = document.getElementById(QueueId);
     if (modal) {
       modal.close();
     }
-  }
-
-  const handleEditedQueue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedQueue(event.target.value);
-  }
-
-  const handleEditedAlphabet = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedAlphabet(event.target.value);
   }
 
   const handleSubmit = async (queueId: number) => {
@@ -105,7 +94,6 @@ const EditQueue = ({queue}) => {
         console.log("Failed to delete queue")
         return
       }
-      const data = await response.json()
       mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
       console.log("Error save delete queue:", error)
