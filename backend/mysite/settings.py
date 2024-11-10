@@ -14,6 +14,7 @@ import datetime
 from pathlib import Path
 from decouple import config, Csv
 from dj_database_url import parse as db_url
+import os
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -169,3 +170,6 @@ NINJA_JWT = {
     'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
 }
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / os.path.join(BASE_DIR, 'media')
