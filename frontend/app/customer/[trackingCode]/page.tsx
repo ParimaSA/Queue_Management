@@ -46,16 +46,24 @@ const CustomerPage: React.FC = () => {
     }
   }, [error, router]);
 
-  // Show notification
+  // Show notifications
   useEffect(() => {
     if (data && data.length > 0) {
-      const firstInQueue = data[0].queue_ahead === 0;
-      console.log("Queue ahead:", data[0].queue_ahead);
-      if (firstInQueue) {
+      const queueAhead = data[0].queue_ahead;
+      console.log("Queue ahead:", queueAhead);
+      
+      if (queueAhead === 0) {
         if (Notification.permission === "granted") {
-          console.log("Sending notification...");
+          console.log("Sending final notification...");
           new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
-        } 
+        }
+      } 
+      
+      else if (queueAhead <= 3) {
+        if (Notification.permission === "granted") {
+          console.log("Sending near-turn notification...");
+          new Notification("Almost your turn!", { body: `Only ${queueAhead} people ahead of you. Please be ready.` });
+        }
       }
     }
   }, [data]);
