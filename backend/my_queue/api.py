@@ -9,6 +9,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count, Min, Max
 from django.db.models.functions import TruncTime
+from ninja import File
+from django.core.files.base import ContentFile
+from ninja.files import UploadedFile
 from .schemas import (
     CustomerQueueCreateSchema,
     EntryDetailSchema,
@@ -19,6 +22,7 @@ from .schemas import (
     EntryDetailCustomerSchema,
     QueueCreateSchema,
     BusinessDataSchema,
+    BusinessUpdatedSchema,
 )
 from .models import Entry, Business, Queue
 from .forms import SignUpForm
@@ -185,8 +189,8 @@ class BusinessController:
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
         
-    @http_put("/{business_id}", auth=helpers.api_auth_user_required)
-    def edit_business(self, request, business_id: int, edit_attrs: EditIn):
+    @http_put("/business_updated", auth=helpers.api_auth_user_required)
+    def edit_business(self, request, edit_attrs: BusinessUpdatedSchema):
         """
         Edit deatils of the business.
 
@@ -196,7 +200,7 @@ class BusinessController:
         Returns: message indicate whether the business is successfully edit or not
         """
         try:
-            business = Business.objects.get(user=request.user, pk=business_id)
+            business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "Cannot edit this business."}, status=404)
         for attr, value in edit_attrs.dict().items():
@@ -208,7 +212,19 @@ class BusinessController:
             },
             status=200,
         )
-
+    
+    @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
+    def get_profile_image(self, request):
+        """Return the profile image of the business."""
+        print(request.user)
+        try:
+            business = Business.objects.get(user=request.user)
+            image_url = request.build_absolute_uri(business.image.url)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        print("Image URL:", image_url)
+        return {"image": image_url}
+    
 
 @api_controller("/queue")
 class QueueController:

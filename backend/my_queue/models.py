@@ -16,6 +16,7 @@ class Business(models.Model):
     name = models.CharField(max_length=255)
     open_time = models.TimeField(default="06:00")
     close_time = models.TimeField(default="23:59")
+    image = models.ImageField(upload_to='profiles/', null=True, blank=True)
 
     def __str__(self):
         """Return name of Business."""

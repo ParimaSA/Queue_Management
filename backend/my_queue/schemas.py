@@ -28,6 +28,12 @@ class BusinessRegisterSchema(Schema):
     business_name: str
 
 
+class BusinessUpdatedSchema(Schema):
+    name: str
+    open_time: time
+    close_time: time
+
+
 class QueueDetailSchema(Schema):
     """Schema for Queue model."""
 
