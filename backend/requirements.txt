@@ -5,7 +5,8 @@ django-ninja-jwt[crypto]
 dj_database_url
 pydantic[email]
 django-cors-headers
-django-allauth
 nanoid
+Pillow
+django-allauth
 requests
 djangorestframework-simplejwt

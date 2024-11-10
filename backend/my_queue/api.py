@@ -1,11 +1,18 @@
 """Api routes for business and customer."""
 
 import helpers
+import math
+from datetime import timedelta, datetime
 from django.http import JsonResponse
 from rest_framework_simplejwt.tokens import RefreshToken
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.db.models import Count, Min, Max
+from django.db.models.functions import TruncTime
+from ninja import File
+from django.core.files.base import ContentFile
+from ninja.files import UploadedFile
 from .schemas import (
     CustomerQueueCreateSchema,
     EntryDetailSchema,
@@ -16,6 +23,8 @@ from .schemas import (
     QueueDetailSchema,
     EntryDetailCustomerSchema,
     QueueCreateSchema,
+    BusinessDataSchema,
+    BusinessUpdatedSchema,
 )
 from django.contrib.auth.models import User
 from .models import Entry, Business, Queue
@@ -45,11 +54,11 @@ def serialize_single_entry(entry):
 class BusinessController:
     """Controller for managing business-related endpoints."""
 
-    @http_get("", response=BusinessSchema | None, auth=helpers.api_auth_user_required)
+    @http_get("", response=List[BusinessDataSchema] | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
         try:
-            my_business = Business.objects.get(user=request.user)
+            my_business = Business.objects.filter(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         return my_business
@@ -113,7 +122,130 @@ class BusinessController:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         queue_list = Queue.objects.filter(business=business)
         return queue_list
+    
+    @http_get("/top_queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+    def get_top_queue(self, request):
+        """Return top 3 queues in the business."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        top_queue_list = Queue.objects.filter(business=business).annotate(entry_count=Count('entry')).order_by('-entry_count')[:3]
+        return top_queue_list
+    
+    @http_get("/avg_weekly_entry", auth=helpers.api_auth_user_required)
+    def get_average_weekly_entry(self, request):
+        """Return a list of the average number of entries for each day of the week."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+        
+        try:
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"), 
+                                                           last_entry=Max("time_in"))
 
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+                
+            weekly_entry = Entry.objects.filter(business=business, queue__in=queues
+                                         ).values("time_in__week_day"
+                                                  ).annotate(entry_count=Count("id"))
+            avg_weekly_entry = []
+            for entry in weekly_entry:
+                avg_weekly_entry.append({"day":entry["time_in__week_day"], "entry_count": math.ceil(entry["entry_count"]/total_week)})
+            return avg_weekly_entry
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+        
+    @http_get("/entry_in_time_slot", auth=helpers.api_auth_user_required)
+    def get_entry_in_time_slot(self, request):
+        """Return a list of the average number of entries in time slot."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+        
+        try:
+            entry = Entry.objects.filter(business=business, queue__in=queues)
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"), 
+                                                           last_entry=Max("time_in"))
+            date = datetime.today().date()
+            open_time = timezone.make_aware(datetime.combine(date, business.open_time))
+            close_time = timezone.make_aware(datetime.combine(date, business.close_time))
+            total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+            
+                time_slot_list = []
+                for i in range(math.ceil(total_hours/2)):
+                    start_time = open_time + timedelta(hours=2 * i)
+                    end_time = start_time + timedelta(hours=2)
+
+                    entry_in_slot = entry.annotate(time_in_time=TruncTime('time_in')).filter(
+                        time_in_time__gte=start_time,
+                        time_in_time__lt=end_time
+                    )
+                    num_entry_in_slot = math.ceil(entry_in_slot.count()/total_week)
+
+                    time_slot_list.append({"start_time": start_time.hour, "entry_count": num_entry_in_slot})
+                return time_slot_list
+            
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+        
+    @http_put("/business_updated", auth=helpers.api_auth_user_required)
+    def edit_business(self, request, edit_attrs: BusinessUpdatedSchema):
+        """
+        Edit deatils of the business.
+
+        Args:
+            request: The HTTP request object.
+            queue_id: The primary key of the business.
+        Returns: message indicate whether the business is successfully edit or not
+        """
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "Cannot edit this business."}, status=404)
+        for attr, value in edit_attrs.dict().items():
+            setattr(business, attr, value)
+        business.save()
+        return JsonResponse(
+            {
+                "msg": f"Successfully updated the details of '{business.name}'."
+            },
+            status=200,
+        )
+    
+    @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
+    def get_profile_image(self, request):
+        """Return the profile image of the business."""
+        print(request.user)
+        try:
+            business = Business.objects.get(user=request.user)
+            image_url = request.build_absolute_uri(business.image.url)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        print("Image URL:", image_url)
+        return {"image": image_url}
+    
 
 @api_controller("/queue")
 class QueueController:

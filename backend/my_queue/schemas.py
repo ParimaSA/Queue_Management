@@ -1,7 +1,7 @@
 """Schemas for api endpoints."""
 
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, time
 from ninja import Schema, ModelSchema
 from .models import Business
 
@@ -14,6 +14,13 @@ class BusinessSchema(ModelSchema):
         fields = ("user", "name")
 
 
+class BusinessDataSchema(Schema):
+    id: int
+    name: str
+    open_time: time
+    close_time: time
+
+
 class BusinessRegisterSchema(Schema):
     username: str
     password1: str
@@ -21,6 +28,12 @@ class BusinessRegisterSchema(Schema):
     business_name: str
 
 
+class BusinessUpdatedSchema(Schema):
+    name: str
+    open_time: time
+    close_time: time
+
+      
 class EmailBusinessRegisterSchema(Schema):
     email: str
 
