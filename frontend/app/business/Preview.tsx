@@ -21,11 +21,7 @@ function Preview(props) {
                                     <div className="card-body">
                                         {/* Title at the top */}
                                         <h2 className="card-title">{q.name}</h2>
-
-                                        {/* If prefix exists, show queue for preview */}
                                         <div className="flex flex-col gap-4 mt-4">
-                                        {q.prefix && (
-                                        <>
                                         <div className="border p-4 rounded-md shadow-md">
                                             <p>{q.prefix}1</p>
                                         </div>
@@ -35,8 +31,6 @@ function Preview(props) {
                                         <div className="border p-4 rounded-md shadow-md">
                                             <p>{q.prefix}3</p>
                                         </div>
-                                        </>
-                                        )}
                                         </div>
                                     </div>
                                 </div>
