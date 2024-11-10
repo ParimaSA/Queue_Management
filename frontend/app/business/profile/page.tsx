@@ -13,7 +13,8 @@ const MY_BUSINESS_API_URL = "/api/business/";
 
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
-  const [businessEmail, setBusinessEmail] = useState('');
+  const [businessOpenTime, setBusinessOpenTime] = useState('');
+  const [businessCloseTime, setBusinessCloseTime] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
 
@@ -32,6 +33,14 @@ const ProfilePage = () => {
     setBusinessName(event.target.value);
   }
 
+  const handleOpenTimeChange = (event) => {
+    setBusinessOpenTime(event.target.value);
+  }
+
+  const handleCloseTimeChange = (event) => {
+    setBusinessCloseTime(event.target.value);
+  }
+
   const handleEditClick = () => {
     if (businessName && businessEmail) {
       handleSubmit();
@@ -44,7 +53,12 @@ const ProfilePage = () => {
 
   const openModal = () => {
     setIsModalOpen(true);
-    const modal = document.getElementById('my_modal_3');
+    if (my_business && my_business.length > 0) {
+      const business = my_business[0];
+      setBusinessName(business.name);
+      setBusinessOpenTime(business.open_time);
+      setBusinessCloseTime(business.close_time);}
+    const modal = document.getElementById('profile_modal');
     if (modal) {
       modal.showModal();
     }
@@ -53,8 +67,9 @@ const ProfilePage = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setBusinessName('');
-    setBusinessEmail('');
-    const modal = document.getElementById('my_modal_3');
+    setBusinessOpenTime('');
+    setBusinessCloseTime('');
+    const modal = document.getElementById('profile_modal');
     if (modal) {
       modal.close();
     }
@@ -66,7 +81,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <dialog id="my_modal_3" className="modal">
+      <dialog id="profile_modal" className="modal">
         <div className="modal-box">
           <form onSubmit={handleEditClick}>
             <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>
@@ -84,16 +99,36 @@ const ProfilePage = () => {
             </div>
             <br/>
             <div className='mb-4'>
-              <input type="file" className="file-input file-input-bordered file-input-sm w-full" />
+              <input type="file" className="file-input file-input-bordered file-input-sm w-full rounded-full" />
             </div>
-            <label className="input input-bordered flex items-center gap-2">
+            <label className="input input-bordered flex items-center gap-2 font-bold mb-4 rounded-full">
               Business Name
               <input
                 type="text"
-                className="grow font-light"
-                placeholder="TeeNoi"
+                className="grow font-light text-slate-500"
+                placeholder={businessName}
                 value={businessName}
                 onChange={handleBusinessNameChange}
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2 font-bold mb-4 rounded-full">
+              Open Time
+              <input
+                type="text"
+                className="grow font-light text-slate-500"
+                placeholder={businessOpenTime}
+                value={businessOpenTime}
+                onChange={handleOpenTimeChange}
+              />
+            </label>
+            <label className="input input-bordered flex items-center gap-2 font-bold mb-4 rounded-full">
+              Close Time
+              <input
+                type="text"
+                className="grow font-light text-slate-500"
+                placeholder={businessCloseTime}
+                value={businessCloseTime}
+                onChange={handleCloseTimeChange}
               />
             </label>
             <br />
