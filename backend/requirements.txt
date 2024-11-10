@@ -8,4 +8,4 @@ django-cors-headers
 django-allauth
 nanoid
 requests
-rest_framework_simplejwt
+djangorestframework-simplejwt
