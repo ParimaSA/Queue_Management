@@ -33,6 +33,10 @@ class BusinessUpdatedSchema(Schema):
     open_time: time
     close_time: time
 
+      
+class EmailBusinessRegisterSchema(Schema):
+    email: str
+
 
 class QueueDetailSchema(Schema):
     """Schema for Queue model."""

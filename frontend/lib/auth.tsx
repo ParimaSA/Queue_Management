@@ -5,7 +5,7 @@ const TOKEN_AGE = 3600;
 const TOKEN_NAME = "auth-token";
 const TOKEN_REFRESH_NAME = "auth-refresh-token";
 
-export async function getToken(): Promise<string | undefined> {
+export async function getAuthToken(): Promise<string | undefined> {
     // Retrieve auth token for API requests
     const cookie = await cookies();
     const authToken = cookie.get(TOKEN_NAME);

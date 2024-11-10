@@ -39,6 +39,7 @@ const config: Config = {
       },
       height: {
         '26': '4rem',
+        '42': '13rem',
         '60': '16rem',
         '76': '20rem',
         '100': '35rem',
@@ -50,6 +51,7 @@ const config: Config = {
         '34': '9rem',
         '100': '40rem',
         '122': '52rem',
+        '42': '13rem',
       }
     },
   },
