@@ -56,13 +56,15 @@ const CustomerPage: React.FC = () => {
         if (Notification.permission === "granted") {
           console.log("Sending final notification...");
           new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
+          if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
         }
       } 
       
-      else if (queueAhead <= 3) {
+      else if (queueAhead <= 2) {
         if (Notification.permission === "granted") {
           console.log("Sending near-turn notification...");
           new Notification("Almost your turn!", { body: `Only ${queueAhead} people ahead of you. Please be ready.` });
+          if (navigator.vibrate) navigator.vibrate(300);
         }
       }
     }
