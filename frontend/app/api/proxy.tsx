@@ -1,5 +1,4 @@
-import { getToken } from "@/lib/auth"
-import { cookies } from "next/headers"
+import { getAuthToken } from "@/lib/auth"
 
 interface FetchResponse {
     data: any
@@ -7,16 +6,17 @@ interface FetchResponse {
 }
 
 export default class ApiProxy {
-    // Updated to return a Record<string, string> type for headers
+
     static async getHeaders(requireAuth: boolean): Promise<Record<string, string>> {
         const headers: Record<string, string> = {
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-        const authToken = await getToken()
+        const authToken = await getAuthToken()
         if (authToken && requireAuth) {
             headers["Authorization"] = `Bearer ${authToken}`
         }
+        console.log(headers)
         return headers
     }
 

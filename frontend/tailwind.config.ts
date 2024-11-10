@@ -33,13 +33,15 @@ const config: Config = {
       },
       height: {
         '26': '4rem',
+        '42': '13rem',
         '60': '16rem',
         '76': '20rem',
         '100': '35rem',
       },
       width: {
         '32': '8rem',
-        '100': '40rem'
+        '100': '40rem',
+        '42': '13rem',
       }
     },
   },

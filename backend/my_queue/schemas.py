@@ -21,6 +21,10 @@ class BusinessRegisterSchema(Schema):
     business_name: str
 
 
+class EmailBusinessRegisterSchema(Schema):
+    email: str
+
+
 class QueueDetailSchema(Schema):
     """Schema for Queue model."""
 

@@ -3,19 +3,24 @@
 import React, { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthProvider'
+import { useSession } from "next-auth/react";
 import BusinessPage from './ShowEntry'
 import BusinessNavbar from './components/BusinessNavbar'
 
 const Business = () => {
   const auth = useAuth()
   const router = useRouter()
-
+  const { data: session, status } = useSession();
+  
   // Redirect if the user is not authenticated
   useEffect(() => {
-    if (!auth.isAuthenticated) {
+    if (status === "authenticated"){
+      auth.login()
+    }
+    if (!auth.isAuthenticated && status === "unauthenticated") {
         router.replace('/business/login')
     }
-  }, [auth.isAuthenticated, router])
+  }, [auth, status, router])
 
   return (
     <main>
