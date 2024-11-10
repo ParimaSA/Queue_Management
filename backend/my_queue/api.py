@@ -72,11 +72,6 @@ class BusinessController:
         """Create new queue for business."""
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
-        all_alphabet = Queue.objects.filter(business=business).values_list(
-            "prefix", flat=True
-        )
-        if data_dict["prefix"] in all_alphabet:
-            return {"msg": "This prefix has been used."}
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {"msg": f"Queue {new_queue.name} is successfully created."}

@@ -9,7 +9,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isPrefix, setIsPrefix] = useState(true)
+  const [isPrefix, setIsPrefix] = useState(false)
 
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
@@ -21,7 +21,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const handleAddClick = async (event) => {
     event.preventDefault(); 
-    if (newQueue && newAlphabet) {
+    if (newQueue && (newAlphabet || !isPrefix)) {
       console.log('New Queue:', newQueue);
       console.log('New Alphabet:', newAlphabet);
       const success = await createNewQueue(newQueue, newAlphabet);
@@ -67,7 +67,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const openModal = () => {
     setIsModalOpen(true);
-    setIsPrefix(true)
+    setIsPrefix(false)
     const modal = document.getElementById('my_modal_3');
     if (modal) {
       modal.showModal();
@@ -83,6 +83,10 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
       modal.close();
     }
   };
+
+  const handlePrefixToggle = ()=> {
+    setIsPrefix(!isPrefix)
+  }
 
   return (
     <>
@@ -105,13 +109,17 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
               />
             </label>
             <br />
-            <div className="form-control w-52">
+            <div className="form-control flex space-x-2">
               <label className="label cursor-pointer">
-                <span className="label-text">Set Prefix</span>
-                <input type="checkbox" className="toggle toggle-success" defaultChecked={isPrefix}/>
+                <p className='text-sm'>Set Prefix</p>
+                <input 
+                  type="checkbox" 
+                  className="toggle toggle-success ml-0" 
+                  defaultChecked={isPrefix}
+                  onChange={handlePrefixToggle}/>
               </label>
             </div>
-            { isPrefix ? (
+            { isPrefix && (
             <label className="input input-bordered flex items-center gap-2">
               Prefix
               <input
@@ -121,7 +129,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 value={newAlphabet}
                 onChange={handleAlphabetChange}
               />
-            </label>) : (<></>)}
+            </label>)}
             <br />
             <button type="submit" className="btn btn-primary">Add</button>
           </form>
