@@ -1,8 +1,10 @@
 'use client'
 
+import fetcher from '@/lib/fetcher';
+import { Queue } from '@mui/icons-material';
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { mutate } from 'swr';
+import useSWR, { mutate } from "swr";
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
@@ -16,6 +18,18 @@ const EditQueue = ({queue}) => {
   useEffect(() => {
     setQueueId(queue.id);
   }, [queue]);
+
+  const { data: queueData, error: queueError } = useSWR(QueueId ? `${QUEUE_API_URL}/${QueueId}` : null);
+  console.log("data: ", queueData)
+  console.log("id: ", QueueId)
+  // useEffect(() => {
+  //   if (QueueId) {
+  //     const fetchQueueData = async () => {
+  //       const { data: queueData, error: queueError } = useSWR(`${QUEUE_API_URL}/${QueueId}`, fetcher);
+  //       console.log("data: ", queueData)      
+  //     };
+  //     fetchQueueData();
+  //   }}, [QueueId]);
 
   const handleQueueChange = (event) => {
     console.log(QueueId, " ChangeQueue")

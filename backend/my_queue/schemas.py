@@ -30,6 +30,7 @@ class QueueDetailSchema(Schema):
 
     id: int
     name: str
+    prefix: str
 
 
 class QueueSchema(Schema):

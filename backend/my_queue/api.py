@@ -96,6 +96,15 @@ class BusinessController:
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
+    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
+    def get_queue_detail(self, request, queue_id: int):
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=queue_id, business=business)
+        except Queue.DoesNotExist:
+            return {'error': 'This queue is not belong to your business.'}
+        return queue
+
     @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):
         """
