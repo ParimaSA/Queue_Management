@@ -151,7 +151,7 @@ class QueueController:
         return {
             'business': business.name,
             'queue_name': queue.name,
-            'time_in': new_entry.time_in,
+            'time_in': new_entry.time_in.isoformat(),
             'name': new_entry.name,
             'tracking_code': new_entry.tracking_code,
             'queue_ahead': new_entry.get_queue_position()
