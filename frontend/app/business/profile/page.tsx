@@ -144,7 +144,7 @@ const ProfilePage = () => {
               Business Name
               <input
                 type="text"
-                className="grow font-light text-slate-500"
+                className="grow font-light"
                 placeholder={businessName}
                 value={businessName}
                 onChange={handleBusinessNameChange}
@@ -154,7 +154,7 @@ const ProfilePage = () => {
               Open Time
               <input
                 type="text"
-                className="grow font-light text-slate-500"
+                className="grow font-light"
                 placeholder={businessOpenTime}
                 value={businessOpenTime}
                 onChange={handleOpenTimeChange}
@@ -164,7 +164,7 @@ const ProfilePage = () => {
               Close Time
               <input
                 type="text"
-                className="grow font-light text-slate-500"
+                className="grow font-light"
                 placeholder={businessCloseTime}
                 value={businessCloseTime}
                 onChange={handleCloseTimeChange}
