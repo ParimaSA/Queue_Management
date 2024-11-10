@@ -1,9 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { toast } from "react-toastify";
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
+
 
 const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
@@ -51,13 +52,12 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
         body: JSON.stringify(requestData),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log('Failed to create queue:', errorData.error || 'Unknown error');
+      const data = await response.json()
+      if (data.error) {
+        toast.error(data.error)
         return;
       }
-      const data = await response.json();
-      console.log('Queue created:', data);
+      toast.success(data.msg, {style: { marginTop: "70px" }})
       return true
     } catch (error) {
       console.log('Error creating queue:', error);
@@ -67,7 +67,6 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const openModal = () => {
     setIsModalOpen(true);
-    setIsPrefix(false)
     const modal = document.getElementById('my_modal_3');
     if (modal) {
       modal.showModal();
@@ -115,7 +114,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 <input 
                   type="checkbox" 
                   className="toggle toggle-success ml-0" 
-                  defaultChecked={isPrefix}
+                  checked={isPrefix}
                   onChange={handlePrefixToggle}/>
               </label>
             </div>
