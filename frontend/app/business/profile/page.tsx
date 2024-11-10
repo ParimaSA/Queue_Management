@@ -171,7 +171,7 @@ const ProfilePage = () => {
               />
             </label>
             <br />
-            <button type="submit" className="btn btn-primary">Add</button>
+            <button type="submit" className="btn btn-primary">Save</button>
           </form>
         </div>
       </dialog>
@@ -193,7 +193,11 @@ const ProfilePage = () => {
                     <div className='flex justify-center py-3'>
                       <div className="avatar">
                           <div className="w-34 rounded-xl">
+                          {profileImage ? (
+                            <Image src={profileImage} alt="Profile" width={500} height={300} />
+                          ) : (
                             <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                          )}
                           </div>
                       </div>
                     </div>
