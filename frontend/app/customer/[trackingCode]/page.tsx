@@ -22,9 +22,13 @@ const CustomerPage: React.FC = () => {
 
   // Ask permission for sending a notification
   useEffect(() => {
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-      Notification.requestPermission();
-    }
+    if ('Notification' in window) {
+        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+          Notification.requestPermission();
+        }
+      } else {
+        console.log("Notifications are not supported on this browser.");
+      }
   }, []);
 
   const { data, error } = useSWR(
@@ -53,22 +57,24 @@ const CustomerPage: React.FC = () => {
       console.log("Queue ahead:", queueAhead);
 
       if (queueAhead === 0) {
-        if (Notification.permission === "granted") {
-          console.log("Sending final notification...");
-          new Notification("Your turn has arrived!", {
-            body: "Please proceed to the service point.",
-            tag: "queue-notification"
-          });
-        }
+        if ('Notification' in window) {
+            if (Notification.permission === "granted") {
+              console.log("Sending final notification...");
+              new Notification("Your turn has arrived!", {
+                body: "Please proceed to the service point.",
+                tag: "queue-notification"
+              });
+        }}
       } 
       
       else if (queueAhead <= 2) {
-        if (Notification.permission === "granted") {
-          console.log("Sending near-turn notification...");
-          new Notification("Almost your turn!", {
-            body: `Only ${queueAhead} people ahead of you. Please be ready.`,
-            tag: "queue-notification"
-          });
+            if ('Notification' in window) {
+              if (Notification.permission === "granted") {
+              console.log("Sending near-turn notification...");
+              new Notification("Almost your turn!", {
+                body: `Only ${queueAhead} people ahead of you. Please be ready.`,
+                tag: "queue-notification"
+              });}
         }
       }
     }
