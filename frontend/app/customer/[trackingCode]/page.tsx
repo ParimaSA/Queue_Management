@@ -59,7 +59,6 @@ const CustomerPage: React.FC = () => {
             body: "Please proceed to the service point.",
             tag: "queue-notification"
           });
-          if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
         }
       } 
       
@@ -70,7 +69,6 @@ const CustomerPage: React.FC = () => {
             body: `Only ${queueAhead} people ahead of you. Please be ready.`,
             tag: "queue-notification"
           });
-          if (navigator.vibrate) navigator.vibrate(300);
         }
       }
     }
