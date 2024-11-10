@@ -51,11 +51,14 @@ const CustomerPage: React.FC = () => {
     if (data && data.length > 0) {
       const queueAhead = data[0].queue_ahead;
       console.log("Queue ahead:", queueAhead);
-      
+
       if (queueAhead === 0) {
         if (Notification.permission === "granted") {
           console.log("Sending final notification...");
-          new Notification("Your turn has arrived!", { body: "Please proceed to the service point." });
+          new Notification("Your turn has arrived!", {
+            body: "Please proceed to the service point.",
+            tag: "queue-notification"
+          });
           if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
         }
       } 
@@ -63,12 +66,16 @@ const CustomerPage: React.FC = () => {
       else if (queueAhead <= 2) {
         if (Notification.permission === "granted") {
           console.log("Sending near-turn notification...");
-          new Notification("Almost your turn!", { body: `Only ${queueAhead} people ahead of you. Please be ready.` });
+          new Notification("Almost your turn!", {
+            body: `Only ${queueAhead} people ahead of you. Please be ready.`,
+            tag: "queue-notification"
+          });
           if (navigator.vibrate) navigator.vibrate(300);
         }
       }
     }
   }, [data]);
+
 
   if (error) return <div>Failed to load entry</div>;
 
