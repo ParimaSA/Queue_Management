@@ -7,3 +7,4 @@ pydantic[email]
 django-cors-headers
 django-allauth
 nanoid
+requests
