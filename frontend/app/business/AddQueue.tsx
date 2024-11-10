@@ -9,6 +9,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isPrefix, setIsPrefix] = useState(true)
 
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
@@ -66,6 +67,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const openModal = () => {
     setIsModalOpen(true);
+    setIsPrefix(true)
     const modal = document.getElementById('my_modal_3');
     if (modal) {
       modal.showModal();
@@ -103,6 +105,13 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
               />
             </label>
             <br />
+            <div className="form-control w-52">
+              <label className="label cursor-pointer">
+                <span className="label-text">Set Prefix</span>
+                <input type="checkbox" className="toggle toggle-success" defaultChecked={isPrefix}/>
+              </label>
+            </div>
+            { isPrefix ? (
             <label className="input input-bordered flex items-center gap-2">
               Prefix
               <input
@@ -112,7 +121,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 value={newAlphabet}
                 onChange={handleAlphabetChange}
               />
-            </label>
+            </label>) : (<></>)}
             <br />
             <button type="submit" className="btn btn-primary">Add</button>
           </form>
