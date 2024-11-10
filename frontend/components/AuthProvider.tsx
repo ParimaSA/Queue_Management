@@ -52,15 +52,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             setUsername(username);
         } else {
             localStorage.removeItem(LOCAL_USERNAME_KEY);
-        }
-        const nextUrl = searchParams.get("next");
-        const invalidNextUrls = ['/login', '/logout'];
-        const nextUrlValid = nextUrl && nextUrl.startsWith("/") && !invalidNextUrls.includes(nextUrl);
-        if (nextUrlValid) {
-            router.replace(nextUrl);
-        } else {
-            router.replace(LOGIN_REDIRECT_URL);
-        }
+        }        
     };
 
     const logout = () => {

@@ -2,6 +2,7 @@
 
 import helpers
 from django.http import JsonResponse
+from rest_framework_simplejwt.tokens import RefreshToken
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -10,11 +11,13 @@ from .schemas import (
     EntryDetailSchema,
     BusinessSchema,
     BusinessRegisterSchema,
+    EmailBusinessRegisterSchema,
     EditIn,
     QueueDetailSchema,
     EntryDetailCustomerSchema,
     QueueCreateSchema,
 )
+from django.contrib.auth.models import User
 from .models import Entry, Business, Queue
 from .forms import SignUpForm
 from typing import List
@@ -66,6 +69,24 @@ class BusinessController:
         else:
             error_details = form.errors.as_json()
             return {'msg': "Can not create this account", "error": error_details}
+
+    @http_post("/email-register", response=dict, auth=helpers.api_auth_user_or_guest)
+    def oauth_business_register(self, request, data: EmailBusinessRegisterSchema):
+        """Register new business user."""
+        data_dict = data.dict()
+        email = data_dict["email"]
+        if not email:
+            return {"error": "Email is required"}
+
+        user = User.objects.filter(email=email).first()
+        if not user:
+            user = User.objects.create_user(email=email, username=email)
+            user.save()
+            Business.objects.create(user=user, name="BusinessName")
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+
+        return {'access_token': str(access_token), 'refresh_token': str(refresh)}
 
     @http_post("/queues", response=dict, auth=helpers.api_auth_user_required)
     def create_business_queue(self, request, data: QueueCreateSchema):
@@ -168,7 +189,7 @@ class QueueController:
         entry = Entry.objects.filter(
             queue=queue, status="waiting", time_in__date=today
         ).order_by("time_in")
-        return entry
+        return entry[:6]
 
 
 @api_controller("/entry")
