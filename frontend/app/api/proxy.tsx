@@ -16,7 +16,6 @@ export default class ApiProxy {
         if (authToken && requireAuth) {
             headers["Authorization"] = `Bearer ${authToken}`
         }
-        console.log(headers)
         return headers
     }
 
