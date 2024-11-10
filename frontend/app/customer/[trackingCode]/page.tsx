@@ -13,13 +13,19 @@ const CustomerPage: React.FC = () => {
   const { trackingCode } = useParams();
   const [src, setSrc] = useState<string | null>(null);
 
-
   // Redirect to /customer if trackingCode is missing
   useEffect(() => {
     if (!trackingCode) {
       router.replace('/customer');
     }
   }, [trackingCode, router]);
+
+  // Ask permission for sending a notification
+  useEffect(() => {
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+      Notification.requestPermission();
+    }
+  }, []);
 
   const { data, error } = useSWR(
     trackingCode ? `${ENTRY_TRACKING_CODE_URL}/${trackingCode}` : null,
@@ -39,6 +45,35 @@ const CustomerPage: React.FC = () => {
       router.replace('/customer');
     }
   }, [error, router]);
+
+  // Show notifications
+  useEffect(() => {
+    if (data && data.length > 0) {
+      const queueAhead = data[0].queue_ahead;
+      console.log("Queue ahead:", queueAhead);
+
+      if (queueAhead === 0) {
+        if (Notification.permission === "granted") {
+          console.log("Sending final notification...");
+          new Notification("Your turn has arrived!", {
+            body: "Please proceed to the service point.",
+            tag: "queue-notification"
+          });
+        }
+      } 
+      
+      else if (queueAhead <= 2) {
+        if (Notification.permission === "granted") {
+          console.log("Sending near-turn notification...");
+          new Notification("Almost your turn!", {
+            body: `Only ${queueAhead} people ahead of you. Please be ready.`,
+            tag: "queue-notification"
+          });
+        }
+      }
+    }
+  }, [data]);
+
 
   if (error) return <div>Failed to load entry</div>;
 
@@ -79,7 +114,6 @@ const CustomerPage: React.FC = () => {
   };
 
   const generate = () => {
-    console.log('to generate: ', trackingCode)
     QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
   }
   generate()
@@ -103,8 +137,8 @@ const CustomerPage: React.FC = () => {
               <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
   
               {/* QR Code */}
-              <div className="bg-gray-300 rounded-lg mx-auto w-32 h-32 flex items-center justify-center text-lg text-gray-700 mb-8">
-                <img src={src} alt="QR Code" className='h-40 w-50'/>
+              <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
+                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
               </div>
   
               {/* Estimated Time and Queue Position */}
@@ -144,5 +178,5 @@ const CustomerPage: React.FC = () => {
     </div>
   );
 } 
-  export default CustomerPage;
-  
+
+export default CustomerPage;
