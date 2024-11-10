@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
@@ -11,6 +12,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
+  const [isExplanation, setIsExplanation] = useState(false)
 
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
@@ -54,7 +56,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
       const data = await response.json()
       if (data.error) {
-        toast.error(data.error)
+        toast.error(data.error, {style: { marginTop: "70px" }})
         return;
       }
       toast.success(data.msg, {style: { marginTop: "70px" }})
@@ -74,6 +76,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   };
 
   const closeModal = () => {
+    setIsExplanation(false)
     setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
@@ -85,6 +88,11 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const handlePrefixToggle = ()=> {
     setIsPrefix(!isPrefix)
+    setNewAlphabet('')
+  }
+
+  const handleExplanation = () => {
+    setIsExplanation(!isExplanation)
   }
 
   return (
@@ -116,8 +124,15 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                   className="toggle toggle-success ml-0" 
                   checked={isPrefix}
                   onChange={handlePrefixToggle}/>
+                <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
               </label>
             </div>
+            {isExplanation && (
+              <div className="w-full bg-yellow-200 p-1">
+                <p className='text-sm font-normal'> If you set a <span className="font-bold">prefix</span> (e.g., A), entries will be numbered like <span className="font-bold">A1, A2, A3,</span> etc.</p>
+                <p className='text-sm font-normal'> If you <span className="font-bold">don’t set a prefix</span>, entries will be numbered as <span className="font-bold">1, 2, 3,</span> etc.</p>
+              </div>
+            )}
             { isPrefix && (
             <label className="input input-bordered flex items-center gap-2">
               Prefix
@@ -134,6 +149,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
           </form>
         </div>
       </dialog>
+      {/* Explanation Box (Positioned outside the modal, adjusted) */}
       <button className="btn" onClick={openModal}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
