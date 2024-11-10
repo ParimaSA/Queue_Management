@@ -4,19 +4,30 @@ import React from 'react'
 import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
 import TopQueue from '../TopQueue';
 
 const MY_BUSINESS_API_URL = "/api/business/";
+const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
 
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
   const [businessOpenTime, setBusinessOpenTime] = useState('');
-  const [businessCloseTime, setBusinessCloseTime] = useState('');
+  const [businessCloseTime, setBusinessCloseTime] = useState('')
+  const [profileImage, setProfileImage] = useState(null);;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
+  const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+  useEffect(() => {
+    if (profile) {
+      setProfileImage(profile.image);
+    }
+  }, [profile]);
+
+  console.log("Profile: ", profileImage)
 
   useEffect(() => {
     if (myBusinessError) {
@@ -42,12 +53,12 @@ const ProfilePage = () => {
   }
 
   const handleEditClick = () => {
-    if (businessName && businessEmail) {
+    if (businessName && businessOpenTime && businessCloseTime) {
       handleSubmit();
       closeModal();
     }
     else {
-      console.log('No queue added');
+      console.log('No business details');
     }
   }
 
@@ -76,7 +87,31 @@ const ProfilePage = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('submit')
+    try {
+      const response = await fetch(`/api/business/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name: businessName,
+            open_time: businessOpenTime,
+            close_time: businessCloseTime,
+        })
+      })
+
+      if (!response.ok) {
+        console.log("Failed to save edited business")
+        return
+      }
+      
+      const data = await response.json()
+      console.log("Response:", data)
+
+      mutate(MY_BUSINESS_API_URL);
+    } catch (error) {
+      console.log("Error save edited queue:", error)
+    }
   };
 
   return (
@@ -92,8 +127,12 @@ const ProfilePage = () => {
             </div>
             <div className='flex justify-center items-center'>
               <div className="avatar">
-                <div className="w-34 rounded-xl">
-                  <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+              <div className="w-34 rounded-xl">
+                  {profileImage ? (
+                    <Image src={profileImage} alt="Profile" width={500} height={300} />
+                  ) : (
+                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                  )}
                 </div>
               </div>
             </div>
