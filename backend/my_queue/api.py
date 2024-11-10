@@ -184,6 +184,30 @@ class BusinessController:
             
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+        
+    @http_put("/{business_id}", auth=helpers.api_auth_user_required)
+    def edit_business(self, request, business_id: int, edit_attrs: EditIn):
+        """
+        Edit deatils of the business.
+
+        Args:
+            request: The HTTP request object.
+            queue_id: The primary key of the business.
+        Returns: message indicate whether the business is successfully edit or not
+        """
+        try:
+            business = Business.objects.get(user=request.user, pk=business_id)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "Cannot edit this business."}, status=404)
+        for attr, value in edit_attrs.dict().items():
+            setattr(business, attr, value)
+        business.save()
+        return JsonResponse(
+            {
+                "msg": f"Successfully updated the details of '{business.name}'."
+            },
+            status=200,
+        )
 
 
 @api_controller("/queue")
