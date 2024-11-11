@@ -1,10 +1,9 @@
 'use client'
 
-import fetcher from '@/lib/fetcher';
-import { Queue } from '@mui/icons-material';
+import { fetchData } from 'next-auth/client/_utils';
 import React from 'react'
 import { useState, useEffect } from 'react';
-import useSWR, { mutate } from "swr";
+import { mutate } from 'swr';
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
@@ -18,18 +17,6 @@ const EditQueue = ({queue}) => {
   useEffect(() => {
     setQueueId(queue.id);
   }, [queue]);
-
-  const { data: queueData, error: queueError } = useSWR(QueueId ? `${QUEUE_API_URL}/${QueueId}` : null);
-  console.log("data: ", queueData)
-  console.log("id: ", QueueId)
-  // useEffect(() => {
-  //   if (QueueId) {
-  //     const fetchQueueData = async () => {
-  //       const { data: queueData, error: queueError } = useSWR(`${QUEUE_API_URL}/${QueueId}`, fetcher);
-  //       console.log("data: ", queueData)      
-  //     };
-  //     fetchQueueData();
-  //   }}, [QueueId]);
 
   const handleQueueChange = (event) => {
     console.log(QueueId, " ChangeQueue")
@@ -52,14 +39,37 @@ const EditQueue = ({queue}) => {
     }
   }
 
-  const openModal = (queueId) => {
-    setIsModalOpen(true);
+  const openModal = async (queueId) => {
     setQueueId(queueId);
+
+    try {
+      const response = await fetch(`/api/queue/${queueId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.log("Failed to fetch queue data");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("data: ", data)
+      console.log(data.prefix, data.name)
+      setEditedAlphabet(data.prefix)
+      setEditedQueue(data.name)
+    } catch (error) {
+      console.log("Error fetching queue data:", error);
+    }
+    setIsModalOpen(true);
     const modal = document.getElementById(QueueId);
     if (modal) {
-        modal.showModal();
+      modal.showModal();
     }
-  }
+  };
+
 
   const closeModal = (QueueId) => {
     setIsModalOpen(false);
@@ -86,10 +96,6 @@ const EditQueue = ({queue}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            name: editedQueue,
-            prefix: editedAlphabet
-        })
       })
 
       if (!response.ok) {
