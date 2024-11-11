@@ -86,7 +86,7 @@ class BusinessController:
         business = Business.objects.get(user=request.user)
         same_queue_name = Queue.objects.filter(business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
-            return {"error": f"Queue with name {data_dict["name"]} already exist."}
+            return {"error": f"Queue with name {data_dict['name']} already exist."}
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {"msg": f"Queue {new_queue.name} is successfully created."}
