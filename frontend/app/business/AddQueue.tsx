@@ -1,8 +1,10 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import Preview from './Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
@@ -119,9 +121,9 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
             <div className="form-control flex space-x-2">
               <label className="label cursor-pointer">
                 <p className='text-sm'>Set Prefix</p>
-                <input 
-                  type="checkbox" 
-                  className="toggle toggle-success ml-0" 
+                <input
+                  type="checkbox"
+                  className="toggle toggle-success ml-0"
                   checked={isPrefix}
                   onChange={handlePrefixToggle}/>
                 <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
@@ -139,17 +141,20 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
               <input
                 type="text"
                 className="grow font-light"
-                placeholder="A"
+                placeholder="eg. A, B, C"
                 value={newAlphabet}
                 onChange={handleAlphabetChange}
               />
             </label>)}
             <br />
+
+          <Preview newQueue={newQueue} newAlphabet={newAlphabet} />
+
+
             <button type="submit" className="btn btn-primary">Add</button>
           </form>
         </div>
       </dialog>
-      {/* Explanation Box (Positioned outside the modal, adjusted) */}
       <button className="btn" onClick={openModal}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />

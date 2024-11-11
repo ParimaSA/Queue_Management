@@ -16,8 +16,8 @@ class ShowBusinessTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
         # Check if the returned business ID matches
-        self.assertEqual(response.json()["user"], self.business.user.id)
-        self.assertEqual(response.json()["name"], self.business.name)
+        self.assertEqual(response.json()[0]["id"], self.business.id)
+        self.assertEqual(response.json()[0]["name"], self.business.name)
 
         response = self.client.get("/api/business")
         self.assertEqual(response.status_code, 401)
@@ -30,8 +30,7 @@ class ShowBusinessTestCase(BaseTestCase):
         response = self.client.get(
             "/api/business", headers={"Authorization": f"Bearer {token}"}
         )
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
+        self.assertEqual(response.json(), [])
 
 
 class BusinessQueueTestCase(BaseTestCase):

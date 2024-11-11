@@ -1,4 +1,6 @@
 import json
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.utils import timezone
 from .base import BaseTestCase
@@ -81,8 +83,12 @@ class AddCustomerTestCase(BaseTestCase):
         self.assertEqual(
             response.json(),
             {
-                "msg": f"New entry successfully added to queue {self.queue.name}.",
-                "tracking_code": entry.tracking_code,
+                'business': self.business.name,
+                'name': entry.name,
+                'queue_ahead': 0,
+                'queue_name': self.queue.name,
+                'time_in': entry.time_in.isoformat(),
+                'tracking_code': entry.tracking_code
             },
         )
 
@@ -94,8 +100,8 @@ class AddCustomerTestCase(BaseTestCase):
             f"/api/queue/new-entry/9999", headers={"Authorization": f"Bearer {token}"}
         )
 
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {"msg": "This queue does not exist"})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"error": "This queue not belong to your business."})
 
 
 class DeleteQueueTestCase(BaseTestCase):

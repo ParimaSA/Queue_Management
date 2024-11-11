@@ -17,6 +17,8 @@ const config: Config = {
         lightPurple1: '#F7DBF0',
         lightPurple2: '#F4EEFF',
         lightPurple3: '#AB95D6',
+        lightPurple4: '#F6EBF4',
+        lightPurple5: '#D2C2EF',
         lightSky: '#BFECFF',
         lightYellow: '#FFF8C9',
         lightPink: '#D1AFC2',
@@ -28,8 +30,12 @@ const config: Config = {
         darkPurple2: '#704BAB',
         cream: '#FAF0E2',
         cream2: '#FEF9F2',
+        cream3: '#FFF1E7',
         brightPink: '#C869B3',
-        brightPink2: '#DD98D6'
+        brightPink2: '#DD98D6',
+        lightOrange1: '#FFBFB6',
+        lightOrange2: '#FFD5B6',
+        lightOrange3: '#FFE8E2',
       },
       height: {
         '26': '4rem',
@@ -37,10 +43,14 @@ const config: Config = {
         '60': '16rem',
         '76': '20rem',
         '100': '35rem',
+        '120': '45rem',
+        '122': '52rem',
       },
       width: {
         '32': '8rem',
+        '34': '9rem',
         '100': '40rem',
+        '122': '52rem',
         '42': '13rem',
       }
     },

@@ -6,3 +6,7 @@ dj_database_url
 pydantic[email]
 django-cors-headers
 nanoid
+Pillow
+django-allauth
+requests
+djangorestframework-simplejwt
