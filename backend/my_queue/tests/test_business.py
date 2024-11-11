@@ -57,7 +57,7 @@ class BusinessQueueTestCase(BaseTestCase):
         )
         self.assertEqual(
             response.json(),
-            [{"id": 2, "name": "New Queue"}, {"id": 3, "name": "New Queue2"}],
+            [{"id": 2, "name": "New Queue", "prefix": "A"}, {"id": 3, "name": "New Queue2", "prefix": "A"}],
         )
 
     def test_get_no_business(self):
