@@ -9,6 +9,8 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count, Min, Max
 from django.db.models.functions import TruncTime
+from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import File
 from django.core.files.base import ContentFile
 from ninja.files import UploadedFile
@@ -17,6 +19,7 @@ from .schemas import (
     EntryDetailSchema,
     BusinessSchema,
     BusinessRegisterSchema,
+    EmailBusinessRegisterSchema,
     EditIn,
     QueueDetailSchema,
     EntryDetailCustomerSchema,
@@ -99,6 +102,24 @@ class BusinessController:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
         queue_list = Queue.objects.filter(business=business)
         return queue_list
+
+    @http_post("/email-register", response=dict, auth=helpers.api_auth_user_or_guest)
+    def oauth_business_register(self, request, data: EmailBusinessRegisterSchema):
+        """Register new business user."""
+        data_dict = data.dict()
+        email = data_dict["email"]
+        if not email:
+            return {"error": "Email is required"}
+
+        user = User.objects.filter(email=email).first()
+        if not user:
+            user = User.objects.create_user(email=email, username=email)
+            user.save()
+            Business.objects.create(user=user, name="BusinessName")
+        refresh = RefreshToken.for_user(user)
+        access_token = refresh.access_token
+
+        return {'access_token': str(access_token), 'refresh_token': str(refresh)}
     
     @http_get("/top_queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
     def get_top_queue(self, request):

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import PreviewIcon from '@mui/icons-material/Preview';
 import Preview from './Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
@@ -15,6 +16,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
   const [isExplanation, setIsExplanation] = useState(false)
+  const [isPreview, setIsPreview] = useState(false)
 
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
@@ -97,6 +99,10 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     setIsExplanation(!isExplanation)
   }
 
+  const handlePreview = () => {
+    setIsPreview(!isPreview)
+  }
+
   return (
     <>
       <dialog id="my_modal_3" className="modal">
@@ -148,10 +154,11 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
             </label>)}
             <br />
 
-          <Preview newQueue={newQueue} newAlphabet={newAlphabet} />
-
-
             <button type="submit" className="btn btn-primary">Add</button>
+
+            <button type="button" className="text-sm mr-0" onClick={handlePreview}>See Preview <PreviewIcon style={{color: 'blue'}}/></button>
+            { isPreview && (<Preview newQueue={newQueue} newAlphabet={newAlphabet} />)}
+
           </form>
         </div>
       </dialog>
