@@ -81,6 +81,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const closeModal = () => {
     setIsExplanation(false)
+    setIsPreview(false)
     setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
@@ -101,6 +102,10 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
 
   const handlePreview = () => {
     setIsPreview(!isPreview)
+    if (!isPreview && !(newQueue && (newAlphabet || !isPrefix))){
+      toast.warning('Preview: You have not set any value.', {style: { marginTop: "70px" }})
+      setIsPreview(false)
+    }
   }
 
   return (
@@ -111,7 +116,10 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
             <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>
               ✕
             </button>
-            <h3 className="font-bold text-lg">Add Queue</h3>
+            <div className='flex justify-between mt-4'>
+              <h3 className="font-bold text-lg">Add Queue</h3>
+              <button type="button" className="text-sm mr-0 flex justify-end text-blue-500" onClick={handlePreview}>See Preview <PreviewIcon/></button>
+            </div>
             <br />
             <label className="input input-bordered flex items-center gap-2">
               Queue Name
@@ -135,30 +143,29 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
               </label>
             </div>
+            { isPrefix && (
+              <label className="input input-bordered flex items-center gap-2">
+                Prefix
+                <input
+                  type="text"
+                  className="grow font-light"
+                  placeholder="eg. A, B, C"
+                  value={newAlphabet}
+                  onChange={handleAlphabetChange}
+                />
+              </label>)
+            }
             {isExplanation && (
               <div className="w-full bg-yellow-200 p-1">
                 <p className='text-sm font-normal'> If you set a <span className="font-bold">prefix</span> (e.g., A), entries will be numbered like <span className="font-bold">A1, A2, A3,</span> etc.</p>
                 <p className='text-sm font-normal'> If you <span className="font-bold">don’t set a prefix</span>, entries will be numbered as <span className="font-bold">1, 2, 3,</span> etc.</p>
               </div>
             )}
-            { isPrefix && (
-            <label className="input input-bordered flex items-center gap-2">
-              Prefix
-              <input
-                type="text"
-                className="grow font-light"
-                placeholder="eg. A, B, C"
-                value={newAlphabet}
-                onChange={handleAlphabetChange}
-              />
-            </label>)}
+            { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={newQueue} newAlphabet={newAlphabet} />)}
             <br />
-
-            <button type="submit" className="btn btn-primary">Add</button>
-
-            <button type="button" className="text-sm mr-0" onClick={handlePreview}>See Preview <PreviewIcon style={{color: 'blue'}}/></button>
-            { isPreview && (<Preview newQueue={newQueue} newAlphabet={newAlphabet} />)}
-
+            <div className='form-control flex space-x-2'>
+              <button type="submit" className="btn btn-primary">Add</button>
+            </div>              
           </form>
         </div>
       </dialog>
