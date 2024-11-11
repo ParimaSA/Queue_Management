@@ -49,7 +49,7 @@ class BusinessQueueTestCase(BaseTestCase):
         Queue.objects.create(name="New Queue", business=new_business)
         Queue.objects.create(name="New Queue2", business=new_business)
 
-        self.assertEqual(response.json(), [{"id": 1, "name": "Test Queue"}])
+        self.assertEqual(response.json(), [{"id": 1, "name": "Test Queue", "prefix": "A"}])
 
         token = self.login(username="testuser2", password="test1234")
         response = self.client.get(
@@ -57,7 +57,7 @@ class BusinessQueueTestCase(BaseTestCase):
         )
         self.assertEqual(
             response.json(),
-            [{"id": 2, "name": "New Queue"}, {"id": 3, "name": "New Queue2"}],
+            [{"id": 2, "name": "New Queue", "prefix": "A"}, {"id": 3, "name": "New Queue2", "prefix": "A"}],
         )
 
     def test_get_no_business(self):
@@ -107,4 +107,4 @@ class BusinessQueueTestCase(BaseTestCase):
             content_type="application/json",
             headers={"Authorization": f"Bearer {token}"},
         )
-        self.assertEqual(response.json(), {"msg": "This prefix has been used."})
+        self.assertEqual(response.json(), {"error": 'Queue with name New Queue already exist.'})

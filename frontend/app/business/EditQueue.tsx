@@ -1,8 +1,12 @@
 'use client'
 
+import { fetchData } from 'next-auth/client/_utils';
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { mutate } from 'swr';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import PreviewIcon from '@mui/icons-material/Preview';
+import Preview from './Preview';
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
@@ -12,6 +16,9 @@ const EditQueue = ({queue}) => {
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isExplanation, setIsExplanation] = useState(false)
+  const [isPrefix, setIsPrefix] = useState(false)
+
 
   useEffect(() => {
     setQueueId(queue.id);
@@ -38,14 +45,40 @@ const EditQueue = ({queue}) => {
     }
   }
 
-  const openModal = (queueId) => {
-    setIsModalOpen(true);
+  const openModal = async (queueId) => {
     setQueueId(queueId);
+
+    try {
+      const response = await fetch(`/api/queue/${queueId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        console.log("Failed to fetch queue data");
+        return;
+      }
+
+      const data = await response.json();
+      console.log("data: ", data)
+      console.log(data.prefix, data.name)
+      setEditedAlphabet(data.prefix)
+      setEditedQueue(data.name)
+      if (data.prefix){
+        setIsPrefix(true)
+      }
+    } catch (error) {
+      console.log("Error fetching queue data:", error);
+    }
+    setIsModalOpen(true);
     const modal = document.getElementById(QueueId);
     if (modal) {
-        modal.showModal();
+      modal.showModal();
     }
-  }
+  };
+
 
   const closeModal = (QueueId) => {
     setIsModalOpen(false);
@@ -72,10 +105,6 @@ const EditQueue = ({queue}) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-            name: editedQueue,
-            prefix: editedAlphabet
-        })
       })
 
       if (!response.ok) {
@@ -112,6 +141,14 @@ const EditQueue = ({queue}) => {
     }
   };
     
+  const handlePrefixToggle = ()=> {
+    setIsPrefix(!isPrefix)
+    setEditedAlphabet('')
+  }
+
+  const handleExplanation = () => {
+    setIsExplanation(!isExplanation)
+  }
 
   return (
     <>
@@ -132,13 +169,36 @@ const EditQueue = ({queue}) => {
                   value={editedQueue} onChange={handleQueueChange} />
             </label>
             <br></br>
-            <label className="input input-bordered flex items-center gap-2">
-            Prefix
-            <input type="text" 
-                  className="grow font-light" 
-                  placeholder="A" 
-                  value={editedAlphabet} onChange={handleAlphabetChange}/>
-            </label>
+            <div className="form-control flex space-x-2">
+              <label className="label cursor-pointer">
+                <p className='text-sm'>Set Prefix</p>
+                <input
+                  type="checkbox"
+                  className="toggle toggle-success ml-0"
+                  checked={isPrefix}
+                  onChange={handlePrefixToggle}/>
+                <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+              </label>
+            </div>
+            {isExplanation && (
+              <div className="w-full bg-yellow-200 p-1">
+                <p className='text-sm font-normal'> If you set a <span className="font-bold">prefix</span> (e.g., A), entries will be numbered like <span className="font-bold">A1, A2, A3,</span> etc.</p>
+                <p className='text-sm font-normal'> If you <span className="font-bold">don’t set a prefix</span>, entries will be numbered as <span className="font-bold">1, 2, 3,</span> etc.</p>
+              </div>
+            )}
+            { isPrefix && (
+              <label className="input input-bordered flex items-center gap-2">
+                Prefix
+                <input
+                  type="text"
+                  className="grow font-light"
+                  placeholder="eg. A, B, C"
+                  value={editedAlphabet}
+                  onChange={handleAlphabetChange}
+                />
+              </label>)
+            }
+            
             <br></br>
             <form onSubmit={(e) => { e.preventDefault() }}>
                 <div className='flex space-x-3'>
