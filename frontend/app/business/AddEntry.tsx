@@ -23,6 +23,13 @@ const AddEntry = ({ queue }) => {
     }
   }, [trackingCode]);
 
+  useEffect(() => {
+    if (queue.length > 0) {
+      setSelectedQueue(queue[0].id);
+    }
+  }, [queue]);
+  
+
   const handleSelectedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedQueue(event.target.value);
   }
