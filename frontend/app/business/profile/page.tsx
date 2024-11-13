@@ -177,10 +177,10 @@ const ProfilePage = () => {
       </dialog>
       <BusinessNavbar />
       <div className='pt-16'/>
-      <div className='px-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen bg-cream2'>
-        <div className='grid grid-cols-3 gap-4'>
-          <div className='col-span-1'>
-              <div className="card bg-base-100 w-96 shadow-xl bg-lightPurple4">
+      <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen bg-cream2'>
+        <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4'>
+          <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
+              <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPurple4">
                 <div className="card-body">
                     <div className='flex justify-end'>
                       <button className="btn rounded-full bg-cream1" onClick={openModal}>
@@ -216,7 +216,7 @@ const ProfilePage = () => {
               <div className='py-6'/>
               <TopQueue />
           </div>
-          <div className='col-span-2'>
+          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3'>
             <div className="card bg-cream w-full h-76 shadow-xl">
               <div className="card-body">
               <h2 className="card-title">Avarage Weekly Entries Chart</h2>
