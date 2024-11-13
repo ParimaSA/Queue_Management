@@ -35,9 +35,9 @@ const BusinessPage = () => {
               <h2>All Queue</h2>
               <AddQueue business_data={queue} onQueueAdded={handleQueueAdded} />
             </div>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
               {queue.map(q => (
-                <div className="card bg-base-100 w-66 shadow-xl" key={q.id}>
+                <div className="card bg-base-100 w-66 h-90 shadow-xl overflow-hidden" key={q.id}>
                   <div className="card-body">
                     <div className="flex justify-between">
                       <h2 className="card-title">{q.name}</h2>

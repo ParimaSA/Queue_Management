@@ -82,8 +82,8 @@ const AddEntry = ({ queue }) => {
 
   return (
     <>  
-        <div className="grid grid-cols-10 gap-4 w-full">
-          <div className="card bg-base-100 shadow-xl col-span-8 h-90 overflow-hidden w-full bg-lightPurple1">
+        <div className="grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 gap-4 w-full">
+          <div className="card bg-base-100 shadow-xl lg:col-span-8 md:col-span-8 sm:col-span-10 h-90 overflow-hidden w-full bg-lightPurple1">
             <div className="card-body">
             <h1 className="card-title text-3xl text-bold mt-7 mb-10">Add Entry</h1>
             {trackingCode && (
@@ -119,7 +119,7 @@ const AddEntry = ({ queue }) => {
           </div>
           </div>
           </div>
-          <div className="card bg-base-100 shadow-xl col-span-2 h-90 overflow-hidden w-full">
+          <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-90 overflow-hidden w-full">
           {entryData ? (
           <div ref={ contentRef }>
             <div className="card-body text-center">
