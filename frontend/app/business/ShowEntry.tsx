@@ -28,10 +28,10 @@ const BusinessPage = () => {
     <>
     <div className="flex justify-center p-9">
       <div className="grid grid-cols-10 gap-6">
-        <div className="col-span-3">
+        <div className="lg:col-span-3 md:col-span-3 sm:col-span-10">
           <AddEntry queue={queue}/>
         </div>
-        <div className="col-span-7">
+        <div className="lg:col-span-7 md:col-span-7 sm:col-span-10">
           <div className="card bg-base-100 w-full h-110 shadow-xl bg-lightPurple2 overflow-y-auto">
               <div className="card-body">
                 <div className="card-title justify-between">

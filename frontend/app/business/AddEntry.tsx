@@ -135,10 +135,10 @@ const AddEntry = ({ queue }) => {
                   </div>
 
                   {/* Queue Number */}
-                  <h1 className="text-2xl font-bold text-amber-900">{entryData.name}</h1>
+                  <h1 className="text-3xl font-bold text-amber-900">{entryData.name}</h1>
                   
                   {/* QR Code */}
-                  <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                  <div className="mx-auto w-28 h-28 flex items-center justify-center">
                     {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
                   </div>
 
