@@ -26,31 +26,36 @@ const BusinessPage = () => {
 
   return (
     <>
-      <div className="px-4 md:px-8 lg:px-12 min-h-screen bg-[#FEF9F2]">
-            <AddEntry queue={queue}/>
-        <div className="pt-8"/>
-         <div className="card bg-base-100 w-full shadow-xl bg-lightPurple2">
-          <div className="card-body">
-            <div className="card-title justify-between">
-              <h2>All Queue</h2>
-              <AddQueue business_data={queue} onQueueAdded={handleQueueAdded} />
-            </div>
-            <div className="grid lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2 gap-4">
-              {queue.map(q => (
-                <div className="card bg-base-100 w-66 h-83 shadow-xl overflow-hidden" key={q.id}>
-                  <div className="card-body">
-                    <div className="flex justify-between">
-                      <h2 className="card-title">{q.name}</h2>
-                      <EditQueue queue={q}/>
-                    </div>
-                    <RunQueue queue={q}/>
-                  </div>
+    <div className="flex justify-center p-9">
+      <div className="grid grid-cols-10 gap-6">
+        <div className="col-span-3">
+          <AddEntry queue={queue}/>
+        </div>
+        <div className="col-span-7">
+          <div className="card bg-base-100 w-full h-110 shadow-xl bg-lightPurple2 overflow-y-auto">
+              <div className="card-body">
+                <div className="card-title justify-between">
+                  <h2>All Queue</h2>
+                  <AddQueue business_data={queue} onQueueAdded={handleQueueAdded} />
                 </div>
-            ))}
-            </div>
+                <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">
+                  {queue.map(q => (
+                    <div className="card bg-base-100 w-66 h-83 shadow-xl overflow-hidden" key={q.id}>
+                      <div className="card-body">
+                        <div className="flex justify-between">
+                          <h2 className="card-title">{q.name}</h2>
+                          <EditQueue queue={q}/>
+                        </div>
+                        <RunQueue queue={q}/>
+                      </div>
+                    </div>
+                ))}
+                </div>
+              </div>
           </div>
         </div>
       </div>
+    </div>
     </>
   )
 }

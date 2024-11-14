@@ -89,76 +89,74 @@ const AddEntry = ({ queue }) => {
 
   return (
     <>  
-        <div className="grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 gap-4 w-full">
-          <div className="card bg-base-100 shadow-xl lg:col-span-8 md:col-span-8 sm:col-span-10 h-90 overflow-hidden w-full bg-lightPurple1">
+          <div className="card shadow-xl h-110 overflow-hidden w-full bg-lightPurple1">
             <div className="card-body">
-            <h1 className="card-title text-3xl text-bold mt-7 mb-10">Add Entry</h1>
-            {trackingCode && (
-              <div role="alert" className="alert shadow-lg">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="stroke-info h-6 w-6 shrink-0">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <div className='flex space-x-3'>
-                <h3 className="font-bold">Tracking Code</h3>
-                <h3 className="font-bold text-red-500">{trackingCode}</h3>
-              </div>
-            </div>
-            )}
-          <div className='space-x-3 flex py-7'>
-            <select className="select select-bordered w-100 h-26" onChange={handleSelectedChange}>
-              {queue.map(q => (
-                <option key={q.id} value={q.id}>{q.name}</option>
-              ))}
-            </select>
-            <div className="card-actions">
-              <button className='btn h-26 w-32' onClick={handleAddClick}>
-                Add
-              </button>
-            </div>
-          </div>
-          </div>
-          </div>
-          <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-90 overflow-hidden w-full">
-          {entryData ? (
-          <div ref={ contentRef }>
-            <div className="card-body text-center">
-              <style>{getPageMargins()}</style>
-              {/* Queue Name and Time In */}
-              <div className="text-brown mb-6 text-lg">
-                <p className="text-amber-700 font-semibold text-1g">Queue Name: {entryData.queue_name}</p>
-                <p className="text-amber-700 font-semibold text-1g">Time in: {formatDate(entryData.time_in)}</p>
-              </div>
-
-              {/* Queue Number */}
-              <h1 className="text-4xl font-bold text-amber-900">{entryData.name}</h1>
-              
-              {/* QR Code */}
-              <div className="mx-auto w-40 h-40 flex items-center justify-center">
-                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
-              </div>
-
-              {/* Estimated Time and Queue Position */}
-              <div className="text-brown text-lg">
-                <p className="text-amber-700 font-semibold text-1g"> Ahead of you: {entryData.queue_ahead}</p>
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <button className='btn h-20 w-20 ml-auto m-3' onClick={ reactToPrintFn } > <LocalPrintshopIcon style={{ fontSize: 30 }}/> </button>
-            </div>
-          </div>
-              ) : (
-                <p className="text-xl text-center mt-10 text-gray-500">No QR code generated</p>
+              <h1 className="card-title text-bold mt-3">Add Entry</h1>
+              {trackingCode && (
+                <div role="alert" className="alert shadow-lg">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="stroke-info h-6 w-6 shrink-0">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <div className='flex space-x-3'>
+                    <h3 className="font-bold">Tracking Code</h3>
+                    <h3 className="font-bold text-red-500">{trackingCode}</h3>
+                  </div>
+                </div>
               )}
+              <div className='space-x-3 flex py-2'>
+                <select className="select select-bordered w-100 h-26" onChange={handleSelectedChange}>
+                  {queue.map(q => (
+                    <option key={q.id} value={q.id}>{q.name}</option>
+                  ))}
+                </select>
+                <div className="card-actions">
+                  <button className='btn h-26 w-16' onClick={handleAddClick}>
+                    Add
+                  </button>
+                </div>
+              </div>
+              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-80 overflow-hidden w-full">
+              {entryData ? (
+              <div ref={ contentRef }>
+                <div className="card-body text-center">
+                  <style>{getPageMargins()}</style>
+                  {/* Queue Name and Time In */}
+                  <div className="text-brown mb-2 text-lg">
+                    <p className="text-amber-700 font-semibold text-1g">Queue Name: {entryData.queue_name}</p>
+                    <p className="text-amber-700 font-semibold text-1g">Time in: {formatDate(entryData.time_in)}</p>
+                  </div>
+
+                  {/* Queue Number */}
+                  <h1 className="text-2xl font-bold text-amber-900">{entryData.name}</h1>
+                  
+                  {/* QR Code */}
+                  <div className="mx-auto w-20 h-20 flex items-center justify-center">
+                    {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                  </div>
+
+                  {/* Estimated Time and Queue Position */}
+                  <div className="text-brown text-lg">
+                    <p className="text-amber-700 font-semibold text-1g"> Ahead of you: {entryData.queue_ahead}</p>
+                  </div>
+                </div>
+                <div className="flex justify-end">
+                    <button className='btn h-12 w-20 mr-2' onClick={ reactToPrintFn } > <LocalPrintshopIcon style={{ fontSize: 30 }}/> </button>
+                </div>
+              </div>
+                  ) : (
+                    <p className="text-xl text-center mt-10 text-gray-500">No QR code generated</p>
+                  )}
+              </div>
+            </div>
           </div>
-      </div>
     </>
   )
 }
