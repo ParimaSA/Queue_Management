@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const [businessCloseTime, setBusinessCloseTime] = useState('')
   const [profileImage, setProfileImage] = useState(null);;
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
   const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
@@ -52,7 +53,14 @@ const ProfilePage = () => {
     setBusinessCloseTime(event.target.value);
   }
 
-  const handleEditClick = () => {
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setSelectedFile(file); // Capture the selected file
+    console.log("Selected file:", file);
+  };
+
+  const handleEditClick = (event) => {
+    event.preventDefault();
     if (businessName && businessOpenTime && businessCloseTime) {
       handleSubmit();
       closeModal();
@@ -87,32 +95,36 @@ const ProfilePage = () => {
   };
 
   const handleSubmit = async () => {
-    try {
-      const response = await fetch(`/api/business/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            name: businessName,
-            open_time: businessOpenTime,
-            close_time: businessCloseTime,
-        })
-      })
+    const formData = new FormData();
 
-      if (!response.ok) {
-        console.log("Failed to save edited business")
-        return
-      }
-      
-      const data = await response.json()
-      console.log("Response:", data)
-
-      mutate(MY_BUSINESS_API_URL);
-    } catch (error) {
-      console.log("Error save edited queue:", error)
+    if (selectedFile instanceof File) {
+        formData.append("file", selectedFile, selectedFile.name); // Append file with name
+        console.log("File appended:", selectedFile.name);
+    } else {
+        console.log("No valid file selected");
+        return;
     }
-  };
+
+    try {
+        const response = await fetch(MY_BUSINESS_PROFILE_URL, {
+            method: "POST",
+            body: formData, // Automatically sets the content type for multipart/form-data
+        });
+
+        if (!response.ok) {
+            console.log("Failed to save edited business");
+            return;
+        }
+
+        // Update data and close modal upon successful submission
+        mutate(MY_BUSINESS_API_URL);
+        closeModal();
+    } catch (error) {
+        console.log("Error saving edited business:", error);
+    }
+};
+
+
 
   return (
     <>
@@ -138,7 +150,7 @@ const ProfilePage = () => {
             </div>
             <br/>
             <div className='mb-4'>
-              <input type="file" className="file-input file-input-bordered file-input-sm w-full rounded-full" />
+              <input type="file" className="file-input file-input-bordered file-input-sm w-full rounded-full" onChange={handleFileChange} />
             </div>
             <label className="input input-bordered flex items-center gap-2 font-bold mb-4 rounded-full">
               Business Name
