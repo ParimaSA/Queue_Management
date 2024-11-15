@@ -219,7 +219,7 @@ const ProfilePage = () => {
           <div className='lg:col-span-2 md:col-span-3 sm:col-span-3'>
             <div className="card bg-cream w-full h-76 shadow-xl">
               <div className="card-body">
-              <h2 className="card-title">Avarage Weekly Entries Chart</h2>
+              <h2 className="card-title">Average Weekly Entries Chart</h2>
                 <div className='h-56 w-full flex justify-center items-center'>
                   <WeeklyEntryChart />
                 </div>
