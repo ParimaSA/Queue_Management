@@ -89,7 +89,7 @@ const AddEntry = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-110 overflow-hidden w-full bg-lightPurple1">
+          <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
               {trackingCode && (
@@ -112,13 +112,13 @@ const AddEntry = ({ queue }) => {
                 </div>
               )}
               <div className='space-x-3 flex py-2'>
-                <select className="select select-bordered w-100 h-26" onChange={handleSelectedChange}>
+                <select className="select select-bordered lg:w-100 md:w-100 sm:w-90 h-26" onChange={handleSelectedChange}>
                   {queue.map(q => (
                     <option key={q.id} value={q.id}>{q.name}</option>
                   ))}
                 </select>
                 <div className="card-actions">
-                  <button className='btn h-26 w-16' onClick={handleAddClick}>
+                  <button className='btn h-26 lg:w-16 md:w-16 sm:w-8' onClick={handleAddClick}>
                     Add
                   </button>
                 </div>

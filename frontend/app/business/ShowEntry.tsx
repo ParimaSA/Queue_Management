@@ -27,7 +27,7 @@ const BusinessPage = () => {
   return (
     <>
     <div className="flex justify-center p-9">
-      <div className="grid grid-cols-10 gap-6">
+      <div className="grid lg:grid-cols-10 md:grid-cols-10 sm:grid-cols-10 gap-6">
         <div className="lg:col-span-3 md:col-span-3 sm:col-span-10">
           <AddEntry queue={queue}/>
         </div>
