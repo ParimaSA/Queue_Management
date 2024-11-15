@@ -51,7 +51,26 @@ const QueueVolumeChart: React.FC = () => {
                         scales: {
                             y: {
                                 beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Number of entry',
+                                    color: '#333',
+                                    font: {
+                                        weight: 'bold'
+                                    },
+                                }
                             },
+                            x: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Time',
+                                    color: '#333',
+                                    font: {
+                                        weight: 'bold'
+                                    },
+                                }
+                            }
                         },
                     },
                 });
