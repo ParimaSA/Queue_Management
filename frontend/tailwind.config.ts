@@ -39,6 +39,7 @@ const config: Config = {
         darkBlue: '#5a6194',
         lightBlue4: '#9fa2d4',
         lightPurple: '#9d70b4',
+        lightPurple6: '#ebeaf6',
       },
       height: {
         '26': '4rem',
@@ -55,6 +56,8 @@ const config: Config = {
       width: {
         '32': '8rem',
         '34': '9rem',
+        '70': '25rem',
+        '90': '35rem',
         '100': '40rem',
         '122': '52rem',
         '42': '13rem',
