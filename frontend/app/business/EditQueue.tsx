@@ -105,6 +105,10 @@ const EditQueue = ({queue}) => {
         headers: {
           "Content-Type": "application/json",
         },
+        body: JSON.stringify({
+          name: editedQueue,
+          prefix: editedAlphabet
+        })
       })
 
       if (!response.ok) {
