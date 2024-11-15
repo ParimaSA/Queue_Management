@@ -241,12 +241,10 @@ class BusinessController:
             status=200,
         )
 
-    # TODO , auth=helpers.api_auth_user_required
-
     @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
     def get_profile_image(self, request):
         """Return the profile image of the business."""
-        print(request.user)
+        # print(request.user)
         try:
             business = Business.objects.get(user=request.user)
             if business.image:
@@ -255,11 +253,11 @@ class BusinessController:
                 return JsonResponse({"msg": "No profile image found."}, status=404)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        print("Image URL:", image_url)
+        # print("Image URL:", image_url)
         return {"image": image_url}
 
-    #Todo , auth=helpers.api_auth_user_required
-    @http_post("/profile", response=dict)
+
+    @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         print('POST')
