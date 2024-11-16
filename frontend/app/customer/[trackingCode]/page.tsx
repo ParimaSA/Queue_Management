@@ -12,6 +12,11 @@ const CustomerPage: React.FC = () => {
   const router = useRouter();
   const { trackingCode } = useParams();
   const [src, setSrc] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<string>('');
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   // Redirect to /customer if trackingCode is missing
   useEffect(() => {
@@ -60,7 +65,7 @@ const CustomerPage: React.FC = () => {
         if ('Notification' in window) {
             if (Notification.permission === "granted") {
               console.log("Sending final notification...");
-              new Notification("Your turn has arrived!", {
+              const n = new Notification("Your turn has arrived!", {
                 body: "Please proceed to the service point.",
                 tag: "queue-notification"
               });
@@ -71,7 +76,7 @@ const CustomerPage: React.FC = () => {
             if ('Notification' in window) {
               if (Notification.permission === "granted") {
               console.log("Sending near-turn notification...");
-              new Notification("Almost your turn!", {
+              const n = new Notification("Almost your turn!", {
                 body: `Only ${queueAhead} people ahead of you. Please be ready.`,
                 tag: "queue-notification"
               });}
@@ -126,63 +131,69 @@ const CustomerPage: React.FC = () => {
 
   return (
     <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
-      {data.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
-          {data.map((item) => (
-            <div key={item.id}>
-              {/* Business Name */}
-              <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
-  
-              {/* Queue Name and Time In */}
-              <div className="text-brown mb-6 text-lg">
-                <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
-                <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
-              </div>
-  
-              {/* Queue Number */}
-              <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
-  
-              {/* QR Code */}
-              <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
-                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
-              </div>
-  
-              {/* Estimated Time and Queue Position */}
-              <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
-                <div>
-                  <p>Estimated Time</p>
-                  <p>{item.Estimated ?? "null"}</p>
+      <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
+        {data.length > 0 ? (
+          <div>
+            {data.map((item) => (
+              <div key={item.id}>
+                {/* Business Name */}
+                <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
+      
+                {/* Queue Name and Time In */}
+                <div className="text-brown mb-6 text-lg">
+                  <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
+                  <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
                 </div>
-                <div>
-                  <p>Ahead of you</p>
-                  <p>{item.queue_ahead}</p>
+      
+                {/* Queue Number */}
+                <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
+      
+                {/* QR Code */}
+                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
+                  {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
                 </div>
-              </div>
-  
-              {/* Cancel Button */}
-              <button
-                onClick={handleCancel}
-                disabled={isCancelling}
-                className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-6 ${isCancelling ? 'btn-disabled' : ''}`}
-              >
-                {isCancelling ? 'Canceling...' : 'cancel'}
-              </button>
 
-  
-              {/* Cancel Message */}
-              {cancelMessage && (
-                <p className="mt-6 text-xl text-red-600 font-semibold">
-                  {cancelMessage}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-xl">Loading...</p>
-      )}
+                {/* URL */}
+                <div className="text-black font-bold mb-10 text-lg">
+                  <p>[ {origin} ]</p>               
+                </div>
+
+                {/* Estimated Time and Queue Position */}
+                <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
+                  <div>
+                    <p>Estimated Time</p>
+                    <p>{item.Estimated ?? "null"}</p>
+                  </div>
+                  <div>
+                    <p>Ahead of you</p>
+                    <p>{item.queue_ahead}</p>
+                  </div>
+                </div>
+      
+                {/* Cancel Button */}
+                <button
+                  onClick={handleCancel}
+                  disabled={isCancelling}
+                  className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-6 ${isCancelling ? 'btn-disabled' : ''}`}
+                >
+                  {isCancelling ? 'Canceling...' : 'cancel'}
+                </button>
+      
+                {/* Cancel Message */}
+                {cancelMessage && (
+                  <p className="mt-6 text-xl text-red-600 font-semibold">
+                    {cancelMessage}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xl">Loading...</p>
+        )}
+      </div>
     </div>
   );
-} 
+}
 
 export default CustomerPage;
