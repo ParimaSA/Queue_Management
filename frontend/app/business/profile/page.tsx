@@ -17,9 +17,11 @@ const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
   const [businessOpenTime, setBusinessOpenTime] = useState('');
   const [businessCloseTime, setBusinessCloseTime] = useState('')
-  const [profileImage, setProfileImage] = useState(null);;
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
+  // const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
+  const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
+  const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
   const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
@@ -56,8 +58,14 @@ const ProfilePage = () => {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file); // Capture the selected file
-    console.log("Selected file:", file);
-  };
+    if (file) {
+        const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
+        setPreviewImage(previewUrl);
+    } else {
+        setPreviewImage(profile.image); // Reset preview if no file is selected
+    }
+  }
+
 
   const handleEditClick = (event) => {
     event.preventDefault();
@@ -76,7 +84,9 @@ const ProfilePage = () => {
       const business = my_business[0];
       setBusinessName(business.name);
       setBusinessOpenTime(business.open_time);
-      setBusinessCloseTime(business.close_time);}
+      setBusinessCloseTime(business.close_time);
+      setPreviewImage(business.image);
+          }
     const modal = document.getElementById('profile_modal');
     if (modal) {
       modal.showModal();
@@ -92,6 +102,10 @@ const ProfilePage = () => {
     if (modal) {
       modal.close();
     }
+  };
+
+  const isImageFile = (file: File): boolean => {
+      return file.type.startsWith("image/");
   };
 
   const handleSubmit = async () => {
@@ -118,6 +132,7 @@ const ProfilePage = () => {
 
         // Update data and close modal upon successful submission
         mutate(MY_BUSINESS_API_URL);
+        mutate(MY_BUSINESS_PROFILE_URL);
         closeModal();
     } catch (error) {
         console.log("Error saving edited business:", error);
@@ -140,11 +155,14 @@ const ProfilePage = () => {
             <div className='flex justify-center items-center'>
               <div className="avatar">
               <div className="w-34 rounded-xl">
-                  {profileImage ? (
-                    <Image src={profileImage} alt="Profile" width={500} height={300} />
-                  ) : (
-                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                  )}
+              {previewImage ? (
+                <Image src={previewImage} alt="Profile" width={500} height={300} />
+              ) : profileImage ? (
+                <Image src={profileImage} alt="Profile" width={500} height={300} />
+              ) : (
+                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" />
+              )}
+
                 </div>
               </div>
             </div>
@@ -253,4 +271,4 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage
+export default ProfilePage;
