@@ -19,8 +19,8 @@ const ProfilePage = () => {
   const [businessCloseTime, setBusinessCloseTime] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
-  const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
+  // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
   const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
@@ -42,7 +42,14 @@ const ProfilePage = () => {
     }
   }, [my_business, myBusinessError]);
 
-
+  useEffect(() => {
+    if (!isModalOpen) {
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.value = ''; // Reset file input value
+        }
+    }
+}, [isModalOpen]);
   const handleBusinessNameChange = (event) => {
     setBusinessName(event.target.value);
   }
@@ -98,6 +105,8 @@ const ProfilePage = () => {
     setBusinessName('');
     setBusinessOpenTime('');
     setBusinessCloseTime('');
+    setSelectedFile(null);
+    setPreviewImage(null);
     const modal = document.getElementById('profile_modal');
     if (modal) {
       modal.close();
