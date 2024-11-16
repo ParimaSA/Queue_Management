@@ -5,6 +5,7 @@ import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { toast } from "react-toastify";
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
@@ -81,7 +82,12 @@ const ProfilePage = () => {
         const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
         setPreviewImage(previewUrl);
       } else {
+        const fileInput = document.querySelector('input[type="file"]');
+        if (fileInput) {
+            fileInput.value = ''; // Reset file input value
+        }
         alert("Please select a valid image file.");
+        
       }
     } else {
         setPreviewImage(profile.image); // Reset preview if no file is selected
@@ -145,6 +151,7 @@ const ProfilePage = () => {
 
       if (!response.ok) {
         console.log("Failed to save edited business")
+        toast.error("Failed to save edited business", {style: { marginTop: "70px" }})
         return
       }
       
@@ -154,6 +161,7 @@ const ProfilePage = () => {
       mutate(MY_BUSINESS_API_URL);
     } catch (error) {
       console.log("Error save edited business:", error)
+      
     }
 
     console.log(businessName, businessOpenTime, businessCloseTime);
