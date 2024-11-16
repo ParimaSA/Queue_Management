@@ -28,10 +28,6 @@ export async function POST(request: Request) {
 
     // Create FormData from the incoming request's form data
     const formData = await request.formData();
-    // const file = formData.get('profile_image') as File;
-    const file: File | null  = formData.get('file') as File;
-    console.log("Form data:", formData);
-    console.log("File:", file);
 
     try {
         // Send FormData to Django API using ApiProxy

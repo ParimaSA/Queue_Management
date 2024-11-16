@@ -55,16 +55,6 @@ export default class ApiProxy {
         return await ApiProxy.handleFetch(endpoint, requestOptions)
     }
 
-    // static async post(endpoint: string, object: any, requireAuth: boolean): Promise<FetchResponse> {
-    //     const jsonData = JSON.stringify(object)
-    //     const headers = await ApiProxy.getHeaders(requireAuth)
-    //     const requestOptions: RequestInit = {
-    //         method: "POST",
-    //         headers,
-    //         body: jsonData
-    //     }
-    //     return await ApiProxy.handleFetch(endpoint, requestOptions)
-    // }
 
     // new proxy
     static async post(endpoint: string, object: any, requireAuth: boolean): Promise<FetchResponse> {
@@ -78,8 +68,6 @@ export default class ApiProxy {
             object = JSON.stringify(object);
         }
         
-        console.log("Object:", object);
-        console.log("Headers:", headers);
         const requestOptions: RequestInit = {
             method: "POST",
             headers,

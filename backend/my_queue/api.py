@@ -259,10 +259,6 @@ class BusinessController:
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES.get('file')
-        if file:
-            print("File received:", file.name)
-        else:
-            print("No file received")
         
         try:
             business = Business.objects.get(user=request.user)
