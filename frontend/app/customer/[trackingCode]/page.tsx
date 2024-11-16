@@ -158,6 +158,11 @@ const CustomerPage: React.FC = () => {
                   <p>[ {origin} ]</p>               
                 </div>
 
+                {/* Status */}  
+                <div className="text-amber-800 font-bold mb-5 text-lg">
+                  <p> Status: {item.status} </p>               
+                </div>
+
                 {/* Estimated Time and Queue Position */}
                 <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
                   <div>
