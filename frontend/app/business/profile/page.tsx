@@ -9,6 +9,7 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
 import TopQueue from '../TopQueue';
+import Business from '../page';
 
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
@@ -62,12 +63,26 @@ const ProfilePage = () => {
     setBusinessCloseTime(event.target.value);
   }
 
+
+  const isValidImageFile = (file: File): boolean => {
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
+    const lowerCaseName = file.name.toLowerCase();
+    const isExtensionValid = imageExtensions.some((ext) => lowerCaseName.endsWith(ext));
+    return file.type.startsWith("image/") && isExtensionValid;
+  }
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file); // Capture the selected file
+    
     if (file) {
+      if (isValidImageFile(file)) {
+        setSelectedFile(file); // Capture the selected file
+        console.log("This is a valid image file.");
         const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
         setPreviewImage(previewUrl);
+      } else {
+        alert("Please select a valid image file.");
+      }
     } else {
         setPreviewImage(profile.image); // Reset preview if no file is selected
     }
@@ -113,11 +128,36 @@ const ProfilePage = () => {
     }
   };
 
-  const isImageFile = (file: File): boolean => {
-      return file.type.startsWith("image/");
-  };
 
   const handleSubmit = async () => {
+    try {
+      const response = await fetch(`/api/business/profile`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name: businessName,
+            open_time: businessOpenTime,
+            close_time: businessCloseTime,
+        })
+      })
+
+      if (!response.ok) {
+        console.log("Failed to save edited business")
+        return
+      }
+      
+      const data = await response.json()
+      console.log("Response:", data)
+
+      mutate(MY_BUSINESS_API_URL);
+    } catch (error) {
+      console.log("Error save edited business:", error)
+    }
+
+    console.log(businessName, businessOpenTime, businessCloseTime);
+
     const formData = new FormData();
 
     if (selectedFile instanceof File) {
@@ -135,19 +175,19 @@ const ProfilePage = () => {
         });
 
         if (!response.ok) {
-            console.log("Failed to save edited business");
+            console.log("Failed to save new profile image");
             return;
         }
 
         // Update data and close modal upon successful submission
-        mutate(MY_BUSINESS_API_URL);
+        // mutate(MY_BUSINESS_API_URL);
         mutate(MY_BUSINESS_PROFILE_URL);
-        closeModal();
+        // closeModal();
     } catch (error) {
-        console.log("Error saving edited business:", error);
+        console.log("Error saving edited business profile:", error);
     }
+    closeModal();
 };
-
 
 
   return (
