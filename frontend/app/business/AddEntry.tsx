@@ -15,6 +15,11 @@ const AddEntry = ({ queue }) => {
   const [trackingCode, setTrackingCode] = useState(null);
   const [entryData, setEntryData] = useState(null);
   const [src, setSrc] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<string>('');
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     if (trackingCode !== null) {
@@ -72,7 +77,7 @@ const AddEntry = ({ queue }) => {
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
-    QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
+    QRCode.toDataURL(`{origin}/customer/${trackingCode}`).then(setSrc)
   }
 
   const formatDate = (isoDate: string | number | Date) => {
@@ -140,6 +145,11 @@ const AddEntry = ({ queue }) => {
                   {/* QR Code */}
                   <div className="mx-auto w-28 h-28 flex items-center justify-center">
                     {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                  </div>
+
+                  {/* URL */}
+                  <div className="text-black font-bold mb-2 text-lg">
+                    <p>[ {origin} ]</p>               
                   </div>
 
                   {/* Estimated Time and Queue Position */}
