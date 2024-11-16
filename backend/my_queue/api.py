@@ -341,7 +341,7 @@ class QueueController:
         entry = Entry.objects.filter(
             queue=queue, status="waiting", time_in__date=today
         ).order_by("time_in")
-        return entry[:6]
+        return entry[:5]
 
 
 @api_controller("/entry")

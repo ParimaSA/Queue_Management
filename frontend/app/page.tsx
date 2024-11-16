@@ -1,30 +1,28 @@
 import React from 'react'
 import Link from 'next/link'
-
+import Head from 'next/head'
+import {fredoka} from "./fonts/fonts";
 const Home = () => {
-  const homeBackground = {
-    backgroundImage: "url('/home_background.png')",
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    height: '100vh',
-  }
   return (
-    <main style={homeBackground} className='grid grid-cols-3 gap-4'>
-      <div className='items-center col-span-2 px-20 py-40'>
-        <div className='grid grid-rows-6 grid-flow-col gap-4'>
-          <div className='row-start-6'>
-            <div className='grid grid-cols-2 gap-4'>
-              <Link href="/customer">
-                <button className='btn btn-primary w-full text-xl text-white bg-lightPink border-none hover:bg-pink-900'>Customer</button>
+    <>
+    <main className="flex flex-col min-h-screen lg:p-20 md:p-15 sm:p-10 lg:py-40 md:py-32 sm:py-20 lg:px-32 md:px-20 sm:px-10 bg-cream2">
+        <div className={`${fredoka.className} antialiased`}>
+          <h1 className="lg:text-8xl md:text-6xl sm:text-5xl font-bold text-darkBlue text-left">Queue</h1>
+          <h1 className="lg:text-8xl md:text-6xl sm:text-5xl font-bold text-lightBlue4 text-left lg:mt-4">Management</h1>
+          <p className="lg:text-3xl md:text-2xl sm:text-2xl text-lightPurple lg:mt-8 text-left">
+            You can choose your role to start using our website
+          </p>
+          <div className='lg:grid lg:grid-cols-2 lg:gap-4 lg:mt-14 md:grid md:grid-cols-2 md:gap-4 md:mt-14'>
+             <Link href="/customer">
+                <button className='btn btn-primary w-full text-xl text-white bg-lightPink border-none hover:bg-pink-900 sm:mt-3 md:mt-0 lg:mt-0'>Customer</button>
               </Link>
               <Link href="/business/login">
-                <button className='btn btn-primary w-full text-xl text-white bg-lightPurple3 border-none hover:bg-purple-900'>Business Owner</button>
+                <button className='btn btn-primary w-full text-xl text-white bg-lightPurple3 border-none hover:bg-purple-900 sm:mt-3 md:mt-0 lg:mt-0'>Business Owner</button>
               </Link>
-            </div>
           </div>
         </div>
-      </div>
     </main>
+    </>
   )
 }
 

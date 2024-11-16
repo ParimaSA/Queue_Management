@@ -31,7 +31,7 @@ export default function RootLayout({
     <SessionWrapper>
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-cream2 min-h-screen`}
       >
          <AuthProvider>
            {children}
