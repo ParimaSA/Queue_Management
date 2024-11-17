@@ -77,7 +77,7 @@ const AddEntry = ({ queue }) => {
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
-    QRCode.toDataURL(`{origin}/customer/${trackingCode}`).then(setSrc)
+    QRCode.toDataURL(`${origin}/customer/${trackingCode}`).then(setSrc)
   }
 
   const formatDate = (isoDate: string | number | Date) => {
