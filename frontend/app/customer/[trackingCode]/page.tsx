@@ -18,6 +18,21 @@ const CustomerPage: React.FC = () => {
     setOrigin(window.location.origin);
   }, []);
 
+  // Register Service Worker
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js')
+        .then((registration) => {
+          console.log('Service Worker registered with scope:', registration.scope);
+        })
+        .catch((error) => {
+          console.error('Service Worker registration failed:', error);
+        });
+    } else {
+      console.log("Service Workers are not supported in this browser.");
+    }
+  }, []);
+
   // Redirect to /customer if trackingCode is missing
   useEffect(() => {
     if (!trackingCode) {
@@ -27,13 +42,13 @@ const CustomerPage: React.FC = () => {
 
   // Ask permission for sending a notification
   useEffect(() => {
-    if ('Notification' in window) {
-        if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-          Notification.requestPermission();
-        }
-      } else {
-        console.log("Notifications are not supported on this browser.");
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
       }
+    } else {
+      console.log("Notifications are not supported on this browser.");
+    }
   }, []);
 
   const { data, error } = useSWR(
@@ -61,30 +76,27 @@ const CustomerPage: React.FC = () => {
       const queueAhead = data[0].queue_ahead;
       console.log("Queue ahead:", queueAhead);
 
-      if (queueAhead === 0) {
-        if ('Notification' in window) {
-            if (Notification.permission === "granted") {
+      if ('Notification' in window && 'serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((reg) => {
+          if (Notification.permission === "granted") {
+            if (queueAhead === 0) {
               console.log("Sending final notification...");
-              const n = new Notification("Your turn has arrived!", {
+              reg.showNotification("Your turn has arrived!", {
                 body: "Please proceed to the service point.",
-                tag: "queue-notification"
+                tag: "queue-notification",
               });
-        }}
-      } 
-      
-      else if (queueAhead <= 2) {
-            if ('Notification' in window) {
-              if (Notification.permission === "granted") {
+            } else if (queueAhead <= 2) {
               console.log("Sending near-turn notification...");
-              const n = new Notification("Almost your turn!", {
+              reg.showNotification("Almost your turn!", {
                 body: `Only ${queueAhead} people ahead of you. Please be ready.`,
-                tag: "queue-notification"
-              });}
-        }
+                tag: "queue-notification",
+              });
+            }
+          }
+        });
       }
     }
   }, [data]);
-
 
   if (error) return <div>Failed to load entry</div>;
 
