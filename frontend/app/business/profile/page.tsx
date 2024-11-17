@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
-import QueueVolumeChart from '../QueueVolumeChart';
+import EntryTimeChart from '../EntryTimeChart';
+import EstimateTimeChart from '../EstimateTimeChart';
 import TopQueue from '../TopQueue';
 
 const MY_BUSINESS_API_URL = "/api/business/";
@@ -216,25 +217,55 @@ const ProfilePage = () => {
               <div className='py-6'/>
               <TopQueue />
           </div>
-          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3'>
-            <div className="card bg-cream w-full h-76 shadow-xl">
-              <div className="card-body">
-              <h2 className="card-title">Average Weekly Entries Chart</h2>
-                <div className='h-56 w-full flex justify-center items-center'>
-                  <WeeklyEntryChart />
-                </div>
-              </div>
-            </div>
-            <div className='pt-8'/>
-            <div className="card bg-cream w-full h-76 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title">Queue Volume by Time Slot Chart</h2>
-                  <div className='h-56 w-full flex justify-center items-center'>
-                    <QueueVolumeChart />
+          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0'>
+          <div role="tablist" className="tabs tabs-lifted">
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Time" defaultChecked/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" >
+                <div className="card bg-cream w-full h-76 shadow-xl">
+                  <div className="card-body">
+                  <h2 className="card-title">Time Slot Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EntryTimeChart />
+                    </div>
                   </div>
-              </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-cream w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Estimate Waiting Time by Time Slot Chart</h2>
+                      <div className='h-56 w-full flex justify-center items-center'>
+                        <EstimateTimeChart/>
+                      </div>
+                  </div>
+                </div>
+          </div>  
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
+                <div className="card bg-cream w-full h-76 shadow-xl">
+                  <div className="card-body">
+                  <h2 className="card-title">Average Weekly Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <WeeklyEntryChart />
+                    </div>
+                  </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-cream w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Estimate Waiting Time by Time Slot Chart</h2>
+                      <div className='h-56 w-full flex justify-center items-center'>
+                        <EstimateTimeChart/>
+                      </div>
+                  </div>
+                </div>
+            </div>
+
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
+              Tab content 3
             </div>
           </div>
+        </div>
         </div>
       </div>
     </>

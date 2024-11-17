@@ -4,7 +4,7 @@ import { DJANGO_API_ENDPOINT } from "@/config/defaults";
 import { NextResponse } from "next/server";
 import ApiProxy from "@/app/api/proxy";
 
-const DJANGO_API_ENTRY_IN_TIME_SLOT_URL = `${DJANGO_API_ENDPOINT}/business/entry_in_time_slot`;
+const DJANGO_API_ENTRY_IN_TIME_SLOT_URL = `${DJANGO_API_ENDPOINT}/analytic/estimate_waiting_time`;
 
 interface ErrorResponse {
     error: string;

@@ -5,6 +5,7 @@ import math
 from datetime import timedelta, datetime
 from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
+from django.db.models import F, ExpressionWrapper, DurationField, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count, Min, Max
@@ -418,3 +419,71 @@ class EntryController:
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "Invalid tracking code"}, status=404)
         return [serialize_single_entry(my_entry)]
+
+
+@api_controller("/analytic")
+class AnalyticController:
+
+    @http_get("/estimate_waiting_time", auth=helpers.api_auth_user_required)
+    def get_estimate_waiting_time_in_time_slot(self, request):
+        """Return a list of the average number of entries in time slot."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+
+        try:
+            entry = Entry.objects.filter(business=business, queue__in=queues)
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"),
+                                                          last_entry=Max("time_in"))
+            date = datetime.today().date()
+            open_time = timezone.make_aware(datetime.combine(date, business.open_time))
+            close_time = timezone.make_aware(datetime.combine(date, business.close_time))
+            total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+
+                time_slot_list = []
+                for i in range(math.ceil(total_hours / 2)):
+                    start_time = open_time + timedelta(hours=2 * i)
+                    end_time = start_time + timedelta(hours=2)
+
+                    entry_in_slot = entry.annotate(time_in_time=TruncTime('time_in')).filter(
+                        time_in_time__gte=start_time,
+                        time_in_time__lt=end_time
+                    )
+                    if not entry_in_slot.exists():
+                        print("no entry")
+                        continue
+                    entry_with_waiting_time = entry_in_slot.annotate(
+                        waiting_time=ExpressionWrapper(
+                            F('time_out') - F('time_in'),
+                            output_field=DurationField()
+                        )
+                    )
+                    for ent in entry_with_waiting_time:
+                        print(ent.id, ent.name, ent.time_out, ent.time_in, ent.waiting_time)
+                    total_waiting_time = entry_with_waiting_time.aggregate(
+                        total_waiting_time=Sum('waiting_time')
+                    )['total_waiting_time']
+                    if not total_waiting_time:  # Handle cases where there are no valid waiting times
+                        print(f"No valid waiting times for time slot {start_time} to {end_time}")
+                        continue
+                    estimate_waiting_time = (total_waiting_time.total_seconds() / entry_in_slot.count()) / 60
+
+                    time_slot_list.append({"start_time": start_time.hour,
+                                           "estimate_waiting": estimate_waiting_time,
+                                           "num_entry": entry_in_slot.count()})
+                return time_slot_list
+
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+
