@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 
 test('Business Owner Login and Check Profile', async ({ page }) => {
   await page.goto('http://localhost:3000/');
+  
+  // Click on Business Owner button
   await page.getByRole('button', { name: 'Business Owner' }).click();
 
   // Login
@@ -21,6 +23,7 @@ test('Business Owner Login and Check Profile', async ({ page }) => {
 
   // Have correct business name
   const element = page.locator('text="TestRestaurant"');
+  await expect(element).toBeVisible();
   await expect(element).toHaveText('TestRestaurant');
 
 });
