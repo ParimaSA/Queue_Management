@@ -167,7 +167,7 @@ const CustomerPage: React.FC = () => {
 
                 {/* URL */}
                 <div className="text-black font-bold mb-8 text-lg">
-                  <p>{origin}</p>               
+                  <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>               
                 </div>
 
                 {/* Status */}  
