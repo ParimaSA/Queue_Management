@@ -24,8 +24,8 @@ const AddEntry = ({ queue }) => {
   }, [trackingCode]);
 
   useEffect(() => {
-    if (queue.length > 0) {
-      setSelectedQueue(queue[0].id);
+    if (queue.length === 1 && !selectedQueue) {
+      setSelectedQueue(queue[0]?.id);
     }
   }, [queue]);
   
