@@ -161,18 +161,18 @@ const CustomerPage: React.FC = () => {
                 <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
       
                 {/* QR Code */}
-                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
+                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-5">
                   {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
                 </div>
 
                 {/* URL */}
-                <div className="text-black font-bold mb-10 text-lg">
-                  <p>[ {origin} ]</p>               
+                <div className="text-black font-bold mb-8 text-lg">
+                  <p>{origin}</p>               
                 </div>
 
                 {/* Status */}  
-                <div className="text-amber-800 font-bold mb-5 text-lg">
-                  <p> Status: {item.status} </p>               
+                <div className="text-amber-900 font-bold mb-3 text-lg">
+                  <p>[ Status: {item.status} ]</p>               
                 </div>
 
                 {/* Estimated Time and Queue Position */}

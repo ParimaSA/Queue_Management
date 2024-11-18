@@ -149,7 +149,7 @@ const AddEntry = ({ queue }) => {
 
                   {/* URL */}
                   <div className="text-black font-bold mb-2 text-lg">
-                    <p>[ {origin} ]</p>               
+                    <p>{origin}</p>               
                   </div>
 
                   {/* Estimated Time and Queue Position */}
