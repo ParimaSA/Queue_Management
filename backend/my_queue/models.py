@@ -1,5 +1,7 @@
 """Provide models using in business app."""
 
+import os
+from django.conf import settings
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import models
@@ -16,7 +18,14 @@ class Business(models.Model):
     name = models.CharField(max_length=255)
     open_time = models.TimeField(default="06:00")
     close_time = models.TimeField(default="23:59")
-    image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    image = models.ImageField(upload_to='profiles/', blank=True, default='profiles/default.png')
+    
+    @property
+    def profile_image_url(self):
+        """Returns the image URL or a default URL if the file is missing."""
+        if self.image and os.path.exists(self.image.path):
+            return self.image.url
+        return os.path.join(settings.MEDIA_URL, 'profiles/default.png')
 
     def __str__(self):
         """Return name of Business."""
