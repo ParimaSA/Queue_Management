@@ -1,5 +1,23 @@
 """Api routes for business and customer."""
 
+from typing import List
+from .forms import SignUpForm
+from .models import Entry, Business, Queue
+from .schemas import (
+    CustomerQueueCreateSchema,
+    EntryDetailSchema,
+    BusinessSchema,
+    BusinessRegisterSchema,
+    EmailBusinessRegisterSchema,
+    EditIn,
+    QueueDetailSchema,
+    EntryDetailCustomerSchema,
+    QueueCreateSchema,
+    BusinessDataSchema,
+    BusinessUpdatedSchema,
+)
+import os
+from django.conf import settings
 import helpers
 import math
 from datetime import timedelta, datetime
@@ -14,22 +32,9 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import File
 from django.core.files.base import ContentFile
 from ninja.files import UploadedFile
-from .schemas import (
-    CustomerQueueCreateSchema,
-    EntryDetailSchema,
-    BusinessSchema,
-    BusinessRegisterSchema,
-    EmailBusinessRegisterSchema,
-    EditIn,
-    QueueDetailSchema,
-    EntryDetailCustomerSchema,
-    QueueCreateSchema,
-    BusinessDataSchema,
-    BusinessUpdatedSchema,
-)
-from .models import Entry, Business, Queue
-from .forms import SignUpForm
-from typing import List
+from .models import Business
+
+DEFAULT_PROFILE_IMAGE_NAME = "profiles/default.png"
 
 
 def serialize_single_entry(entry):
@@ -241,29 +246,69 @@ class BusinessController:
             status=200,
         )
 
+    @http_get("/profile2222", response=dict, auth=helpers.api_auth_user_required)
+    def get_profile_image(self, request):
+        """Return the profile image of the business."""
+        try:
+            business = Business.objects.get(user=request.user)
+            # if business.image:
+            #     image_path = request.build_absolute_uri(business.image.url)
+            #     if os.path.exists(image_path):
+            #         image_url = request.build_absolute_uri(business.image.url)
+            #     else:
+            #         return JsonResponse({"msg": "Profile image file not found."}, status=404)
+            # else:
+            #     image_url = request.build_absolute_uri(settings.MEDIA_URL + "profiles/default.png")
+            if not business.image:
+                image_url = request.build_absolute_uri(
+                    settings.MEDIA_URL + "profiles/default.png")
+            else:
+                print("idkerror", business.image)
+                image_path = request.build_absolute_uri(business.image.url)
+                if not os.path.exists(image_path):
+                    image_url = request.build_absolute_uri(
+                        settings.MEDIA_URL + "profiles/default.png")
+                    return {"image": image_url}
+                image_url = request.build_absolute_uri(business.image.url)
+
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+
+        return {"image": image_url}
+
     @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
     def get_profile_image(self, request):
         """Return the profile image of the business."""
         try:
             business = Business.objects.get(user=request.user)
-            if business.image:
-                image_url = request.build_absolute_uri(business.image.url)
-            else:
-                return JsonResponse({"msg": "No profile image found."}, status=404)
+            image_relative_path = business.profile_image_url
+            image_url = request.build_absolute_uri(image_relative_path)
+            print("image_url", image_url)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        print("image name", business.image.name)
+        print("image path", os.path.join(
+            settings.MEDIA_ROOT, business.image.name))
+        print("image_path", image_relative_path)
         return {"image": image_url}
-
 
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES.get('file')
-        
+
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        # Delete the old profile image if it exists
+        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
+            old_image_path = os.path.join(
+                settings.MEDIA_ROOT, business.image.name)
+            if os.path.exists(old_image_path):
+                os.remove(old_image_path)
+
+        print("image name", business.image.name)
         business.image.save(file.name, ContentFile(file.read()), save=True)
 
         image_url = request.build_absolute_uri(business.image.url)  # Full URL
@@ -271,7 +316,6 @@ class BusinessController:
             "msg": f"{file.name} uploaded.",
             "business": image_url
         }
-
 
 
 @api_controller("/queue")
