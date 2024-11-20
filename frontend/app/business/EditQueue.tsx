@@ -34,7 +34,7 @@ const EditQueue = ({queue}) => {
   }
 
   const handleAddClick = (queueID) => {
-    if (editedQueue && editedAlphabet) {
+    if (editedQueue && (editedAlphabet || !isPrefix)) {
       handleSubmit(parseInt(QueueId, 10));
       console.log('New Queue:', editedQueue);
       console.log('New Alphabet', editedAlphabet);
@@ -90,15 +90,9 @@ const EditQueue = ({queue}) => {
     }
   }
 
-  const handleEditedQueue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedQueue(event.target.value);
-  }
-
-  const handleEditedAlphabet = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedAlphabet(event.target.value);
-  }
 
   const handleSubmit = async (queueId: number) => {
+  const newPrefix = isPrefix ? editedAlphabet : '';
     try {
       const response = await fetch(`/api/queue/${queueId}`, {
         method: "PUT",
@@ -107,7 +101,7 @@ const EditQueue = ({queue}) => {
         },
         body: JSON.stringify({
           name: editedQueue,
-          prefix: editedAlphabet
+          prefix: newPrefix
         })
       })
 
