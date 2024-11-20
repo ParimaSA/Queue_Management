@@ -97,7 +97,7 @@ const AddEntry = ({ queue }) => {
           <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
-              {trackingCode && (
+              {/* {trackingCode && (
                 <div role="alert" className="alert shadow-lg">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ const AddEntry = ({ queue }) => {
                     <h3 className="font-bold text-red-500">{trackingCode}</h3>
                   </div>
                 </div>
-              )}
+              )} */}
               <div className='space-x-3 flex py-2'>
                 <select className="select select-bordered lg:w-100 md:w-100 sm:w-90 h-26" onChange={handleSelectedChange}>
                   {queue.map(q => (
@@ -128,7 +128,7 @@ const AddEntry = ({ queue }) => {
                   </button>
                 </div>
               </div>
-              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-80 overflow-hidden w-full">
+              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-95 overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">
@@ -148,8 +148,8 @@ const AddEntry = ({ queue }) => {
                   </div>
 
                   {/* URL */}
-                  <div className="text-black font-bold mb-2 text-lg">
-                    <p>{origin}</p>               
+                  <div className="text-black font-bold mb-2 text-sm">
+                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
                   </div>
 
                   {/* Estimated Time and Queue Position */}
