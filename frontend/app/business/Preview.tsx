@@ -1,6 +1,10 @@
 import React from 'react';
 
 function Preview(props) {
+    const { newQueue, newAlphabet } = props;
+    console.log("check: ", newQueue)
+    const arrayNewQueue = Array.isArray(newQueue) ? newQueue : [newQueue];
+
     return (
         <div>
             <div className="px-4 md:px-8 lg:px-12 min-h-80 bg-[#FEF9F2]">
@@ -15,26 +19,28 @@ function Preview(props) {
                             <h2>All Queue</h2>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-4">
-                            {[{ name: props.newQueue, prefix: props.newAlphabet }].map((q, index) => (
-                                <div className="card bg-base-100 w-66 shadow-xl" key={index}>
-                                    <div className="card-body">
-                                        {/* Title at the top */}
-                                        <h2 className="card-title">{q.name}</h2>
-                                        <div className="flex flex-col gap-4 mt-4">
-                                        <div className="border p-4 rounded-md shadow-md">
-                                            <p>{q.prefix}1</p>
-                                        </div>
-                                        <div className="border p-4 rounded-md shadow-md">
-                                            <p>{q.prefix}2</p>
-                                        </div>
-                                        <div className="border p-4 rounded-md shadow-md">
-                                            <p>{q.prefix}3</p>
-                                        </div>
+                        <div className={`grid ${arrayNewQueue.length === 1 ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
+                            {newQueue.length === 0 ? (
+                                <p>No queues available</p>
+                            ) : (
+                                arrayNewQueue.map((queueName, index) => (
+                                    <div className="card bg-base-100 w-66 shadow-xl" key={index}>
+                                        <div className="card-body">
+                                            <h2 className="card-title">{queueName}</h2>
+                                            <div className="flex flex-col gap-4 mt-4">
+                                                {[1, 2, 3].map((num) => (
+                                                    <div
+                                                        className="border p-4 rounded-md shadow-md"
+                                                        key={num}
+                                                    >
+                                                        <p>{newAlphabet[index]}{num}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </div>
                 </div>
@@ -43,4 +49,5 @@ function Preview(props) {
         </div>
     );
 }
+
 export default Preview;
