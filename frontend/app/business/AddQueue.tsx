@@ -28,17 +28,40 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     'Child Wellness', 'Geriatric', 'Eye & Ent'
   ];
   const restaurantQueues = [
-    'Reservation', 'Walk-in', 'Takeaway', 'Delivery', 'Order Pickup', 'Payment', 'VIP or Priority'
+    'Reservation', 'Walk-in', 'Takeaway', 'Delivery', 'Order Pickup', 'Payment'
   ];
 
   const bankQueues = [
-    'Deposit/Withdraw/Transfer', 'Pay Bills/Make Installment Payments', 
-    'Open Account/ATM/Credit Card', 'Cheque Services', 
-    'Consult/Invest in Mutual Funds', 'Consult/Buy Insurance', 
-    'Personal/Home Loans', 'Auto Loans/Insurance'
-];
+    'Deposit/Withdraw', 'Pay Bills/Installments', 'Open Account/ATM/CC', 
+    'Cheque Services', 'Invest in Funds', 'Buy Insurance', 'Personal Loans', 
+    'Auto Loans/Insurance'
+  ];
+  
+  const governmentServiceQueues = [
+    'Driving License', 'Vehicle Tax', 'Vehicle Reg', 'Excise Tax', 'e-Excise', 
+    'Alcohol/Tobacco License', 'Healthcare License', 'Health Spa License', 
+    'Health Course Cert', 'Pollution Report', 'Hazardous Material License', 
+    'Machinery Registration', 'Unemployment Benefits', 'Pension Benefits', 
+    'Social Security', 'Tour Guide License', 'Tourism Standards', 
+    'Direct Selling Reg', 'Online Sales Reg'
+  ];
 
-
+  const airportQueues = [
+    'Check-in (Regular)', 
+    'Check-in (Priority)', 
+    'Security (Standard)', 
+    'Security (Fast Track)', 
+    'Immigration (Regular)', 
+    'Immigration (Fast Track)', 
+    'Baggage Claim (Domestic)', 
+    'Baggage Claim (International)', 
+    'Customs (Regular)', 
+    'Customs (Duty-Free)', 
+    'Boarding (Regular)', 
+    'Boarding (Priority)'
+  ];
+  
+  
   const handleQueueChange = (event) => {
     setNewQueue(event.target.value)
   };
@@ -159,6 +182,8 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
       'Restaurant': restaurantQueues,
       'Hospital': hospitalQueues,
       'Bank': bankQueues,
+      'Government Service Center': governmentServiceQueues,
+      'Airport': airportQueues,
     }
 
     if (selectedTemplate && templates) {
@@ -242,26 +267,41 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
         </div>
       </dialog>
       <dialog id="modal_template" className="modal">
-        <div className="modal-box w-[80%] max-w-4xl h-[80%]">
+        <div className="modal-box w-[80%] lg:max-w-4xl md:max-w-2xl sm:max-w-lg h-[80%]">
           <form onSubmit={addTemplate}>
             <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeTemplateModal}>
               ✕
             </button>
             <h2 className='mb-4'>Select Queue Template</h2>
-            <div className="flex space-x-4">
-              <button className={`btn rounded-full ${selectedTemplate === "Restaurant" ? "bg-gray-300" : "bg-lightPurple5"}`} type="button" onClick={() => selectTemplate("Restaurant")}>
-                Restaurant
-              </button>
-              <button className={`btn rounded-full ${selectedTemplate === "Hospital" ? "bg-gray-300" : "bg-lightYellow"}`} type="button" onClick={() => selectTemplate("Hospital")}>
-                Hospital
-              </button>
-              <button className={`btn rounded-full ${selectedTemplate === "Bank" ? "bg-gray-300" : "bg-lightSky"}`} type="button" onClick={() => selectTemplate("Bank")}>
-                Bank
-              </button>
-              <button className={`btn rounded-full ${selectedTemplate === "Government Service Center" ? "bg-gray-300" : "bg-lightOrange2"}`} type="button" onClick={() => selectTemplate("Government Service Center")}>
-                Government Service Center
-              </button>
-            </div>    
+            <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Restaurant" ? "bg-gray-300" : "bg-lightPurple5"}`} type="button" onClick={() => selectTemplate("Restaurant")}>
+                  Restaurant
+                </button>
+              </div>
+              <div>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Hospital" ? "bg-gray-300" : "bg-lightYellow"}`} type="button" onClick={() => selectTemplate("Hospital")}>
+                  Hospital
+                </button>
+              </div>
+              <div>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Bank" ? "bg-gray-300" : "bg-lightSky"}`} type="button" onClick={() => selectTemplate("Bank")}>
+                  Bank
+                </button>
+              </div>
+              <div>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Government Service Center" ? "bg-gray-300" : "bg-lightOrange2"}`} type="button" onClick={() => selectTemplate("Government Service Center")}>
+                  Government Service Center
+                </button>
+              </div>
+              <div>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Airport" ? "bg-gray-300" : "bg-lightPink"}`} type="button" onClick={() => selectTemplate("Airport")}>
+                  Airport
+                </button>
+              </div>
+            </div>
+
+
             {/* Template Preview */}
           {selectedTemplate ? (
             <div className="mt-6">
@@ -281,6 +321,18 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 <Preview 
                   newQueue={bankQueues} 
                   newAlphabet={Alphabet.slice(0, bankQueues.length)} 
+                />
+              )}
+              {selectedTemplate === 'Government Service Center' && (
+                <Preview 
+                  newQueue={governmentServiceQueues} 
+                  newAlphabet={Alphabet.slice(0, governmentServiceQueues.length)} 
+                />
+              )}
+              {selectedTemplate === 'Airport' && (
+                <Preview 
+                  newQueue={airportQueues} 
+                  newAlphabet={Alphabet.slice(0, airportQueues.length)} 
                 />
               )}
               <div className='form-control flex space-x-2 mt-5'>
