@@ -19,7 +19,7 @@ function Preview(props) {
                             <h2>All Queue</h2>
                         </div>
 
-                        <div className={`grid ${arrayNewQueue.length === 1 ? 'grid-cols-1' : 'grid-cols-3'} gap-4`}>
+                        <div className={`grid ${arrayNewQueue.length === 1 ? 'grid-cols-1' : 'sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3'} gap-4`}>
                             {newQueue.length === 0 ? (
                                 <p>No queues available</p>
                             ) : (
