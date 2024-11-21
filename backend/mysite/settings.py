@@ -31,9 +31,7 @@ SECRET_KEY = config('SECRET_KEY', default='fake-secret-key')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = [
-    ".railway.app"
-]
+ALLOWED_HOSTS = ["*"]
 if DEBUG:
     ALLOWED_HOSTS = ["*"]
 
@@ -81,13 +79,11 @@ ROOT_URLCONF = 'mysite.urls'
 CORS_URLS_REGEX = r"^/api/.*$"
 # CORS_ALLOWED_ORIGINS = []
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+CORS_ALLOWED_ORIGINS = []
+
 ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
-# for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
-#     CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
+for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
+    CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
 
 
 TEMPLATES = [
@@ -112,12 +108,13 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': config('DATABASE_URL',
-                      default=f'sqlite:///{BASE_DIR.joinpath("db.sqlite3")}',
-                      cast=db_url),
-}
+# DATABASES = {
+#     'default': config('DATABASE_URL',
+#                       default=f'sqlite:///{BASE_DIR.joinpath("db.sqlite3")}',
+#                       cast=db_url),
+# }
 
+# POSTGRES
 DATABASE_URL = config("DATABASE_URL", cast=str, default="")
 if DATABASE_URL != "":
     import dj_database_url
