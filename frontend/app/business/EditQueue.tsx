@@ -8,8 +8,18 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
 
-const EditQueue = ({queue}) => {
-  const [QueueId, setQueueId] = useState('');
+interface Queue {
+  id: number; 
+  name: string;
+  prefix: string;
+}
+
+interface EditQueueProps {
+  queue: Queue;
+}
+
+const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
+  const [QueueId, setQueueId] = useState(-1);
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
   const [isExplanation, setIsExplanation] = useState(false)
@@ -20,18 +30,18 @@ const EditQueue = ({queue}) => {
     setQueueId(queue.id);
   }, [queue]);
 
-  const handleQueueChange = (event) => {
+  const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(QueueId, " ChangeQueue")
     setEditedQueue(event.target.value);
   }
 
-  const handleAlphabetChange = (event) => {
+  const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditedAlphabet(event.target.value);
   }
 
   const handleAddClick = () => {
     if (editedQueue && editedAlphabet) {
-      handleSubmit(parseInt(QueueId, 10));
+      handleSubmit(QueueId);
       console.log('New Queue:', editedQueue);
       console.log('New Alphabet', editedAlphabet);
       closeModal(QueueId);
@@ -41,7 +51,7 @@ const EditQueue = ({queue}) => {
     }
   }
 
-  const openModal = async (queueId) => {
+  const openModal = async (queueId: number) => {
     setQueueId(queueId);
 
     try {
@@ -68,17 +78,17 @@ const EditQueue = ({queue}) => {
     } catch (error) {
       console.log("Error fetching queue data:", error);
     }
-    const modal = document.getElementById(QueueId);
+    const modal = document.getElementById(QueueId.toString()) as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
 
-  const closeModal = (QueueId) => {
+  const closeModal = (QueueId: number) => {
     setEditedQueue('');
     setEditedAlphabet('');
-    const modal = document.getElementById(QueueId);
+    const modal = document.getElementById(QueueId.toString()) as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
@@ -141,7 +151,7 @@ const EditQueue = ({queue}) => {
 
   return (
     <>
-        <dialog id={QueueId} className="modal">
+        <dialog id={QueueId.toString()} className="modal">
         <div className="modal-box">
             <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" >

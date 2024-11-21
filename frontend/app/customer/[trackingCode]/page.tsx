@@ -9,6 +9,21 @@ import useSWR from "swr";
 
 const ENTRY_TRACKING_CODE_URL = '/api/entry';
 
+interface Queue{
+  name: string;
+}
+
+interface EntryData {
+  id: number;
+  business: string;
+  queue: Queue;
+  name: string;
+  time_in: Date;
+  queue_ahead: number;
+  tracking_code: string;
+  Estimated: number;
+}
+
 const CustomerPage: React.FC = () => {
   const router = useRouter();
   const { trackingCode } = useParams();
@@ -129,7 +144,7 @@ const CustomerPage: React.FC = () => {
     <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
       {data.length > 0 ? (
         <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
-          {data.map((item) => (
+          {data.map((item: EntryData) => (
             <div key={item.id}>
               {/* Business Name */}
               <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>

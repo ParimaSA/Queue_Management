@@ -9,11 +9,28 @@ import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
 const QUEUE_API_URL = `/api/queue`;
 
+interface Queue {
+  id: number; 
+  name: string;
+  prefix: string;
+}
 
-const AddEntry = ({ queue }) => {
-  const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || '');
+interface AddEntryProps {
+  queue: Queue[];
+}
+
+interface EntryData {
+  queue_name: string;
+  name: string;
+  time_in: Date;
+  queue_ahead: number;
+  tracking_code: string;
+}
+
+const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
+  const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || -1);
   const [trackingCode, setTrackingCode] = useState(null);
-  const [entryData, setEntryData] = useState(null);
+  const [entryData, setEntryData] = useState<EntryData | null>(null);
   const [src, setSrc] = useState<string | null>(null);
 
   useEffect(() => {
@@ -31,14 +48,14 @@ const AddEntry = ({ queue }) => {
   
 
   const handleSelectedChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedQueue(event.target.value);
+    setSelectedQueue(parseInt(event.target.value));
   }
 
   const handleAddClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (selectedQueue) {
       console.log('Selected Queue id:', selectedQueue)
-      await handleSubmit(parseInt(selectedQueue, 10))
+      await handleSubmit(selectedQueue)
     } else {
       console.log('No selected')
     }
@@ -148,7 +165,12 @@ const AddEntry = ({ queue }) => {
                   </div>
                 </div>
                 <div className="flex justify-end">
-                    <button className='btn h-12 w-20 mr-2' onClick={ reactToPrintFn } > <LocalPrintshopIcon style={{ fontSize: 30 }}/> </button>
+                <button
+                  className="btn h-12 w-20 mr-2"
+                  onClick={() => reactToPrintFn && reactToPrintFn()}
+                >
+                  <LocalPrintshopIcon style={{ fontSize: 30 }} />
+                </button>                
                 </div>
               </div>
                   ) : (

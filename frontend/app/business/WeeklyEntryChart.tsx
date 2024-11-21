@@ -7,10 +7,15 @@ import fetcher from "@/lib/fetcher";
 Chart.register(...registerables);
 const AVG_WEEKLY_ENTRY_API_URL = "/api/business/avg_weekly_entry";
 
+interface Entry{
+    day: number;
+    entry_count: number;
+}
+
 const WeeklyEntryChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
-    const { data: avg_weekly_entry, error: entryError } = useSWR(AVG_WEEKLY_ENTRY_API_URL, fetcher);
+    const { data: avg_weekly_entry, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
     const [entryData, setEntryData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
 
     useEffect(() => {

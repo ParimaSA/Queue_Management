@@ -8,11 +8,17 @@ Chart.register(...registerables);
 const ENTRY_IN_TIME_SLOT_API_URL = "/api/business/entry_in_time_slot";
 
 const QueueVolumeChart: React.FC = () => {
+    interface Slot {
+        start_time: number;
+        entry_count: number;
+    }
+
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
-    const { data: entry_in_time_slot, error: entryError } = useSWR(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
+    const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
     const [entryData, setEntryData] = useState<number[]>([]);
     const [timeSlot, setTimeSlot] = useState<number[]>([]);
+
     useEffect(() => {
         if (entryError) {
             console.log("Failed to load avg", entryError);
@@ -81,7 +87,7 @@ const QueueVolumeChart: React.FC = () => {
                 chartInstanceRef.current.destroy();
             }
         };
-    });
+    }, [entryData]);
 
     return <canvas ref={chartRef} />;
 }

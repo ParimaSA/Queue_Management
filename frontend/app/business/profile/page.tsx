@@ -14,6 +14,15 @@ import TopQueue from '../TopQueue';
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
 
+interface Business {
+  id: number;           
+  name: string;        
+  open_time: string;  
+  close_time: string; 
+  image: string | null; 
+}
+
+
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
   const [businessOpenTime, setBusinessOpenTime] = useState('');
@@ -23,7 +32,7 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
   // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
-  const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
+  const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
     if (profile) {
@@ -45,21 +54,21 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!isModalOpen) {
-        const fileInput = document.querySelector('input[type="file"]');
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
         if (fileInput) {
-            fileInput.value = ''; // Reset file input value
+            fileInput.value = ''; 
         }
     }
 }, [isModalOpen]);
-  const handleBusinessNameChange = (event) => {
+  const handleBusinessNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessName(event.target.value);
   }
 
-  const handleOpenTimeChange = (event) => {
+  const handleOpenTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessOpenTime(event.target.value);
   }
 
-  const handleCloseTimeChange = (event) => {
+  const handleCloseTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessCloseTime(event.target.value);
   }
 
@@ -71,8 +80,8 @@ const ProfilePage = () => {
     return file.type.startsWith("image/") && isExtensionValid;
   }
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     
     if (file) {
       if (isValidImageFile(file)) {
@@ -81,7 +90,7 @@ const ProfilePage = () => {
         const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
         setPreviewImage(previewUrl);
       } else {
-        const fileInput = document.querySelector('input[type="file"]');
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
         if (fileInput) {
             fileInput.value = ''; // Reset file input value
         }
@@ -94,7 +103,7 @@ const ProfilePage = () => {
   }
 
 
-  const handleEditClick = (event) => {
+  const handleEditClick = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (businessName && businessOpenTime && businessCloseTime) {
       handleSubmit();
@@ -114,7 +123,7 @@ const ProfilePage = () => {
       setBusinessCloseTime(business.close_time);
       setPreviewImage(business.image);
           }
-    const modal = document.getElementById('profile_modal');
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
@@ -127,7 +136,7 @@ const ProfilePage = () => {
     setBusinessCloseTime('');
     setSelectedFile(null);
     setPreviewImage(null);
-    const modal = document.getElementById('profile_modal');
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }

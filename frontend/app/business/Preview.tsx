@@ -1,6 +1,11 @@
 import React from 'react';
 
-function Preview(props) {
+interface Prop {
+    newQueue: string;
+    newAlphabet: string;
+}
+
+function Preview(props: Prop) {
     return (
         <div>
             <div className="px-4 md:px-8 lg:px-12 min-h-80 bg-[#FEF9F2]">
