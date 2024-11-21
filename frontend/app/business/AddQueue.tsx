@@ -153,28 +153,32 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     setSelectedTemplate(template);
   }
 
-  const addTemplate = async (event) => {
+  const addTemplate = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const templates = {
+    const templates: Record<string, string[]> = {
       'Restaurant': restaurantQueues,
       'Hospital': hospitalQueues,
       'Bank': bankQueues,
     }
-    const Template = templates[selectedTemplate];
-    if (!Template) {
-      toast.error('Invalid template selected!', { style: { marginTop: "70px" } });
-      return;
-    }
 
-    for (const [index, queue] of Template.entries()) {
-      const success = await createNewQueue(queue, Alphabet[index]);
-      if (!success) {
-        toast.error(`Failed to add queue: ${queue}`, { style: { marginTop: "70px" } });
+    if (selectedTemplate && templates) {
+      const Template = templates[selectedTemplate];
+
+      if (!Template) {
+        toast.error('Invalid template selected!', { style: { marginTop: "70px" } });
+        return;
       }
-      onQueueAdded();
+  
+      for (const [index, queue] of Template.entries()) {
+        const success = await createNewQueue(queue, Alphabet[index]);
+        if (!success) {
+          toast.error(`Failed to add queue: ${queue}`, { style: { marginTop: "70px" } });
+        }
+        onQueueAdded();
+      }
+      closeTemplateModal();
+        toast.success('All queues have been added!', { style: { marginTop: "70px" } });
     }
-    closeTemplateModal();
-      toast.success('All queues have been added!', { style: { marginTop: "70px" } });
   };
   return (
     <>
