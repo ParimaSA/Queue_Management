@@ -6,8 +6,8 @@ import ApiProxy from "../../proxy";
 
 const DJANGO_API_ENTRY_URL = `${DJANGO_API_ENDPOINT}/entry/tracking-code`;
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-    const { id } = await params; 
+export async function GET(request: Request, context: { params: { id: string } }) {
+    const { id } = await context.params; 
     const endpoint = `${DJANGO_API_ENTRY_URL}/${id}`;
 
     try {
