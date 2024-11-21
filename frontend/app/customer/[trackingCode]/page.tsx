@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
 import QRCode from "qrcode";
+import Image from 'next/image';
 import useSWR from "swr";
 
 const ENTRY_TRACKING_CODE_URL = '/api/entry';
@@ -144,7 +145,7 @@ const CustomerPage: React.FC = () => {
   
               {/* QR Code */}
               <div className="mx-auto w-32 h-32 flex items-center justify-center mb-8">
-                {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                {src ? <Image src={src} width={500} height={500} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
               </div>
   
               {/* Estimated Time and Queue Position */}

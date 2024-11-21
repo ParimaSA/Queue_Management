@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
-import { useState } from 'react';
 
 const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
 const ENTRY_API_URL = `/api/entry`;
@@ -28,7 +27,6 @@ const RunQueue = ({queue}) => {
         console.error("Failed to run queue:", errorData);
         return;
       }
-      const data = await response.json();
       mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
     } catch (error) {
       console.error("Error completing entry:", error);
@@ -49,7 +47,6 @@ const RunQueue = ({queue}) => {
         console.error("Fail to cancel this entry", errorData);
         return;
       }
-    const data = await response.json();
     mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
   } catch (error) {
       console.error("Error completing entry:", error);

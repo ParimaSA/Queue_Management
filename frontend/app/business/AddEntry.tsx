@@ -11,7 +11,6 @@ const QUEUE_API_URL = `/api/queue`;
 
 
 const AddEntry = ({ queue }) => {
-  const queueID = queue.id
   const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || '');
   const [trackingCode, setTrackingCode] = useState(null);
   const [entryData, setEntryData] = useState(null);
@@ -22,7 +21,7 @@ const AddEntry = ({ queue }) => {
       console.log("Updated tracking code:", trackingCode);
       generate();
     }
-  }, [trackingCode]);
+  });
 
   useEffect(() => {
     if (queue.length > 0) {
