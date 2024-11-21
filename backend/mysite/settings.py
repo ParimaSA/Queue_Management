@@ -108,11 +108,11 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': config('DATABASE_URL',
-#                       default=f'sqlite:///{BASE_DIR.joinpath("db.sqlite3")}',
-#                       cast=db_url),
-# }
+DATABASES = {
+    'default': config('DATABASE_URL',
+                      default=f'sqlite:///{BASE_DIR.joinpath("db.sqlite3")}',
+                      cast=db_url),
+}
 
 # POSTGRES
 DATABASE_URL = config("DATABASE_URL", cast=str, default="")
