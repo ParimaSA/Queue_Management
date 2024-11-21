@@ -425,7 +425,7 @@ class EntryController:
 class AnalyticController:
 
     @http_get("/estimate_waiting_time", auth=helpers.api_auth_user_required)
-    def get_estimate_waiting_time_in_time_slot(self, request):
+    def analytic_in_time_slot(self, request):
         """Return a list of the average number of entries in time slot."""
         try:
             business = Business.objects.get(user=request.user)
