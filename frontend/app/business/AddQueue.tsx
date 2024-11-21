@@ -1,20 +1,21 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
 import Preview from './Preview';
-import { mutate } from 'swr';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
+interface AddQueueProps {
+  onQueueAdded: () => void;
+}
 
-const AddQueue = ({ business_data, onQueueAdded }) => {
+
+const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
@@ -60,17 +61,16 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     'Boarding (Regular)', 
     'Boarding (Priority)'
   ];
-  
-  
-  const handleQueueChange = (event) => {
+
+  const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewQueue(event.target.value)
   };
 
-  const handleAlphabetChange = (event) => {
+  const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewAlphabet(event.target.value)
   };
 
-  const handleAddClick = async (event) => {
+  const handleAddClick = async (event: React.FormEvent<HTMLFormElement> ) => {
     event.preventDefault(); 
     if (newQueue && (newAlphabet || !isPrefix)) {
       console.log('New Queue:', newQueue);
@@ -80,7 +80,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
         console.log("success add queue")
         onQueueAdded();
         toast.success(`Queue ${newQueue} is successfully created.`, {style: { marginTop: "70px" }})
-        closeAddModal();
+        closeModal();
       }
       else {
         toast.error(`Queue ${newQueue} can not be created.`, {style: { marginTop: "70px" }})
@@ -88,7 +88,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     } else {
       console.log('No queue added');
     }
-    closeAddModal();
+    closeModal();
   };
 
   const createNewQueue = async (queue: string, alphabet: string) => {
@@ -117,39 +117,33 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
     }
   };
 
-  const openAddModal = () => {
-    setIsModalOpen(true);
-    const modal = document.getElementById('my_modal_3');
+  const openModal = () => {
+    const modal = document.getElementById('my_modal_3') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
   const openTemplateModal = () => {
-    setIsModalOpen(true);
-    const modal = document.getElementById('modal_template');
+    const modal = document.getElementById('modal_template') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
-  const closeAddModal = () => {
+  const closeModal = () => {
     setIsExplanation(false)
     setIsPreview(false)
-    setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
-    const modal = document.getElementById('my_modal_3');
+    const modal = document.getElementById('my_modal_3') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
   };
 
   const closeTemplateModal = () => {
-    setIsModalOpen(false);
-    setNewQueue('');
-    setNewAlphabet('');
-    const modal = document.getElementById('modal_template');
+    const modal = document.getElementById('modal_template') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
@@ -205,12 +199,13 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
         toast.success('All queues have been added!', { style: { marginTop: "70px" } });
     }
   };
+
   return (
     <>
       <dialog id="my_modal_3" className="modal">
         <div className="modal-box">
           <form onSubmit={handleAddClick}>
-            <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeAddModal}>
+            <button type="button" className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={closeModal}>
               ✕
             </button>
             <div className='flex justify-between mt-4'>
@@ -258,7 +253,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
                 <p className='text-sm font-normal'> If you <span className="font-bold">don’t set a prefix</span>, entries will be numbered as <span className="font-bold">1, 2, 3,</span> etc.</p>
               </div>
             )}
-            { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={newQueue} newAlphabet={newAlphabet} />)}
+            { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
               <button type="submit" className="btn btn-primary">Add</button>
@@ -345,7 +340,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
       </dialog>
       <div className="flex space-x-2">
         <button className="btn flex justify-end" onClick={openTemplateModal}>Queue Template</button>
-        <button className="btn" onClick={openAddModal}>
+        <button className="btn" onClick={openModal}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
         </svg>

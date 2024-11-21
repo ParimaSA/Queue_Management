@@ -1,8 +1,12 @@
 import React from 'react';
 
-function Preview(props) {
+interface Prop {
+    newQueue: string[];
+    newAlphabet: string[];
+}
+
+function Preview(props: Prop) {
     const { newQueue, newAlphabet } = props;
-    console.log("check: ", newQueue)
     const arrayNewQueue = Array.isArray(newQueue) ? newQueue : [newQueue];
 
     return (
