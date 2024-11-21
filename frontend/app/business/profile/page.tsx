@@ -10,10 +10,18 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
 import TopQueue from '../TopQueue';
-import Business from '../page';
 
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
+
+interface Business {
+  id: number;           
+  name: string;        
+  open_time: string;  
+  close_time: string; 
+  image: string | null; 
+}
+
 
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
@@ -24,8 +32,8 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
   // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
-  const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
-  const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+  const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
+  const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
     if (profile) {
       setProfileImage(profile.image);
@@ -46,21 +54,21 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!isModalOpen) {
-        const fileInput = document.querySelector('input[type="file"]');
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
         if (fileInput) {
-            fileInput.value = ''; // Reset file input value
+            fileInput.value = ''; 
         }
     }
 }, [isModalOpen]);
-  const handleBusinessNameChange = (event) => {
+  const handleBusinessNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessName(event.target.value);
   }
 
-  const handleOpenTimeChange = (event) => {
+  const handleOpenTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessOpenTime(event.target.value);
   }
 
-  const handleCloseTimeChange = (event) => {
+  const handleCloseTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessCloseTime(event.target.value);
   }
 
@@ -72,8 +80,8 @@ const ProfilePage = () => {
     return file.type.startsWith("image/") && isExtensionValid;
   }
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     
     if (file) {
       if (isValidImageFile(file)) {
@@ -82,7 +90,7 @@ const ProfilePage = () => {
         const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
         setPreviewImage(previewUrl);
       } else {
-        const fileInput = document.querySelector('input[type="file"]');
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
         if (fileInput) {
             fileInput.value = ''; // Reset file input value
         }
@@ -95,7 +103,7 @@ const ProfilePage = () => {
   }
 
 
-  const handleEditClick = (event) => {
+  const handleEditClick = (event: React.ChangeEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (businessName && businessOpenTime && businessCloseTime) {
       handleSubmit();
@@ -115,7 +123,7 @@ const ProfilePage = () => {
       setBusinessCloseTime(business.close_time);
       setPreviewImage(business.image);
           }
-    const modal = document.getElementById('profile_modal');
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
@@ -128,7 +136,7 @@ const ProfilePage = () => {
     setBusinessCloseTime('');
     setSelectedFile(null);
     setPreviewImage(null);
-    const modal = document.getElementById('profile_modal');
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
@@ -217,7 +225,7 @@ const ProfilePage = () => {
               ) : profileImage ? (
                 <Image src={profileImage} alt="Profile" width={500} height={300} />
               ) : (
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" />
+                <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" width={500} height={300}/>
               )}
 
                 </div>
@@ -279,13 +287,25 @@ const ProfilePage = () => {
                     </div>
                     <div className='flex justify-center py-3'>
                       <div className="avatar">
-                          <div className="w-34 rounded-xl">
+                        <div className="w-34 rounded-xl">
                           {profileImage ? (
-                            <Image src={profileImage} alt="Profile" width={500} height={300} />
+                            <Image 
+                              src={profileImage} 
+                              alt="User Profile Image" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           ) : (
-                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            <Image 
+                              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" 
+                              alt="Default Profile" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           )}
-                          </div>
+                        </div>
                       </div>
                     </div>
                     {my_business ? (

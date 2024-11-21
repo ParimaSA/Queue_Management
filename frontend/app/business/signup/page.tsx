@@ -6,9 +6,13 @@ import { toast } from "react-toastify";
 
 interface FormData {
     username: string;
-    password: string;
-    confirmpassword: string;
+    password1: string;
+    password2: string;
     business_name: string;
+}
+
+interface ErrorMessage {
+  error: string;
 }
 
 const SignUpForm = () => {
@@ -20,11 +24,11 @@ const SignUpForm = () => {
         toast.success("Successfully create your account.")
     }
 
-    const alert_error = (errorMessage) => {
+    const alert_error = (errorMessage: ErrorMessage) => {
         const errorData = JSON.parse(errorMessage.error)
         const firstErrorKey = Object.keys(errorData)[0]
-        errorMessage = errorData[firstErrorKey][0].message
-        toast.error(errorMessage)
+        const msg = errorData[firstErrorKey][0].message
+        toast.error(msg)
     }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
