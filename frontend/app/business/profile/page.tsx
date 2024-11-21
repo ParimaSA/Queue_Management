@@ -279,13 +279,25 @@ const ProfilePage = () => {
                     </div>
                     <div className='flex justify-center py-3'>
                       <div className="avatar">
-                          <div className="w-34 rounded-xl">
+                        <div className="w-34 rounded-xl">
                           {profileImage ? (
-                            <Image src={profileImage} alt="Profile" width={500} height={300} />
+                            <Image 
+                              src={profileImage} 
+                              alt="User Profile Image" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           ) : (
-                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            <Image 
+                              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" 
+                              alt="Default Profile" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           )}
-                          </div>
+                        </div>
                       </div>
                     </div>
                     {my_business ? (

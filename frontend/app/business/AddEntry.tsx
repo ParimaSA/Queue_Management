@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { mutate } from 'swr';
 import QRCode from 'qrcode';
+import Image from 'next/image';
 import { useReactToPrint } from 'react-to-print'
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
 
@@ -139,7 +140,7 @@ const AddEntry = ({ queue }) => {
                   
                   {/* QR Code */}
                   <div className="mx-auto w-28 h-28 flex items-center justify-center">
-                    {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                    {src ? <Image src={src} height={700} width={700} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
                   </div>
 
                   {/* Estimated Time and Queue Position */}
