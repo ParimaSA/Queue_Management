@@ -81,7 +81,7 @@ const QueueVolumeChart: React.FC = () => {
                 chartInstanceRef.current.destroy();
             }
         };
-    }, [entryData]);
+    });
 
     return <canvas ref={chartRef} />;
 }

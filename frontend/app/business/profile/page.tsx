@@ -10,7 +10,6 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
 import TopQueue from '../TopQueue';
-import Business from '../page';
 
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
@@ -25,7 +24,7 @@ const ProfilePage = () => {
   // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
   const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
   const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
-  const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+  const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
     if (profile) {
       setProfileImage(profile.image);
@@ -217,7 +216,7 @@ const ProfilePage = () => {
               ) : profileImage ? (
                 <Image src={profileImage} alt="Profile" width={500} height={300} />
               ) : (
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" />
+                <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" width={500} height={300}/>
               )}
 
                 </div>

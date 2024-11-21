@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -10,10 +9,9 @@ import Preview from './Preview';
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
 
-const AddQueue = ({ business_data, onQueueAdded }) => {
+const AddQueue = ({ onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
@@ -72,7 +70,6 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   };
 
   const openModal = () => {
-    setIsModalOpen(true);
     const modal = document.getElementById('my_modal_3');
     if (modal) {
       modal.showModal();
@@ -82,7 +79,6 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const closeModal = () => {
     setIsExplanation(false)
     setIsPreview(false)
-    setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
     const modal = document.getElementById('my_modal_3');

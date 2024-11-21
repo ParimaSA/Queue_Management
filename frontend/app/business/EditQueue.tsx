@@ -1,12 +1,9 @@
 'use client'
 
-import { fetchData } from 'next-auth/client/_utils';
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import PreviewIcon from '@mui/icons-material/Preview';
-import Preview from './Preview';
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
@@ -15,7 +12,6 @@ const EditQueue = ({queue}) => {
   const [QueueId, setQueueId] = useState('');
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
 
@@ -33,7 +29,7 @@ const EditQueue = ({queue}) => {
     setEditedAlphabet(event.target.value);
   }
 
-  const handleAddClick = (queueID) => {
+  const handleAddClick = () => {
     if (editedQueue && editedAlphabet) {
       handleSubmit(parseInt(QueueId, 10));
       console.log('New Queue:', editedQueue);
@@ -72,7 +68,6 @@ const EditQueue = ({queue}) => {
     } catch (error) {
       console.log("Error fetching queue data:", error);
     }
-    setIsModalOpen(true);
     const modal = document.getElementById(QueueId);
     if (modal) {
       modal.showModal();
@@ -81,21 +76,12 @@ const EditQueue = ({queue}) => {
 
 
   const closeModal = (QueueId) => {
-    setIsModalOpen(false);
     setEditedQueue('');
     setEditedAlphabet('');
     const modal = document.getElementById(QueueId);
     if (modal) {
       modal.close();
     }
-  }
-
-  const handleEditedQueue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedQueue(event.target.value);
-  }
-
-  const handleEditedAlphabet = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedAlphabet(event.target.value);
   }
 
   const handleSubmit = async (queueId: number) => {
@@ -138,7 +124,6 @@ const EditQueue = ({queue}) => {
         console.log("Failed to delete queue")
         return
       }
-      const data = await response.json()
       mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
       console.log("Error save delete queue:", error)
