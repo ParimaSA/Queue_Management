@@ -20,7 +20,6 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const [addedQueues, setAddedQueues] = useState([]);
   const Alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const hospitalQueues = [
     'Heart', 'Cancer', 'Bone & Spine', 'Brain', 'Trauma', 'Health Check-up', 
