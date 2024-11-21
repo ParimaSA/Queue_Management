@@ -79,11 +79,11 @@ ROOT_URLCONF = 'mysite.urls'
 CORS_URLS_REGEX = r"^/api/.*$"
 # CORS_ALLOWED_ORIGINS = []
 
-CORS_ALLOWED_ORIGINS = []
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
-ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
-for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
-    CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
+# ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
+# for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
+#     CORS_ALLOWED_ORIGINS.append(f"{origin}".strip().lower())
 
 
 TEMPLATES = [
