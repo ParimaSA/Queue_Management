@@ -1,6 +1,8 @@
 """Api routes for business and customer."""
 
 from typing import List
+
+import boto3
 from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from .schemas import (
@@ -35,6 +37,7 @@ from ninja.files import UploadedFile
 from .models import Business
 
 DEFAULT_PROFILE_IMAGE_NAME = "profiles/default.png"
+S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
 
 
 def serialize_single_entry(entry):
@@ -246,14 +249,12 @@ class BusinessController:
             status=200,
         )
 
-
     @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
     def get_profile_image(self, request):
         """Return the profile image of the business."""
         try:
             business = Business.objects.get(user=request.user)
-            image_relative_path = business.profile_image_url
-            image_url = request.build_absolute_uri(image_relative_path)
+            image_url = business.profile_image_url
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
 
@@ -268,23 +269,24 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        
-        # Delete the old profile image if it exists
-        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
-            old_image_path = os.path.join(
-                settings.MEDIA_ROOT, business.image.name)
-            if os.path.exists(old_image_path):
-                os.remove(old_image_path)
 
-        business.image.save(file.name, ContentFile(file.read()), save=True)
+        # Upload the image to S3
+        s3 = boto3.resource("s3")
+        bucket = s3.Bucket(S3_BUCKET_NAME)
+        file_name = f"profiles/{file.name}"  # Ensure the file has a unique name in S3
+        bucket.upload_fileobj(file.file, file_name)
 
-        image_url = request.build_absolute_uri(business.image.url)  # Full URL
+        # Set the image path (not URL)
+        business.image = file_name  # Don't assign the full URL, just the file path
+        business.save()
+
         return {
             "msg": f"{file.name} uploaded.",
-            "business": image_url
+            "business": business.profile_image_url  # This will return the correct URL
         }
 
-
+    
+    
 @api_controller("/queue")
 class QueueController:
     """Controller for managing queue-related endpoints."""

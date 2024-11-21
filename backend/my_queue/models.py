@@ -11,6 +11,12 @@ from nanoid import generate
 from django.forms import ModelForm
 
 
+S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
+
+def get_default_profile_image():
+    """Return the default profile image URL."""
+    return f'https://{settings.AWS_S3_CUSTOM_DOMAIN}.s3.amazonaws.com/profiles/default.png'
+
 class Business(models.Model):
     """Business model to keep track of business owners' information."""
 
@@ -18,14 +24,30 @@ class Business(models.Model):
     name = models.CharField(max_length=255)
     open_time = models.TimeField(default="06:00")
     close_time = models.TimeField(default="23:59")
-    image = models.ImageField(upload_to='profiles/', blank=True, default='profiles/default.png')
-    
+    image = models.ImageField(
+        blank=True, 
+        default=get_default_profile_image,  # Default URL will be returned by the function
+        upload_to="profiles/"  # S3 will store the image under the 'profiles/' directory
+    )
+
     @property
     def profile_image_url(self):
-        """Returns the image URL or a default URL if the file is missing."""
-        if self.image and os.path.exists(self.image.path):
-            return self.image.url
-        return os.path.join(settings.MEDIA_URL, 'profiles/default.png')
+        """Returns the full URL for the profile image or default image."""
+        # Return the full URL if an image exists; otherwise, return the default image URL
+        return self.image.url if self.image else get_default_profile_image()
+    
+    # @property
+    # def profile_image_url(self):
+    #     """Returns the image URL or a default URL if the file is missing."""
+    #     if self.image and os.path.exists(self.image.path):
+    #         return self.image.url
+    #     return os.path.join(settings.MEDIA_URL, 'profiles/default.png')
+
+
+    # @property
+    # def profile_image_url(self):
+    #     """Returns the image URL or a default URL if the file is missing."""
+    #     return self.image or f'https://{S3_BUCKET_NAME}.s3.amazonaws.com/profiles/default.png'
 
     def __str__(self):
         """Return name of Business."""
