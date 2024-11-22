@@ -270,18 +270,15 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-
-        # Upload the image to S3
-        s3 = boto3.resource("s3")
-        bucket = s3.Bucket(S3_BUCKET_NAME)
-        file_name = f"profiles/{file.name}"  # Ensure the file has a unique name in S3
-        bucket.upload_fileobj(file.file, file_name)
         
-        
-        # Set the image path (not URL)
-        business.image = file_name  # Don't assign the full URL, just the file path
-        business.save()
+        # Delete the old profile image if it exists
+        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
+                business.image.delete(save=False)  # Delete from storage (handled by S3)
 
+
+        business.image.save(file.name, ContentFile(file.read()), save=True)
+
+        image_url = request.build_absolute_uri(business.image.url)  # Full URL
         return {
             "msg": f"{file.name} uploaded.",
             "business": business.profile_image_url  # This will return the correct URL
