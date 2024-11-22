@@ -107,41 +107,22 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
+          <div className="card shadow-xl h-[78vh] overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
-              {trackingCode && (
-                <div role="alert" className="alert shadow-lg">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="stroke-info h-6 w-6 shrink-0">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <div className='flex space-x-3'>
-                    <h3 className="font-bold">Tracking Code</h3>
-                    <h3 className="font-bold text-red-500">{trackingCode}</h3>
-                  </div>
-                </div>
-              )}
               <div className='space-x-3 flex py-2'>
-                <select className="select select-bordered lg:w-100 md:w-100 sm:w-90 h-26" onChange={handleSelectedChange}>
+                <select className="select select-bordered lg:w-[100vw] md:w-[100vw] sm:w-[90vw] h-[8vh]" onChange={handleSelectedChange}>
                   {queue.map(q => (
                     <option key={q.id} value={q.id}>{q.name}</option>
                   ))}
                 </select>
                 <div className="card-actions">
-                  <button className='btn h-26 lg:w-16 md:w-16 sm:w-8' onClick={handleAddClick}>
+                  <button className='btn h-[8vh] lg:w-full md:w-full sm:w-full' onClick={handleAddClick}>
                     Add
                   </button>
                 </div>
               </div>
-              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-80 overflow-hidden w-full">
+              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-[55vh] overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">
@@ -158,6 +139,11 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
                   {/* QR Code */}
                   <div className="mx-auto w-28 h-28 flex items-center justify-center">
                     {src ? <Image src={src} height={700} width={700} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                  </div>
+
+                  {/* URL */}
+                  <div className="text-black font-bold mb-2 text-sm">
+                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
                   </div>
 
                   {/* Estimated Time and Queue Position */}
