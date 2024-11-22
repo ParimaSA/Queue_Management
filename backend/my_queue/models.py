@@ -12,6 +12,7 @@ from django.forms import ModelForm
 
 
 S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
+AWS_S3_CUSTOM_DOMAIN = settings.AWS_S3_CUSTOM_DOMAIN
 
 def get_default_profile_image():
     """Return the default profile image URL."""
@@ -34,7 +35,7 @@ class Business(models.Model):
     def profile_image_url(self):
         """Returns the full URL for the profile image or default image."""
         # Return the full URL if an image exists; otherwise, return the default image URL
-        return self.image.url if self.image else get_default_profile_image()
+        return f'https://{settings.AWS_S3_CUSTOM_DOMAIN}/{self.image.name}' if self.image else get_default_profile_image()
     
     # @property
     # def profile_image_url(self):
