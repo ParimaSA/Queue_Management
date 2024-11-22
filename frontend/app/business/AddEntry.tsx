@@ -97,25 +97,6 @@ const AddEntry = ({ queue }) => {
           <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
-              {/* {trackingCode && (
-                <div role="alert" className="alert shadow-lg">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="stroke-info h-6 w-6 shrink-0">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  <div className='flex space-x-3'>
-                    <h3 className="font-bold">Tracking Code</h3>
-                    <h3 className="font-bold text-red-500">{trackingCode}</h3>
-                  </div>
-                </div>
-              )} */}
               <div className='space-x-3 flex py-2'>
                 <select className="select select-bordered lg:w-100 md:w-100 sm:w-90 h-26" onChange={handleSelectedChange}>
                   {queue.map(q => (
@@ -128,7 +109,7 @@ const AddEntry = ({ queue }) => {
                   </button>
                 </div>
               </div>
-              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-95 overflow-hidden w-full">
+              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-83 overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">
