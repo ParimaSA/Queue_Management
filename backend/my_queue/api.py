@@ -263,7 +263,8 @@ class BusinessController:
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
-        file = request.FILES.get('file')
+        file = request.FILES['file']
+        file_content = file.read()
 
         try:
             business = Business.objects.get(user=request.user)
@@ -275,7 +276,8 @@ class BusinessController:
         bucket = s3.Bucket(S3_BUCKET_NAME)
         file_name = f"profiles/{file.name}"  # Ensure the file has a unique name in S3
         bucket.upload_fileobj(file.file, file_name)
-
+        
+        
         # Set the image path (not URL)
         business.image = file_name  # Don't assign the full URL, just the file path
         business.save()
