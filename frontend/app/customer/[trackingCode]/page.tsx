@@ -152,16 +152,16 @@ const CustomerPage: React.FC = () => {
                 <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
       
                 {/* Queue Name and Time In */}
-                <div className="text-brown mb-6 text-lg">
+                <div className="text-brown mb-4 text-lg">
                   <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
                   <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
                 </div>
       
                 {/* Queue Number */}
-                <h1 className="text-7xl font-bold text-amber-900 mb-8">{item.name}</h1>
+                <h1 className="text-7xl font-bold text-amber-900 mb-2">{item.name}</h1>
       
                 {/* QR Code */}
-                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-5">
+                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-3">
                   {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
                 </div>
 
@@ -176,7 +176,7 @@ const CustomerPage: React.FC = () => {
                 </div>
 
                 {/* Estimated Time and Queue Position */}
-                <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
+                <div className="flex justify-around text-amber-700 text-lg font-semibold mb-3">
                   <div>
                     <p>Estimated Time</p>
                     <p>{item.Estimated ?? "null"}</p>
@@ -186,12 +186,19 @@ const CustomerPage: React.FC = () => {
                     <p>{item.queue_ahead}</p>
                   </div>
                 </div>
+
+                {/* Show message when it's the user's turn */}
+                {item.queue_ahead === 0 && (
+                  <div className="text-green-600 font-bold text-lg mb-2">
+                    Your turn has arrived!
+                  </div>
+                )}
       
                 {/* Cancel Button */}
                 <button
                   onClick={handleCancel}
                   disabled={isCancelling}
-                  className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-6 ${isCancelling ? 'btn-disabled' : ''}`}
+                  className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-3 ${isCancelling ? 'btn-disabled' : ''}`}
                 >
                   {isCancelling ? 'Canceling...' : 'cancel'}
                 </button>
