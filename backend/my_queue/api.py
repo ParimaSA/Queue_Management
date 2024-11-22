@@ -264,28 +264,26 @@ class BusinessController:
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES['file']
-        file_content = file.read()
-
+        print("file", file, file.size)
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        
-        # Delete the old profile image if it exists
-        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
-                business.image.delete(save=False)  # Delete from storage (handled by S3)
 
+        #Delete the old profile image if it exists
+        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
+            # Delete from storage (handled by S3)
+            business.image.delete(save=False)
 
         business.image.save(file.name, ContentFile(file.read()), save=True)
 
         image_url = request.build_absolute_uri(business.image.url)  # Full URL
         return {
             "msg": f"{file.name} uploaded.",
-            "business": business.profile_image_url  # This will return the correct URL
+            "business": image_url  # This will return the correct URL
         }
 
-    
-    
+
 @api_controller("/queue")
 class QueueController:
     """Controller for managing queue-related endpoints."""
