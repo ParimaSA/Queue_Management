@@ -10,7 +10,7 @@ interface ErrorResponse {
     error: string;
 }
 
-export async function GET(request: Request) {
+export async function GET() {
     try {
         const { data, status }: { data: any; status: number } = await ApiProxy.get(DJANGO_API_BUSINESS_TOP_QUEUES_URL, true);
         return NextResponse.json<any>(data, { status });

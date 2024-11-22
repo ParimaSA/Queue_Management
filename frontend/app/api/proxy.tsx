@@ -55,16 +55,28 @@ export default class ApiProxy {
         return await ApiProxy.handleFetch(endpoint, requestOptions)
     }
 
+
+    // new proxy
     static async post(endpoint: string, object: any, requireAuth: boolean): Promise<FetchResponse> {
-        const jsonData = JSON.stringify(object)
-        const headers = await ApiProxy.getHeaders(requireAuth)
+        const isFormData = object instanceof FormData;
+        const headers = await ApiProxy.getHeaders(requireAuth);
+        
+        // Remove Content-Type header if object is FormData
+        if (isFormData) {
+            delete headers["Content-Type"];
+        } else {
+            object = JSON.stringify(object);
+        }
+        
         const requestOptions: RequestInit = {
             method: "POST",
             headers,
-            body: jsonData
-        }
-        return await ApiProxy.handleFetch(endpoint, requestOptions)
+            body: object,
+        };
+    
+        return await ApiProxy.handleFetch(endpoint, requestOptions);
     }
+    
 
     static async get(endpoint: string, requireAuth: boolean): Promise<FetchResponse> {
         const headers = await ApiProxy.getHeaders(requireAuth)
