@@ -11,12 +11,6 @@ interface LoginRequest {
     password: string
 }
 
-interface LoginResponse {
-    username: string
-    access: string
-    refresh: string
-}
-
 export async function POST(request: Request): Promise<Response> {
     const requestData: LoginRequest = await request.json()
     const { data, status } = await ApiProxy.post(DJANGO_API_LOGIN_URL, requestData, false)
