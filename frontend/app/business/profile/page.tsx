@@ -11,6 +11,7 @@ import WeeklyEntryChart from '../WeeklyEntryChart';
 import EntryTimeChart from '../EntryTimeChart';
 import EstimateTimeChart from '../EstimateTimeChart';
 import EstimateDayChart from '../EstimateDayChart';
+import EntryChart from '../EntryChart';
 import TopQueue from '../TopQueue';
 import ApiProxy from '@/app/api/proxy';
 import { useRouter } from 'next/navigation';
@@ -386,10 +387,11 @@ const handleSubmit = async () => {
                 </div>
             </div>
 
-            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
-              Tab content 3
-            </div> */}
+              <h1>Entry Status</h1>
+              <EntryChart/>
+            </div>
           </div>
         </div>
         </div>

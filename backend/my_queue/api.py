@@ -545,4 +545,12 @@ class AnalyticController:
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 
+    @http_get("/entry", auth=helpers.api_auth_user_required)
+    def get_entry_number(self, request):
+        """Return a list of the number of entries of this business."""
+        entries = Entry.objects.filter(business__user=request.user)
+        return {"total_entry": entries.count(),
+                "waiting_entry": entries.filter(status="waiting").count(),
+                "complete_entry": entries.filter(status="completed").count(),
+                "cancel_entry": entries.filter(status="cancel").count()}
 
