@@ -27,9 +27,7 @@ export default class ApiProxy {
         }
 
         if (requireAuth) {
-            console.log("im hereeeeeee!!!!!!!!")
             const authToken = await getValidAuthToken()
-            console.log("under")
             if (!authToken){
                 return { redirectToLogin: "true" };
             }
