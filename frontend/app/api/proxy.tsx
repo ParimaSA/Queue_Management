@@ -1,8 +1,21 @@
 import { getAuthToken } from "@/lib/auth"
+import { isTokenExpired } from "@/components/CheckToken"
+import { refreshAuthToken } from "@/components/RefreshToken"
 
 interface FetchResponse {
     data: any
     status: number
+}
+
+async function getValidAuthToken(): Promise<string | null> {
+    const token = await getAuthToken();
+    if (!token) {
+        return null;
+    }
+    if (isTokenExpired(token)) {
+        return await refreshAuthToken();
+    }
+    return token;
 }
 
 export default class ApiProxy {
@@ -12,8 +25,12 @@ export default class ApiProxy {
             "Content-Type": "application/json",
             "Accept": "application/json",
         }
-        const authToken = await getAuthToken()
-        if (authToken && requireAuth) {
+
+        if (requireAuth) {
+            const authToken = await getValidAuthToken()
+            if (!authToken){
+                return { redirectToLogin: "true" };
+            }
             headers["Authorization"] = `Bearer ${authToken}`
         }
         return headers
