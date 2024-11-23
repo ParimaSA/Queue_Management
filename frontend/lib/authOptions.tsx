@@ -42,11 +42,11 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({ session }) {
       console.log(`authtoken: ${getAuthToken()}`)
       return session;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ baseUrl }) {
       return `${baseUrl}/business`;
     },
   },

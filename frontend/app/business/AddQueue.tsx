@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
@@ -9,24 +8,27 @@ import Preview from './Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 
+interface AddQueueProps {
+  onQueueAdded: () => void;
+}
 
-const AddQueue = ({ business_data, onQueueAdded }) => {
+
+const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
 
-  const handleQueueChange = (event) => {
+  const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewQueue(event.target.value)
   };
 
-  const handleAlphabetChange = (event) => {
+  const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewAlphabet(event.target.value)
   };
 
-  const handleAddClick = async (event) => {
+  const handleAddClick = async (event: React.FormEvent<HTMLFormElement> ) => {
     event.preventDefault(); 
     if (newQueue && (newAlphabet || !isPrefix)) {
       console.log('New Queue:', newQueue);
@@ -72,8 +74,7 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   };
 
   const openModal = () => {
-    setIsModalOpen(true);
-    const modal = document.getElementById('my_modal_3');
+    const modal = document.getElementById('my_modal_3') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
@@ -82,10 +83,9 @@ const AddQueue = ({ business_data, onQueueAdded }) => {
   const closeModal = () => {
     setIsExplanation(false)
     setIsPreview(false)
-    setIsModalOpen(false);
     setNewQueue('');
     setNewAlphabet('');
-    const modal = document.getElementById('my_modal_3');
+    const modal = document.getElementById('my_modal_3') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }

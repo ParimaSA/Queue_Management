@@ -7,6 +7,11 @@ import { useEffect} from 'react';
 
 const TOP_QUEUE_API_URL = "/api/business/top_queues";
 
+interface Queue{
+    id: number;
+    name: string;
+}
+
 const TopQueue = () => {
     const { data: top_queue, error: topQueueError } = useSWR(TOP_QUEUE_API_URL, fetcher);
     console.log(top_queue, topQueueError);
@@ -32,7 +37,7 @@ const TopQueue = () => {
                 <table className="table">
                 <tbody>
                     {top_queue && top_queue.length > 0 ? (
-                    top_queue.map((queue, index) => (
+                    top_queue.map((queue: Queue, index: number) => (
                         <tr key={queue.id} className={`hover text-xl ${index === 0 ? 'bg-lightOrange1' : index === 1 ? 'bg-lightOrange2' : 'bg-lightOrange3'}`}>
                         <th>{index + 1}</th>
                         <td>{queue.name}</td>

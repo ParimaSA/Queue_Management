@@ -1,6 +1,5 @@
 "use server"
 import { DJANGO_API_ENDPOINT } from '@/config/defaults'
-import { setRefreshToken, setToken } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import ApiProxy from '../proxy';
 

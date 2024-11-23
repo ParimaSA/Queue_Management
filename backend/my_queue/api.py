@@ -74,7 +74,8 @@ class BusinessController:
         form = SignUpForm(signup_user)
         if form.is_valid():
             new_user = form.save()
-            Business.objects.create(user=new_user, name=data_dict["business_name"])
+            Business.objects.create(
+                user=new_user, name=data_dict["business_name"])
             return {'msg': 'Business account is successfully created.'}
         else:
             error_details = form.errors.as_json()
@@ -85,7 +86,8 @@ class BusinessController:
         """Create new queue for business."""
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
-        same_queue_name = Queue.objects.filter(business=business, name=data_dict["name"])
+        same_queue_name = Queue.objects.filter(
+            business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
             return {"error": f"Queue with name {data_dict['name']} already exist."}
         new_queue = Queue.objects.create(business=business, **data_dict)
@@ -121,7 +123,7 @@ class BusinessController:
         access_token = refresh.access_token
 
         return {'access_token': str(access_token), 'refresh_token': str(refresh)}
-    
+
     @http_get("/top_queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
     def get_top_queue(self, request):
         """Return top 3 queues in the business."""
@@ -129,9 +131,10 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        top_queue_list = Queue.objects.filter(business=business).annotate(entry_count=Count('entry')).order_by('-entry_count')[:3]
+        top_queue_list = Queue.objects.filter(business=business).annotate(
+            entry_count=Count('entry')).order_by('-entry_count')[:3]
         return top_queue_list
-    
+
     @http_get("/avg_weekly_entry", auth=helpers.api_auth_user_required)
     def get_average_weekly_entry(self, request):
         """Return a list of the average number of entries for each day of the week."""
@@ -139,32 +142,33 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        
+
         try:
             queues = Queue.objects.filter(business=business)
         except Queue.DoesNotExist:
             return JsonResponse({"msg": "No queue found for this business."}, status=404)
-        
+
         try:
             date_range = Entry.objects.filter(business=business, queue__in=queues
-                                              ).aggregate(first_entry=Min("time_in"), 
-                                                           last_entry=Max("time_in"))
+                                              ).aggregate(first_entry=Min("time_in"),
+                                                          last_entry=Max("time_in"))
 
             if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
                 first_entry = date_range["first_entry"]
                 last_entry = date_range["last_entry"]
                 total_week = ((last_entry - first_entry).days // 7) + 1
-                
+
             weekly_entry = Entry.objects.filter(business=business, queue__in=queues
-                                         ).values("time_in__week_day"
-                                                  ).annotate(entry_count=Count("id"))
+                                                ).values("time_in__week_day"
+                                                         ).annotate(entry_count=Count("id"))
             avg_weekly_entry = []
             for entry in weekly_entry:
-                avg_weekly_entry.append({"day":entry["time_in__week_day"], "entry_count": math.ceil(entry["entry_count"]/total_week)})
+                avg_weekly_entry.append({"day": entry["time_in__week_day"], "entry_count": math.ceil(
+                    entry["entry_count"]/total_week)})
             return avg_weekly_entry
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
-        
+
     @http_get("/entry_in_time_slot", auth=helpers.api_auth_user_required)
     def get_entry_in_time_slot(self, request):
         """Return a list of the average number of entries in time slot."""
@@ -172,26 +176,29 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        
+
         try:
             queues = Queue.objects.filter(business=business)
         except Queue.DoesNotExist:
             return JsonResponse({"msg": "No queue found for this business."}, status=404)
-        
+
         try:
             entry = Entry.objects.filter(business=business, queue__in=queues)
             date_range = Entry.objects.filter(business=business, queue__in=queues
-                                              ).aggregate(first_entry=Min("time_in"), 
-                                                           last_entry=Max("time_in"))
+                                              ).aggregate(first_entry=Min("time_in"),
+                                                          last_entry=Max("time_in"))
             date = datetime.today().date()
-            open_time = timezone.make_aware(datetime.combine(date, business.open_time))
-            close_time = timezone.make_aware(datetime.combine(date, business.close_time))
-            total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
+            open_time = timezone.make_aware(
+                datetime.combine(date, business.open_time))
+            close_time = timezone.make_aware(
+                datetime.combine(date, business.close_time))
+            total_hours = math.ceil(
+                (close_time - open_time).total_seconds() / 3600)
             if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
                 first_entry = date_range["first_entry"]
                 last_entry = date_range["last_entry"]
                 total_week = ((last_entry - first_entry).days // 7) + 1
-            
+
                 time_slot_list = []
                 for i in range(math.ceil(total_hours/2)):
                     start_time = open_time + timedelta(hours=2 * i)
@@ -201,14 +208,16 @@ class BusinessController:
                         time_in_time__gte=start_time,
                         time_in_time__lt=end_time
                     )
-                    num_entry_in_slot = math.ceil(entry_in_slot.count()/total_week)
+                    num_entry_in_slot = math.ceil(
+                        entry_in_slot.count()/total_week)
 
-                    time_slot_list.append({"start_time": start_time.hour, "entry_count": num_entry_in_slot})
+                    time_slot_list.append(
+                        {"start_time": start_time.hour, "entry_count": num_entry_in_slot})
                 return time_slot_list
-            
+
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
-        
+
     @http_put("/business_updated", auth=helpers.api_auth_user_required)
     def edit_business(self, request, edit_attrs: BusinessUpdatedSchema):
         """
@@ -232,19 +241,39 @@ class BusinessController:
             },
             status=200,
         )
-    
+
     @http_get("/profile", response=dict, auth=helpers.api_auth_user_required)
     def get_profile_image(self, request):
         """Return the profile image of the business."""
-        print(request.user)
         try:
             business = Business.objects.get(user=request.user)
-            image_url = request.build_absolute_uri(business.image.url)
+            if business.image:
+                image_url = request.build_absolute_uri(business.image.url)
+            else:
+                return JsonResponse({"msg": "No profile image found."}, status=404)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        print("Image URL:", image_url)
         return {"image": image_url}
-    
+
+
+    @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
+    def upload_profile_image(self, request, file: UploadedFile = File(...)):
+        """Upload profile image for business."""
+        file = request.FILES.get('file')
+        
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        business.image.save(file.name, ContentFile(file.read()), save=True)
+
+        image_url = request.build_absolute_uri(business.image.url)  # Full URL
+        return {
+            "msg": f"{file.name} uploaded.",
+            "business": image_url
+        }
+
+
 
 @api_controller("/queue")
 class QueueController:
@@ -259,7 +288,7 @@ class QueueController:
             return {'error': 'This queue is not belong to your business.'}
         return queue
 
-    @http_get("/{queue_id}", response =QueueDetailSchema, auth=helpers.api_auth_user_required)
+    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
     def get_queue_detail(self, request, queue_id: int):
         """
         Get queue detail of a specified queue.
@@ -338,7 +367,8 @@ class QueueController:
     def get_waiting_entry_in_queue(self, request, queue_id: int):
         """Return list of all today's waiting entries in this queue."""
         today = timezone.localdate()
-        queue = get_object_or_404(Queue, business__user=request.user, pk=queue_id)
+        queue = get_object_or_404(
+            Queue, business__user=request.user, pk=queue_id)
         entry = Entry.objects.filter(
             queue=queue, status="waiting", time_in__date=today
         ).order_by("time_in")

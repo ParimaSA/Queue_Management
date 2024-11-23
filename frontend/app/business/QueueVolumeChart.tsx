@@ -5,34 +5,35 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 Chart.register(...registerables);
-const AVG_WEEKLY_ENTRY_API_URL = "/api/business/avg_weekly_entry";
+const ENTRY_IN_TIME_SLOT_API_URL = "/api/business/entry_in_time_slot";
 
-interface Entry{
-    day: number;
-    entry_count: number;
-}
+const QueueVolumeChart: React.FC = () => {
+    interface Slot {
+        start_time: number;
+        entry_count: number;
+    }
 
-const WeeklyEntryChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
-    const { data: avg_weekly_entry, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
-    const [entryData, setEntryData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
+    const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
+    const [entryData, setEntryData] = useState<number[]>([]);
+    const [timeSlot, setTimeSlot] = useState<number[]>([]);
 
     useEffect(() => {
         if (entryError) {
             console.log("Failed to load avg", entryError);
-        } else if (!avg_weekly_entry) {
+        } else if (!entry_in_time_slot) {
             console.log("Loading business...");
         } else {
-            console.log("Avg data:", avg_weekly_entry);
-            const updatedEntryData = entryData.map((_, dayIndex) => {
-                const entry = avg_weekly_entry.find(entry => entry.day - 1 === dayIndex);
-                return entry ? entry.entry_count || 0 : 0;
-            });
+            console.log("Slot data:", entry_in_time_slot);
+            const updatedEntryData = entry_in_time_slot.map(slot => slot.entry_count || 0);
+            const updatedTimeSlot = entry_in_time_slot.map(time => time.start_time || 0);
+            console.log("Entry data populated: ", updatedEntryData);
+            console.log("Time Slot: ", updatedTimeSlot);
             setEntryData(updatedEntryData);
-            console.log("Avg data2:", entryData);
+            setTimeSlot(updatedTimeSlot);
         }
-    }, [avg_weekly_entry, entryError]);
+    }, [entry_in_time_slot, entryError]);
 
     useEffect(() => {
         if (chartRef.current) {
@@ -41,11 +42,11 @@ const WeeklyEntryChart: React.FC = () => {
                 chartInstanceRef.current = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+                        labels: timeSlot,
                         datasets: [
                             {
                                 label: 'Number of Entry',
-                                backgroundColor: 'rgba(246, 185, 157)',
+                                backgroundColor: 'rgba(255, 187, 186)',
                                 data: entryData,
                             },
                         ],
@@ -69,7 +70,7 @@ const WeeklyEntryChart: React.FC = () => {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Day',
+                                    text: 'Time',
                                     color: '#333',
                                     font: {
                                         weight: 'bold'
@@ -91,4 +92,4 @@ const WeeklyEntryChart: React.FC = () => {
     return <canvas ref={chartRef} />;
 }
 
-export default WeeklyEntryChart;
+export default QueueVolumeChart;

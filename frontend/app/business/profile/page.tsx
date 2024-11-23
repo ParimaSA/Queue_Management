@@ -5,6 +5,7 @@ import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { toast } from "react-toastify";
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import EntryTimeChart from '../EntryTimeChart';
@@ -14,14 +15,26 @@ import TopQueue from '../TopQueue';
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
 
+interface Business {
+  id: number;           
+  name: string;        
+  open_time: string;  
+  close_time: string; 
+  image: string | null; 
+}
+
+
 const ProfilePage = () => {
   const [businessName, setBusinessName] = useState('');
   const [businessOpenTime, setBusinessOpenTime] = useState('');
   const [businessCloseTime, setBusinessCloseTime] = useState('')
-  const [profileImage, setProfileImage] = useState(null);;
+  const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { data: my_business, error: myBusinessError } = useSWR(MY_BUSINESS_API_URL, fetcher)
-  const { data: profile, error: profileError } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
+  // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
+  const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
+  const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
+  const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
   useEffect(() => {
     if (profile) {
       setProfileImage(profile.image);
@@ -40,20 +53,59 @@ const ProfilePage = () => {
     }
   }, [my_business, myBusinessError]);
 
-
-  const handleBusinessNameChange = (event) => {
+  useEffect(() => {
+    if (!isModalOpen) {
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
+        if (fileInput) {
+            fileInput.value = ''; 
+        }
+    }
+}, [isModalOpen]);
+  const handleBusinessNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessName(event.target.value);
   }
 
-  const handleOpenTimeChange = (event) => {
+  const handleOpenTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessOpenTime(event.target.value);
   }
 
-  const handleCloseTimeChange = (event) => {
+  const handleCloseTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBusinessCloseTime(event.target.value);
   }
 
-  const handleEditClick = () => {
+
+  const isValidImageFile = (file: File): boolean => {
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
+    const lowerCaseName = file.name.toLowerCase();
+    const isExtensionValid = imageExtensions.some((ext) => lowerCaseName.endsWith(ext));
+    return file.type.startsWith("image/") && isExtensionValid;
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    
+    if (file) {
+      if (isValidImageFile(file)) {
+        setSelectedFile(file); // Capture the selected file
+        console.log("This is a valid image file.");
+        const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
+        setPreviewImage(previewUrl);
+      } else {
+        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
+        if (fileInput) {
+            fileInput.value = ''; // Reset file input value
+        }
+        alert("Please select a valid image file.");
+        
+      }
+    } else {
+        setPreviewImage(profile.image); // Reset preview if no file is selected
+    }
+  }
+
+
+  const handleEditClick = (event: React.ChangeEvent<HTMLFormElement>) => {
+    event.preventDefault();
     if (businessName && businessOpenTime && businessCloseTime) {
       handleSubmit();
       closeModal();
@@ -69,8 +121,10 @@ const ProfilePage = () => {
       const business = my_business[0];
       setBusinessName(business.name);
       setBusinessOpenTime(business.open_time);
-      setBusinessCloseTime(business.close_time);}
-    const modal = document.getElementById('profile_modal');
+      setBusinessCloseTime(business.close_time);
+      setPreviewImage(business.image);
+          }
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
@@ -81,11 +135,14 @@ const ProfilePage = () => {
     setBusinessName('');
     setBusinessOpenTime('');
     setBusinessCloseTime('');
-    const modal = document.getElementById('profile_modal');
+    setSelectedFile(null);
+    setPreviewImage(null);
+    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
   };
+
 
   const handleSubmit = async () => {
     try {
@@ -103,6 +160,7 @@ const ProfilePage = () => {
 
       if (!response.ok) {
         console.log("Failed to save edited business")
+        toast.error("Failed to save edited business", {style: { marginTop: "70px" }})
         return
       }
       
@@ -111,9 +169,43 @@ const ProfilePage = () => {
 
       mutate(MY_BUSINESS_API_URL);
     } catch (error) {
-      console.log("Error save edited queue:", error)
+      console.log("Error save edited business:", error)
+      
     }
-  };
+
+    console.log(businessName, businessOpenTime, businessCloseTime);
+
+    const formData = new FormData();
+
+    if (selectedFile instanceof File) {
+        formData.append("file", selectedFile, selectedFile.name); // Append file with name
+        console.log("File appended:", selectedFile.name);
+    } else {
+        console.log("No valid file selected");
+        return;
+    }
+
+    try {
+        const response = await fetch(MY_BUSINESS_PROFILE_URL, {
+            method: "POST",
+            body: formData, // Automatically sets the content type for multipart/form-data
+        });
+
+        if (!response.ok) {
+            console.log("Failed to save new profile image");
+            return;
+        }
+
+        // Update data and close modal upon successful submission
+        // mutate(MY_BUSINESS_API_URL);
+        mutate(MY_BUSINESS_PROFILE_URL);
+        // closeModal();
+    } catch (error) {
+        console.log("Error saving edited business profile:", error);
+    }
+    closeModal();
+};
+
 
   return (
     <>
@@ -129,17 +221,20 @@ const ProfilePage = () => {
             <div className='flex justify-center items-center'>
               <div className="avatar">
               <div className="w-34 rounded-xl">
-                  {profileImage ? (
-                    <Image src={profileImage} alt="Profile" width={500} height={300} />
-                  ) : (
-                    <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                  )}
+              {previewImage ? (
+                <Image src={previewImage} alt="Profile" width={500} height={300} />
+              ) : profileImage ? (
+                <Image src={profileImage} alt="Profile" width={500} height={300} />
+              ) : (
+                <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Default profile" width={500} height={300}/>
+              )}
+
                 </div>
               </div>
             </div>
             <br/>
             <div className='mb-4'>
-              <input type="file" className="file-input file-input-bordered file-input-sm w-full rounded-full" />
+              <input type="file" className="file-input file-input-bordered file-input-sm w-full rounded-full" onChange={handleFileChange} />
             </div>
             <label className="input input-bordered flex items-center gap-2 font-bold mb-4 rounded-full">
               Business Name
@@ -193,13 +288,25 @@ const ProfilePage = () => {
                     </div>
                     <div className='flex justify-center py-3'>
                       <div className="avatar">
-                          <div className="w-34 rounded-xl">
+                        <div className="w-34 rounded-xl">
                           {profileImage ? (
-                            <Image src={profileImage} alt="Profile" width={500} height={300} />
+                            <Image 
+                              src={profileImage} 
+                              alt="User Profile Image" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           ) : (
-                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+                            <Image 
+                              src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" 
+                              alt="Default Profile" 
+                              width={500} 
+                              height={300} 
+                              className="object-cover rounded-xl"
+                            />
                           )}
-                          </div>
+                        </div>
                       </div>
                     </div>
                     {my_business ? (
@@ -272,4 +379,4 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage
+export default ProfilePage;

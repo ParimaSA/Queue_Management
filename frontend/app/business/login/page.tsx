@@ -1,21 +1,14 @@
 "use client";
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import LoginForm from '../components/LoginForm';
 import { useEffect } from 'react';
-import { fredoka } from '@/app/fonts/fonts';
-
-interface FormData {
-    username: string;
-    password: string;
-}
 
 const LoginPage: React.FC = () => {
   const auth = useAuth()
   const router = useRouter()
-  const { data: session } = useSession()
 
   // Redirect if the user is authenticated
   useEffect(() => {
@@ -23,7 +16,7 @@ const LoginPage: React.FC = () => {
         auth.login()
         router.replace('/business')
     }
-  }, [auth.isAuthenticated, router])
+  })
 
     return (
       <>

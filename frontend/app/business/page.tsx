@@ -10,7 +10,7 @@ import BusinessNavbar from './components/BusinessNavbar'
 const Business = () => {
   const auth = useAuth()
   const router = useRouter()
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   
   // Redirect if the user is not authenticated
   useEffect(() => {

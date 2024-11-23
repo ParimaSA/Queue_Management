@@ -1,12 +1,10 @@
 'use client'
 
 import React from 'react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 
 export default function Navbar() {
-    const pathname = usePathname()
 
     return (
         <div className='navbar fixed z-50 bg-darkPurple max-w-full'>

@@ -1,21 +1,27 @@
 'use client'
 
-import { fetchData } from 'next-auth/client/_utils';
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import PreviewIcon from '@mui/icons-material/Preview';
-import Preview from './Preview';
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
 
-const EditQueue = ({queue}) => {
-  const [QueueId, setQueueId] = useState('');
+interface Queue {
+  id: number; 
+  name: string;
+  prefix: string;
+}
+
+interface EditQueueProps {
+  queue: Queue;
+}
+
+const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
+  const [QueueId, setQueueId] = useState(-1);
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPrefix, setIsPrefix] = useState(false)
 
@@ -24,28 +30,28 @@ const EditQueue = ({queue}) => {
     setQueueId(queue.id);
   }, [queue]);
 
-  const handleQueueChange = (event) => {
+  const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     console.log(QueueId, " ChangeQueue")
     setEditedQueue(event.target.value);
   }
 
-  const handleAlphabetChange = (event) => {
+  const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditedAlphabet(event.target.value);
   }
 
-  const handleAddClick = (queueID) => {
-    if (editedQueue && editedAlphabet) {
-      handleSubmit(parseInt(QueueId, 10));
-      console.log('New Queue:', editedQueue);
-      console.log('New Alphabet', editedAlphabet);
-      closeModal(QueueId);
-    }
-    else {
-      console.log('No queue added');
-    }
+  const handleAddClick = () => {
+  if (editedQueue && (editedAlphabet || !isPrefix)) {
+    handleSubmit(QueueId);
+    console.log('New Queue:', editedQueue);
+    console.log('New Alphabet', editedAlphabet);
+    closeModal(QueueId);
   }
+  else {
+    console.log('No queue added');
+  }
+}
 
-  const openModal = async (queueId) => {
+  const openModal = async (queueId: number) => {
     setQueueId(queueId);
 
     try {
@@ -72,30 +78,20 @@ const EditQueue = ({queue}) => {
     } catch (error) {
       console.log("Error fetching queue data:", error);
     }
-    setIsModalOpen(true);
-    const modal = document.getElementById(QueueId);
+    const modal = document.getElementById(QueueId.toString()) as HTMLDialogElement;
     if (modal) {
       modal.showModal();
     }
   };
 
 
-  const closeModal = (QueueId) => {
-    setIsModalOpen(false);
+  const closeModal = (QueueId: number) => {
     setEditedQueue('');
     setEditedAlphabet('');
-    const modal = document.getElementById(QueueId);
+    const modal = document.getElementById(QueueId.toString()) as HTMLDialogElement;
     if (modal) {
       modal.close();
     }
-  }
-
-  const handleEditedQueue = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedQueue(event.target.value);
-  }
-
-  const handleEditedAlphabet = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setEditedAlphabet(event.target.value);
   }
 
   const handleSubmit = async (queueId: number) => {
@@ -138,7 +134,6 @@ const EditQueue = ({queue}) => {
         console.log("Failed to delete queue")
         return
       }
-      const data = await response.json()
       mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
       console.log("Error save delete queue:", error)
@@ -156,7 +151,7 @@ const EditQueue = ({queue}) => {
 
   return (
     <>
-        <dialog id={QueueId} className="modal">
+        <dialog id={QueueId.toString()} className="modal">
         <div className="modal-box">
             <form method="dialog">
             <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" >
