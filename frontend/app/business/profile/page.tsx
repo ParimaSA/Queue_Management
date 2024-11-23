@@ -10,6 +10,7 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import EntryTimeChart from '../EntryTimeChart';
 import EstimateTimeChart from '../EstimateTimeChart';
+import EstimateDayChart from '../EstimateDayChart';
 import TopQueue from '../TopQueue';
 
 const MY_BUSINESS_API_URL = "/api/business/";
@@ -339,7 +340,7 @@ const ProfilePage = () => {
                 <div className='pt-8'/>
                 <div className="card bg-cream w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Estimate Waiting Time by Time Slot Chart</h2>
+                    <h2 className="card-title">Waiting Time by Time Slot Chart</h2>
                       <div className='h-56 w-full flex justify-center items-center'>
                         <EstimateTimeChart/>
                       </div>
@@ -359,18 +360,18 @@ const ProfilePage = () => {
                 <div className='pt-8'/>
                 <div className="card bg-cream w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Estimate Waiting Time by Time Slot Chart</h2>
+                    <h2 className="card-title">Waiting Time by Day Chart</h2>
                       <div className='h-56 w-full flex justify-center items-center'>
-                        <EstimateTimeChart/>
+                        <EstimateDayChart/>
                       </div>
                   </div>
                 </div>
             </div>
 
-            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
+            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
               Tab content 3
-            </div>
+            </div> */}
           </div>
         </div>
         </div>

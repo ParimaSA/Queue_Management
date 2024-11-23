@@ -5,7 +5,7 @@ import math
 from datetime import timedelta, datetime
 from django.http import JsonResponse
 from ninja_extra import api_controller, http_get, http_post, http_put, http_delete
-from django.db.models import F, ExpressionWrapper, DurationField, Sum
+from django.db.models import F, ExpressionWrapper, DurationField, Sum, Avg
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.db.models import Count, Min, Max
@@ -443,10 +443,6 @@ class AnalyticController:
             close_time = timezone.make_aware(datetime.combine(date, business.close_time))
             total_hours = math.ceil((close_time - open_time).total_seconds() / 3600)
             if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
-                first_entry = date_range["first_entry"]
-                last_entry = date_range["last_entry"]
-                total_week = ((last_entry - first_entry).days // 7) + 1
-
                 time_slot_list = []
                 for i in range(math.ceil(total_hours / 2)):
                     start_time = open_time + timedelta(hours=2 * i)
@@ -457,7 +453,9 @@ class AnalyticController:
                         time_in_time__lt=end_time
                     )
                     if not entry_in_slot.exists():
-                        continue
+                        time_slot_list.append({"start_time": start_time.hour,
+                                               "estimate_waiting": 0,
+                                               "num_entry": 0})
                     entry_with_waiting_time = entry_in_slot.annotate(
                         waiting_time=ExpressionWrapper(
                             F('time_out') - F('time_in'),
@@ -502,14 +500,20 @@ class AnalyticController:
                 last_entry = date_range["last_entry"]
                 total_week = ((last_entry - first_entry).days // 7) + 1
 
-            weekly_entry = Entry.objects.filter(business=business, queue__in=queues
-                                                ).values("time_in__week_day"
-                                                         ).annotate(entry_count=Count("id"))
-            avg_weekly_entry = []
-            for entry in weekly_entry:
-                avg_weekly_entry.append({"day": entry["time_in__week_day"], "entry_count": math.ceil(
-                    entry["entry_count"] / total_week)})
-            return avg_weekly_entry
+                entry = Entry.objects.filter(business=business, queue__in=queues)
+
+                weekly_entry = entry.annotate(
+                    waiting_time=ExpressionWrapper(
+                        F('time_out') - F('time_in'),
+                        output_field=DurationField()
+                    )
+                ).values("time_in__week_day").annotate(avg_waiting_time=Avg("waiting_time"), entry_count=Count("id"))
+                avg_weekly_entry = []
+                for day_entry in weekly_entry:
+                    avg_weekly_entry.append({"day": day_entry["time_in__week_day"],
+                                             "entry_count": math.ceil(day_entry["entry_count"] / total_week),
+                                             "waiting_time": (day_entry["avg_waiting_time"].total_seconds() / 60) if day_entry["avg_waiting_time"] else 0})
+                return avg_weekly_entry
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 

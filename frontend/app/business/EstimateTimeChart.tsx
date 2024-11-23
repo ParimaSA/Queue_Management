@@ -69,7 +69,7 @@ const EstimateTimeChart: React.FC = () => {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: "Estimate Waiting Time(minute)",
+                                    text: "Average waiting time (minute)",
                                     color: "#333",
                                     font: { weight: "bold" },
                                 },

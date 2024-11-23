@@ -10,6 +10,7 @@ const AVG_WEEKLY_ENTRY_API_URL = "/api/analytic/day";
 interface Entry{
     day: number;
     entry_count: number;
+    waiting_time: number;
 }
 
 const WeeklyEntryChart: React.FC = () => {
