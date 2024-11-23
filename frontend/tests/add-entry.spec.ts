@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+const baseURL = process.env.TEST_BASE_URL || 'http://localhost:3000'; 
+
 test('Add queue entry and verify queue ticket appears', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
+  await page.goto(`${baseURL}`);
   
   // Login as Business Owner
   await page.getByRole('button', { name: 'Business Owner' }).click();

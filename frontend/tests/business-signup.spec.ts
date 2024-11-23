@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
+const baseURL = process.env.TEST_BASE_URL || 'http://localhost:3000'; 
+
 test('Business Owner Sign Up and Login', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
+  await page.goto(`${baseURL}`);
 
   // Navigate to Sign-Up page
   await page.getByRole('button', { name: 'Business Owner' }).click();
@@ -18,8 +20,8 @@ test('Business Owner Sign Up and Login', async ({ page }) => {
   // Submit form
   await page.getByRole('button', { name: 'Sign up' }).click();
 
-  await page.waitForURL('http://localhost:3000/business/login');
-  await expect(page).toHaveURL('http://localhost:3000/business/login');
+  await page.waitForURL(`${baseURL}/business/login`);
+  await expect(page).toHaveURL(`${baseURL}/business/login`);
 
   // Login with new credentials
   await page.getByPlaceholder('Username').fill('owner0');

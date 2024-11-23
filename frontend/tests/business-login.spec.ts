@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 
+
+const baseURL = process.env.TEST_BASE_URL || 'http://localhost:3000'; 
+
 test('Business Owner Login and Check Profile', async ({ page }) => {
-  await page.goto('http://localhost:3000/');
+  await page.goto(`${baseURL}`);
   
   // Click on Business Owner button
   await page.getByRole('button', { name: 'Business Owner' }).click();
@@ -11,15 +14,15 @@ test('Business Owner Login and Check Profile', async ({ page }) => {
   await page.getByPlaceholder('Password').fill('hackme11');
   await page.getByRole('button', { name: 'Login' }).click();
 
-  await page.waitForURL('http://localhost:3000/business');
-  await expect(page).toHaveURL('http://localhost:3000/business');
+  await page.waitForURL(`${baseURL}/business`);
+  await expect(page).toHaveURL(`${baseURL}/business`);
 
   // Go to the profile page
   await page.getByText('Account').click();
   await page.getByRole('link', { name: 'Profile' }).click();
 
-  await page.waitForURL('http://localhost:3000/business/profile');
-  await expect(page).toHaveURL('http://localhost:3000/business/profile');
+  await page.waitForURL(`${baseURL}/business/profile`);
+  await expect(page).toHaveURL(`${baseURL}/business/profile`);
 
   // Have correct business name
   const element = page.locator('text="TestRestaurant"');
