@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from "react-toastify";
+import { fredoka } from '@/app/fonts/fonts';
 
 interface FormData {
     username: string;
@@ -64,9 +65,14 @@ const SignUpForm = () => {
       
   return (
     <div className='flex justify-center items-center min-h-screen'>
-        <div className="card bg-base-100 lg:w-[60vw] md:w-[50vw] sm:w-[50vw] bg-lightPurple6 h-[80vh] shadow-xl flex justify-center items-center">
+        <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[80vh] shadow-xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center">
-            <label className='text-4xl text-center font-bold text-darkPurple2 flex justify-center items-center m-0'>Sign Up</label>
+            <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
+                <h1 className="text-4xl md:text-5xl text-darkGreen font-extrabold">
+                  Sign Up
+                </h1>
+                <p className="mt-4 text-lg text-gray-600">Enter your details to create your account</p>
+            </div>
             <form onSubmit={handleSubmit}>
               {error && <p className="text-red-500">{error}</p>}
               <div className='pt-7'/>
@@ -153,7 +159,7 @@ const SignUpForm = () => {
                   />
                 </div>    
                 <div className='pt-8'/>
-                <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-darkPurple2 text-white hover:bg-purple-900 border-none'>
+                <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-gradient-to-r from-brightPink to-brightPink1 text-white hover:bg-purple-900 border-none'>
                   Sign up
                 </button>
                 <div className='pt-6'/>
