@@ -19,6 +19,7 @@ interface AddEntryProps {
   queue: Queue[];
 }
 
+
 interface EntryData {
   queue_name: string;
   name: string;
@@ -27,8 +28,9 @@ interface EntryData {
   tracking_code: string;
 }
 
+
 const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
-  const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || -1);
+  const [selectedQueue, setSelectedQueue] = useState(queue[0]?.id || null);
   const [trackingCode, setTrackingCode] = useState(null);
   const [entryData, setEntryData] = useState<EntryData | null>(null);
   const [src, setSrc] = useState<string | null>(null);
@@ -41,8 +43,8 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
   });
 
   useEffect(() => {
-    if (queue.length > 0) {
-      setSelectedQueue(queue[0].id);
+    if (!selectedQueue) {
+      setSelectedQueue(queue[0]?.id);
     }
   }, [queue]);
   
@@ -165,12 +167,12 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
                   </div>
                 </div>
                 <div className="flex justify-end">
-                <button
-                  className="btn h-12 w-20 mr-2"
-                  onClick={() => reactToPrintFn && reactToPrintFn()}
-                >
-                  <LocalPrintshopIcon style={{ fontSize: 30 }} />
-                </button>                
+                  <button
+                    className="btn h-12 w-20 mr-2"
+                    onClick={() => reactToPrintFn && reactToPrintFn()}
+                  >
+                    <LocalPrintshopIcon style={{ fontSize: 30 }} />
+                  </button>
                 </div>
               </div>
                   ) : (

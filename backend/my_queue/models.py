@@ -72,7 +72,7 @@ class Entry(models.Model):
             self.tracking_code = new_tracking_code
 
         if not self.name:
-            today = timezone.now().date()
+            today = timezone.localtime(timezone.now()).date()
             queue_entries_today = (
                 Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
             )

@@ -80,8 +80,9 @@ ROOT_URLCONF = 'mysite.urls'
 CORS_URLS_REGEX = r"^/api/.*$"
 # CORS_ALLOWED_ORIGINS = []
 
-CORS_ALLOWED_ORIGINS = ["http://localhost:3000",
-                        "http://127.0.0.1:3000", "https://queue-management-taupe.vercel.app"]
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "https://queue-management-taupe.vercel.app"]
+
 
 # ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
 # for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
@@ -193,7 +194,7 @@ NINJA_JWT = {
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
 }
 
-# MEDIA_URL = "/media/"
+
 MEDIA_ROOT = BASE_DIR / os.path.join(BASE_DIR, 'media')
 
 
