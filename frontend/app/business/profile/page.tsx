@@ -11,6 +11,8 @@ import WeeklyEntryChart from '../WeeklyEntryChart';
 import EntryTimeChart from '../EntryTimeChart';
 import EstimateTimeChart from '../EstimateTimeChart';
 import EstimateDayChart from '../EstimateDayChart';
+import EstimateQueueChart from '../EstimateQueueChart';
+import EntryQueueChart from '../EntryQueueChart';
 import EntryChart from '../EntryChart';
 import TopQueue from '../TopQueue';
 import ApiProxy from '@/app/api/proxy';
@@ -420,6 +422,26 @@ const handleSubmit = async () => {
                     <h2 className="card-title">Waiting Time by Day Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <EstimateDayChart/>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue"/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0 }}>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Queue Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EntryQueueChart />
+                    </div>
+                  </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Waiting Time by Queue Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EstimateQueueChart/>
                     </div>
                   </div>
                 </div>

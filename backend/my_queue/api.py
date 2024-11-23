@@ -558,29 +558,25 @@ class AnalyticController:
         except Queue.DoesNotExist:
             return JsonResponse({"msg": "No queue found for this business."}, status=404)
 
-        try:
-            date_range = Entry.objects.filter(business=business, queue__in=queues
-                                              ).aggregate(first_entry=Min("time_in"),
-                                                          last_entry=Max("time_in"))
-            all_queue_entry = []
-            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
-                for queue in queues:
-                    entry = Entry.objects.filter(business=business, queue__in=queues)
+        all_queue_entry = []
+        for queue in queues:
+            entry = Entry.objects.filter(business=business, queue=queue)
 
-                    queue_entry = entry.annotate(
-                        waiting_time=ExpressionWrapper(
-                            F('time_out') - F('time_in'),
-                            output_field=DurationField()
-                        )
-                    ).annotate(avg_waiting_time=Avg("waiting_time"), entry_count=Count("id"))
+            queue_entry = entry.annotate(
+                waiting_time=ExpressionWrapper(
+                    F('time_out') - F('time_in'),
+                    output_field=DurationField()
+                )
+            ).aggregate(
+                avg_waiting_time=Avg("waiting_time"),
+                entry_count=Count("id")
+            )
 
-                    all_queue_entry.append({"queue": queue.name,
-                                            "entry_count": queue_entry.entry_count,
-                                            "waiting_time": (queue_entry["avg_waiting_time"].total_seconds() / 60)
-                                            if queue_entry["avg_waiting_time"] else 0})
-            return all_queue_entry
-        except Entry.DoesNotExist:
-            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+            all_queue_entry.append({"queue": queue.name,
+                                    "entry_count": queue_entry["entry_count"],
+                                    "waiting_time": (queue_entry["avg_waiting_time"].total_seconds() / 60)
+                                    if queue_entry["avg_waiting_time"] else 0})
+        return all_queue_entry
 
     @http_get("/entry", auth=helpers.api_auth_user_required)
     def get_entry_number(self, request):
