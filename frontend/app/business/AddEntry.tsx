@@ -25,6 +25,7 @@ interface EntryData {
   time_in: Date;
   queue_ahead: number;
   tracking_code: string;
+  status: string;
 }
 
 
