@@ -46,10 +46,24 @@ def serialize_single_entry(entry):
         time_out=entry.time_out,
         status=entry.status,
         queue_ahead=queue_ahead,
+        estimate_waiting_time=calculate_estimate_waiting_time(entry, queue_ahead)
     )
 
     return entry_detail
 
+def calculate_estimate_waiting_time(entry, entry_ahead):
+    queue = entry.queue
+    entries = Entry.objects.filter(queue=queue, time_out__isnull=False)
+    entries = entries.annotate(
+                waiting_time=ExpressionWrapper(
+                    F('time_out') - F('time_in'),
+                    output_field=DurationField()
+                )
+              )
+    average_waiting_time = entries.aggregate(average_waiting_time=Avg('waiting_time'))['average_waiting_time']
+    if average_waiting_time is not None:
+        return math.ceil(average_waiting_time.total_seconds() / 60)
+    return 0
 
 @api_controller("/business")
 class BusinessController:
@@ -404,6 +418,9 @@ class EntryController:
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "Invalid tracking code"}, status=404)
         return [serialize_single_entry(my_entry)]
+
+    def get_estimate_waiting_time(self):
+        pass
 
 
 @api_controller("/analytic")
