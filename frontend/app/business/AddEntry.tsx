@@ -19,6 +19,7 @@ interface AddEntryProps {
   queue: Queue[];
 }
 
+
 interface EntryData {
   queue_name: string;
   name: string;
@@ -39,7 +40,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       console.log("Updated tracking code:", trackingCode);
       generate();
     }
-  }, [trackingCode]);
+  });
 
   useEffect(() => {
     if (!selectedQueue) {

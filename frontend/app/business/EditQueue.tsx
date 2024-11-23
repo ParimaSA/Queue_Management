@@ -40,11 +40,13 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
   }
 
   const handleAddClick = () => {
+
   if (editedQueue && (editedAlphabet || !isPrefix)) {
     handleSubmit(QueueId);
     console.log('New Queue:', editedQueue);
     console.log('New Alphabet', editedAlphabet);
     closeModal(QueueId);
+
   }
   else {
     console.log('No queue added');
