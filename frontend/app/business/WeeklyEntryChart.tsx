@@ -5,7 +5,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 Chart.register(...registerables);
-const AVG_WEEKLY_ENTRY_API_URL = "/api/business/avg_weekly_entry";
+const AVG_WEEKLY_ENTRY_API_URL = "/api/analytic/day";
 
 interface Entry{
     day: number;

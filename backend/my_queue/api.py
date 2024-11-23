@@ -124,51 +124,6 @@ class BusinessController:
 
         return {'access_token': str(access_token), 'refresh_token': str(refresh)}
 
-    @http_get("/top_queues", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
-    def get_top_queue(self, request):
-        """Return top 3 queues in the business."""
-        try:
-            business = Business.objects.get(user=request.user)
-        except Business.DoesNotExist:
-            return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        top_queue_list = Queue.objects.filter(business=business).annotate(
-            entry_count=Count('entry')).order_by('-entry_count')[:3]
-        return top_queue_list
-
-    @http_get("/avg_weekly_entry", auth=helpers.api_auth_user_required)
-    def get_average_weekly_entry(self, request):
-        """Return a list of the average number of entries for each day of the week."""
-        try:
-            business = Business.objects.get(user=request.user)
-        except Business.DoesNotExist:
-            return JsonResponse({"msg": "You don't have business yet."}, status=404)
-
-        try:
-            queues = Queue.objects.filter(business=business)
-        except Queue.DoesNotExist:
-            return JsonResponse({"msg": "No queue found for this business."}, status=404)
-
-        try:
-            date_range = Entry.objects.filter(business=business, queue__in=queues
-                                              ).aggregate(first_entry=Min("time_in"),
-                                                          last_entry=Max("time_in"))
-
-            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
-                first_entry = date_range["first_entry"]
-                last_entry = date_range["last_entry"]
-                total_week = ((last_entry - first_entry).days // 7) + 1
-
-            weekly_entry = Entry.objects.filter(business=business, queue__in=queues
-                                                ).values("time_in__week_day"
-                                                         ).annotate(entry_count=Count("id"))
-            avg_weekly_entry = []
-            for entry in weekly_entry:
-                avg_weekly_entry.append({"day": entry["time_in__week_day"], "entry_count": math.ceil(
-                    entry["entry_count"]/total_week)})
-            return avg_weekly_entry
-        except Entry.DoesNotExist:
-            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
-
     @http_get("/entry_in_time_slot", auth=helpers.api_auth_user_required)
     def get_entry_in_time_slot(self, request):
         """Return a list of the average number of entries in time slot."""
@@ -454,6 +409,17 @@ class EntryController:
 @api_controller("/analytic")
 class AnalyticController:
 
+    @http_get("/top-queue", response=List[QueueDetailSchema], auth=helpers.api_auth_user_required)
+    def get_top_queue(self, request):
+        """Return top 3 queues in the business."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        top_queue_list = Queue.objects.filter(business=business).annotate(
+            entry_count=Count('entry')).order_by('-entry_count')[:3]
+        return top_queue_list
+
     @http_get("/time-slot", auth=helpers.api_auth_user_required)
     def analytic_in_time_slot(self, request):
         """Return a list of the average number of entries in time slot."""
@@ -491,7 +457,6 @@ class AnalyticController:
                         time_in_time__lt=end_time
                     )
                     if not entry_in_slot.exists():
-                        print("no entry")
                         continue
                     entry_with_waiting_time = entry_in_slot.annotate(
                         waiting_time=ExpressionWrapper(
@@ -500,12 +465,10 @@ class AnalyticController:
                         )
                     )
                     for ent in entry_with_waiting_time:
-                        print(ent.id, ent.name, ent.time_out, ent.time_in, ent.waiting_time)
                     total_waiting_time = entry_with_waiting_time.aggregate(
                         total_waiting_time=Sum('waiting_time')
                     )['total_waiting_time']
-                    if not total_waiting_time:  # Handle cases where there are no valid waiting times
-                        print(f"No valid waiting times for time slot {start_time} to {end_time}")
+                    if not total_waiting_time:
                         continue
                     estimate_waiting_time = (total_waiting_time.total_seconds() / entry_in_slot.count()) / 60
 
@@ -516,4 +479,39 @@ class AnalyticController:
 
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+
+    @http_get("/weekly", auth=helpers.api_auth_user_required)
+    def get_average_weekly_entry(self, request):
+        """Return a list of the average number of entries for each day of the week."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+
+        try:
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"),
+                                                          last_entry=Max("time_in"))
+
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                first_entry = date_range["first_entry"]
+                last_entry = date_range["last_entry"]
+                total_week = ((last_entry - first_entry).days // 7) + 1
+
+            weekly_entry = Entry.objects.filter(business=business, queue__in=queues
+                                                ).values("time_in__week_day"
+                                                         ).annotate(entry_count=Count("id"))
+            avg_weekly_entry = []
+            for entry in weekly_entry:
+                avg_weekly_entry.append({"day": entry["time_in__week_day"], "entry_count": math.ceil(
+                    entry["entry_count"] / total_week)})
+            return avg_weekly_entry
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+
 

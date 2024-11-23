@@ -5,7 +5,7 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 Chart.register(...registerables);
-const ENTRY_IN_TIME_SLOT_API_URL = "/api/business/entry_in_time_slot";
+const ENTRY_IN_TIME_SLOT_API_URL = "/api/analytic/time";
 
 const EstimateTimeChart: React.FC = () => {
     interface Slot {
