@@ -90,7 +90,7 @@ export default function LoginForm() {
             />
         </div>
         <div className='pt-8'/>
-        <button type="submit" className='btn btn-primary lg:w-90 md:w-90 sm:w-70 items-center rounded-full bg-darkPurple2 text-white hover:bg-purple-900 border-none'>Login</button>
+        <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-darkPurple2 text-white hover:bg-purple-900 border-none'>Login</button>
         <div className='pt-7'/>
         <div className='flex items-center space-x-2'>
             <label>Does not have an account?</label>

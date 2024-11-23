@@ -21,10 +21,10 @@ const LoginPage: React.FC = () => {
     return (
       <>
       <div className='flex justify-center items-center min-h-screen'>
-        <div className="card bg-base-100 lg:w-122 md:w-100 sm:w-90 bg-lightPurple6 h-100 shadow-xl flex justify-center items-center">
+        <div className="card bg-base-100 lg:w-[60vw] md:w-[50vw] sm:w-[50vw] bg-lightPurple6 h-[80vh] shadow-xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center">
             <label className='text-4xl text-center text-darkPurple2 font-bold'>Login</label>
-            <button onClick={() => signIn("google")} className='btn btn-primary lg:w-90 md:w-90 sm:w-70 mt-8 bg-white text-black text-base border-none hover:bg-purple-300'>
+            <button onClick={() => signIn("google")} className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 bg-white text-black text-base border-none hover:bg-purple-300'>
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 50 40"
