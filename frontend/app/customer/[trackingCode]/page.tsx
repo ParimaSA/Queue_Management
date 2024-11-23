@@ -143,10 +143,9 @@ const CustomerPage: React.FC = () => {
 
   return (
     <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
-      <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
-        {data.length > 0 ? (
-          <div>
-            {data.map((item) => (
+      {data.length > 0 ? (
+        <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
+          {data.map((item) => (
               <div key={item.id}>
                 {/* Business Name */}
                 <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
@@ -216,7 +215,6 @@ const CustomerPage: React.FC = () => {
           <p className="text-xl">Loading...</p>
         )}
       </div>
-    </div>
   );
 }
 
