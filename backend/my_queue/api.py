@@ -506,7 +506,7 @@ class AnalyticController:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 
     @http_get("/weekly", auth=helpers.api_auth_user_required)
-    def get_average_weekly_entry(self, request):
+    def analytic_in_day(self, request):
         """Return a list of the average number of entries for each day of the week."""
         try:
             business = Business.objects.get(user=request.user)
@@ -542,6 +542,43 @@ class AnalyticController:
                                              "entry_count": math.ceil(day_entry["entry_count"] / total_week),
                                              "waiting_time": (day_entry["avg_waiting_time"].total_seconds() / 60) if day_entry["avg_waiting_time"] else 0})
                 return avg_weekly_entry
+        except Entry.DoesNotExist:
+            return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
+
+    @http_get("/queue", auth=helpers.api_auth_user_required)
+    def analytic_in_queue(self, request):
+        """Return a list of the number of entries and average waiting time for each queue."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+
+        try:
+            date_range = Entry.objects.filter(business=business, queue__in=queues
+                                              ).aggregate(first_entry=Min("time_in"),
+                                                          last_entry=Max("time_in"))
+            all_queue_entry = []
+            if date_range["first_entry"] is not None and date_range["last_entry"] is not None:
+                for queue in queues:
+                    entry = Entry.objects.filter(business=business, queue__in=queues)
+
+                    queue_entry = entry.annotate(
+                        waiting_time=ExpressionWrapper(
+                            F('time_out') - F('time_in'),
+                            output_field=DurationField()
+                        )
+                    ).annotate(avg_waiting_time=Avg("waiting_time"), entry_count=Count("id"))
+
+                    all_queue_entry.append({"queue": queue.name,
+                                            "entry_count": queue_entry.entry_count,
+                                            "waiting_time": (queue_entry["avg_waiting_time"].total_seconds() / 60)
+                                            if queue_entry["avg_waiting_time"] else 0})
+            return all_queue_entry
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 
