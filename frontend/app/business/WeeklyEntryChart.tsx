@@ -15,15 +15,17 @@ interface Entry{
 
 const WeeklyEntryChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
+    const [isLoading, setIsLoading] = useState(true)
     const chartInstanceRef = useRef<Chart | null>(null);
     const { data: avg_weekly_entry, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
     const [entryData, setEntryData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
 
     useEffect(() => {
+        setIsLoading(false)
         if (entryError) {
             console.log("Failed to load avg", entryError);
         } else if (!avg_weekly_entry) {
-            console.log("Loading business...");
+            setIsLoading(true)
         } else {
             console.log("Avg data:", avg_weekly_entry);
             const updatedEntryData = entryData.map((_, dayIndex) => {
@@ -46,7 +48,7 @@ const WeeklyEntryChart: React.FC = () => {
                         datasets: [
                             {
                                 label: 'Number of Entry',
-                                backgroundColor: "#f692bf",
+                                backgroundColor: "#ffcde8",
                                 data: entryData,
                             },
                         ],
@@ -88,6 +90,10 @@ const WeeklyEntryChart: React.FC = () => {
             }
         };
     }, [entryData]);
+
+    if (isLoading) {
+        return <span className="loading loading-bars loading-xs"></span>
+    }
 
     return <canvas ref={chartRef} />;
 }

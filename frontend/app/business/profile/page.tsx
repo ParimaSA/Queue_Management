@@ -301,13 +301,13 @@ const handleSubmit = async () => {
           <LoadingSpinner/>
         ) : 
       (  
-      <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen bg-cream2'>
+      <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen'>
         <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4'>
           <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
-              <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPurple4">
+              <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPink3">
                 <div className="card-body">
                     <div className='flex justify-end'>
-                      <button className="btn rounded-full bg-cream1" onClick={openModal}>
+                      <button className="btn rounded-full" onClick={openModal}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
@@ -341,7 +341,7 @@ const handleSubmit = async () => {
                       my_business.map(business => (
                         <div
                           key={business.id}
-                          className='text-xl flex justify-center py-4 bg-lightPurple5 rounded-full font-bold'
+                          className='text-xl flex justify-center py-4 bg-lightPurple8 rounded-full font-bold'
                         >
                           {business.name}
                         </div>

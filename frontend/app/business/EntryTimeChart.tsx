@@ -3,6 +3,7 @@ import React, { useRef, useEffect, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 Chart.register(...registerables);
 const ENTRY_IN_TIME_SLOT_API_URL = "/api/analytic/time";
@@ -15,13 +16,20 @@ const EntryTimeChart: React.FC = () => {
     }
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
+    const [isLoading, setIsLoading] = useState(true)
     const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
+
     const [chartData, setChartData] = useState<{ timeRange: string; entry: number }[]>([]);
 
     useEffect(() => {
+        setIsLoading(false)
         if (entryError) {
             console.error("Failed to load data", entryError);
-        } else if (entry_in_time_slot) {
+        } 
+        else if (!entry_in_time_slot){
+            setIsLoading(true)
+        }
+        else {
             const updatedData = entry_in_time_slot.map((slot) => ({
                 timeRange: `${slot.start_time}:00 - ${slot.start_time+2}:00`,
                 entry: slot.num_entry || 0,
@@ -47,7 +55,7 @@ const EntryTimeChart: React.FC = () => {
                             {
                                 label: "Number of entry",
                                 data: datasetData,
-                                backgroundColor: "#f692bf",
+                                backgroundColor: "#ffcde8",
                             },
                         ],
                     },
@@ -78,13 +86,16 @@ const EntryTimeChart: React.FC = () => {
             }
         }
 
-        // Cleanup on unmount
         return () => {
             if (chartInstanceRef.current) {
                 chartInstanceRef.current.destroy();
             }
         };
     }, [chartData]);
+
+    if (isLoading) {
+        return <span className="loading loading-bars loading-xs"></span>
+    }
 
     return <canvas ref={chartRef} />;
 };
