@@ -6,8 +6,8 @@ import ApiProxy from "@/app/api/proxy";
 
 const DJANGO_API_ENTRY_URL = `${DJANGO_API_ENDPOINT}/entry`;
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-    const { id } = await params
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const id = (await params).id
     const endpoint = `${DJANGO_API_ENTRY_URL}/${id}/status/cancel` ;
 
     try {

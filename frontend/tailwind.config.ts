@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import daisyui from "daisyui";
 
 const config: Config = {
   content: [
@@ -21,7 +22,7 @@ const config: Config = {
         lightPurple5: '#D2C2EF',
         lightSky: '#BFECFF',
         lightYellow: '#FFF8C9',
-        lightPink: '#D1AFC2',
+        lightPink: '#FDBFD5',
         darkGrey1: '#27374D',
         darkGrey2: '#526D82',
         lightGrey1: '#9DB2BF',
@@ -31,8 +32,6 @@ const config: Config = {
         cream: '#FAF0E2',
         cream2: '#FEF9F2',
         cream3: '#FFF1E7',
-        brightPink: '#C869B3',
-        brightPink2: '#DD98D6',
         lightOrange1: '#FFBFB6',
         lightOrange2: '#FFD5B6',
         lightOrange3: '#FFE8E2',
@@ -64,6 +63,6 @@ const config: Config = {
       }
     },
   },
-  plugins: [require('daisyui'),],
+  plugins: [daisyui],
 };
 export default config;

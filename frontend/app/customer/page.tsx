@@ -1,11 +1,12 @@
 import React from 'react'
-import NewAddTrackingCode from './AddTrackingCode'
+// import NewAddTrackingCode from './AddTrackingCode'
+import NoEntry from './NoEntry'
 
 const CustomerPage = () => {
   return (
     <main>
       <div>
-        <NewAddTrackingCode />
+        <NoEntry />
       </div>
     </main>
   )

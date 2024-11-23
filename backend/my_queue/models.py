@@ -1,5 +1,7 @@
 """Provide models using in business app."""
 
+import os
+from django.conf import settings
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import models
@@ -7,6 +9,13 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from nanoid import generate
 from django.forms import ModelForm
+
+S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
+
+def get_default_profile_image():
+    """Return the default profile image URL."""
+    return f'https://{settings.AWS_S3_CUSTOM_DOMAIN}/profiles/default.png'
+
 
 
 class Business(models.Model):
@@ -16,7 +25,16 @@ class Business(models.Model):
     name = models.CharField(max_length=255)
     open_time = models.TimeField(default="06:00")
     close_time = models.TimeField(default="23:59")
-    image = models.ImageField(upload_to='profiles/', null=True, blank=True)
+    image = models.ImageField(
+        blank=True, 
+        default='profiles/default.png',  # Default URL will be returned by the function
+        upload_to="profiles/"  # S3 will store the image under the 'profiles/' directory
+    )
+
+    @property
+    def profile_image_url(self):
+        """Returns the full URL for the profile image or default image."""
+        return self.image.url if self.image else get_default_profile_image()
 
     def __str__(self):
         """Return name of Business."""
@@ -54,7 +72,7 @@ class Entry(models.Model):
             self.tracking_code = new_tracking_code
 
         if not self.name:
-            today = timezone.now().date()
+            today = timezone.localtime(timezone.now()).date()
             queue_entries_today = (
                 Entry.objects.filter(queue=self.queue, time_in__date=today).count() + 1
             )
