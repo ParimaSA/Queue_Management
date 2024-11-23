@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import daisyui from "daisyui";
+import { light } from "@mui/material/styles/createPalette";
 
 const config: Config = {
   content: [
@@ -23,6 +24,7 @@ const config: Config = {
         lightSky: '#BFECFF',
         lightYellow: '#FFF8C9',
         lightPink: '#D1AFC2',
+        lightGreen: "#ffddea",
         darkGrey1: '#27374D',
         darkGrey2: '#526D82',
         lightGrey1: '#9DB2BF',
@@ -32,6 +34,7 @@ const config: Config = {
         cream: '#FAF0E2',
         cream2: '#FEF9F2',
         cream3: '#FFF1E7',
+        cream4: "#fffdf8",
         brightPink: '#C869B3',
         brightPink2: '#DD98D6',
         lightOrange1: '#FFBFB6',
@@ -41,6 +44,8 @@ const config: Config = {
         lightBlue4: '#9fa2d4',
         lightPurple: '#9d70b4',
         lightPurple6: '#ebeaf6',
+        lightPink2: "#e2fedc",
+        darkPink: "#f75ca2",
       },
       height: {
         '26': '4rem',
