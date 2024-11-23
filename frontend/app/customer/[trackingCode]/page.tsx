@@ -21,7 +21,7 @@ interface EntryData {
   time_in: Date;
   queue_ahead: number;
   tracking_code: string;
-  Estimated: number;
+  estimate_waiting_time: number;
 }
 
 const CustomerPage: React.FC = () => {
@@ -167,7 +167,7 @@ const CustomerPage: React.FC = () => {
               <div className="flex justify-around text-amber-700 text-lg font-semibold mb-6">
                 <div>
                   <p>Estimated Time</p>
-                  <p>{item.Estimated ?? "null"}</p>
+                  <p>{item.estimate_waiting_time === -1 ? "null" : item.estimate_waiting_time}</p>
                 </div>
                 <div>
                   <p>Ahead of you</p>

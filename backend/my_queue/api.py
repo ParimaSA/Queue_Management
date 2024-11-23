@@ -36,6 +36,7 @@ from typing import List
 def serialize_single_entry(entry):
     """Serialize json for entry."""
     queue_ahead = entry.get_queue_position()
+    estimate_waiting = calculate_estimate_waiting_time(entry, queue_ahead)
     entry_detail = EntryDetailCustomerSchema(
         id=entry.id,
         name=entry.name,
@@ -46,14 +47,14 @@ def serialize_single_entry(entry):
         time_out=entry.time_out,
         status=entry.status,
         queue_ahead=queue_ahead,
-        estimate_waiting_time=calculate_estimate_waiting_time(entry, queue_ahead)
+        estimate_waiting_time=estimate_waiting
     )
-
+    print(entry_detail)
     return entry_detail
 
 def calculate_estimate_waiting_time(entry, entry_ahead):
     queue = entry.queue
-    entries = Entry.objects.filter(queue=queue, time_out__isnull=False)
+    entries = Entry.objects.filter(queue=queue, time_out__isnull=False, status="completed")
     entries = entries.annotate(
                 waiting_time=ExpressionWrapper(
                     F('time_out') - F('time_in'),
@@ -62,8 +63,8 @@ def calculate_estimate_waiting_time(entry, entry_ahead):
               )
     average_waiting_time = entries.aggregate(average_waiting_time=Avg('waiting_time'))['average_waiting_time']
     if average_waiting_time is not None:
-        return math.ceil(average_waiting_time.total_seconds() / 60)
-    return 0
+        return math.ceil(average_waiting_time.total_seconds() / 60) * entry_ahead
+    return -1
 
 @api_controller("/business")
 class BusinessController:

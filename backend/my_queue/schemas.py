@@ -66,6 +66,7 @@ class EntryDetailCustomerSchema(Schema):
     time_out: Optional[datetime]
     status: str = "waiting"
     queue_ahead: int
+    estimate_waiting_time: int
 
       
 class EntryDetailSchema(Schema):
