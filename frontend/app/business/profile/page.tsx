@@ -10,6 +10,9 @@ import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
 import QueueVolumeChart from '../QueueVolumeChart';
 import TopQueue from '../TopQueue';
+import ApiProxy from '@/app/api/proxy';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/AuthProvider';
 
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
@@ -29,11 +32,23 @@ const ProfilePage = () => {
   const [businessCloseTime, setBusinessCloseTime] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
-  // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
-  const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+
+  const auth = useAuth()
+  const router = useRouter()
+  useEffect(() => {
+    async function checkAuth() {
+      const headers = await ApiProxy.getHeaders(true);
+      if (headers.redirectToLogin === "true") {
+        auth.logout()
+      }
+    }
+    checkAuth();
+  }, [auth, router]);
+
   useEffect(() => {
     if (profile) {
       setProfileImage(profile.image);

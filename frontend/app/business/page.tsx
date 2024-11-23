@@ -6,6 +6,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useSession } from "next-auth/react";
 import BusinessPage from './ShowEntry'
 import BusinessNavbar from './components/BusinessNavbar'
+import ApiProxy from '../api/proxy';
 
 const Business = () => {
   const auth = useAuth()
@@ -21,6 +22,16 @@ const Business = () => {
         router.replace('/business/login')
     }
   }, [auth, status, router])
+
+  useEffect(() => {
+    async function checkAuth() {
+      const headers = await ApiProxy.getHeaders(true);
+      if (headers.redirectToLogin === "true") {
+        auth.logout()
+      }
+    }
+    checkAuth();
+  }, [auth, router]);
 
   return (
     <main>
