@@ -153,11 +153,6 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
                     <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
                   </div>
 
-                  {/* URL */}
-                  <div className="text-black font-bold mb-2 text-sm">
-                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
-                  </div>
-
                   {/* Estimated Time and Queue Position */}
                   <div className="text-brown text-lg">
                     <p className="text-amber-700 font-semibold text-1g"> Ahead of you: {entryData.queue_ahead}</p>
