@@ -1,8 +1,6 @@
 import axios from "axios";
 import { getRefreshToken, setRefreshToken, setToken } from "@/lib/auth";
 
-const api = axios.create();
-
 export async function refreshAuthToken(): Promise<string | null> {
     const refreshToken = await getRefreshToken();
     try {
@@ -14,6 +12,7 @@ export async function refreshAuthToken(): Promise<string | null> {
         
         return accessToken;
     } catch (error) {
+        console.log(error)
         return null;
     }
 }
