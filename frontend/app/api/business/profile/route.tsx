@@ -15,6 +15,7 @@ interface ErrorResponse {
 export async function GET() {
     try {
         const { data, status }: { data: any; status: number } = await ApiProxy.get(DJANGO_API_BUSINESS_PROFILE_URL, true);
+        console.log("Profile", data.image);
         return NextResponse.json<any>(data, { status });
     } catch (error) {
         console.error("Error fetching business:", error);

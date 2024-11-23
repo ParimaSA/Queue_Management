@@ -1,5 +1,25 @@
 """Api routes for business and customer."""
 
+from typing import List
+
+import boto3
+from .forms import SignUpForm
+from .models import Entry, Business, Queue
+from .schemas import (
+    CustomerQueueCreateSchema,
+    EntryDetailSchema,
+    BusinessSchema,
+    BusinessRegisterSchema,
+    EmailBusinessRegisterSchema,
+    EditIn,
+    QueueDetailSchema,
+    EntryDetailCustomerSchema,
+    QueueCreateSchema,
+    BusinessDataSchema,
+    BusinessUpdatedSchema,
+)
+import os
+from django.conf import settings
 import helpers
 import math
 from datetime import timedelta, datetime
@@ -15,22 +35,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from ninja import File
 from django.core.files.base import ContentFile
 from ninja.files import UploadedFile
-from .schemas import (
-    CustomerQueueCreateSchema,
-    EntryDetailSchema,
-    BusinessSchema,
-    BusinessRegisterSchema,
-    EmailBusinessRegisterSchema,
-    EditIn,
-    QueueDetailSchema,
-    EntryDetailCustomerSchema,
-    QueueCreateSchema,
-    BusinessDataSchema,
-    BusinessUpdatedSchema,
-)
-from .models import Entry, Business, Queue
-from .forms import SignUpForm
-from typing import List
+from .models import Business
+
+DEFAULT_PROFILE_IMAGE_NAME = "profiles/default.png"
+S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
 
 
 def serialize_single_entry(entry):
@@ -217,32 +225,34 @@ class BusinessController:
         """Return the profile image of the business."""
         try:
             business = Business.objects.get(user=request.user)
-            if business.image:
-                image_url = request.build_absolute_uri(business.image.url)
-            else:
-                return JsonResponse({"msg": "No profile image found."}, status=404)
+            image_url = business.profile_image_url
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        return {"image": image_url}
 
+        return {"image": image_url}
 
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
-        file = request.FILES.get('file')
-        
+        file = request.FILES['file']
+        print("file", file, file.size)
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
+
+        #Delete the old profile image if it exists
+        if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
+            # Delete from storage (handled by S3)
+            business.image.delete(save=False)
+
         business.image.save(file.name, ContentFile(file.read()), save=True)
 
         image_url = request.build_absolute_uri(business.image.url)  # Full URL
         return {
             "msg": f"{file.name} uploaded.",
-            "business": image_url
+            "business": image_url  # This will return the correct URL
         }
-
 
 
 @api_controller("/queue")

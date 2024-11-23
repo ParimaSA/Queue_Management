@@ -6,6 +6,7 @@ import { useAuth } from '@/components/AuthProvider'
 import { useSession } from "next-auth/react";
 import BusinessPage from './ShowEntry'
 import BusinessNavbar from './components/BusinessNavbar'
+import ApiProxy from '../api/proxy';
 
 const Business = () => {
   const auth = useAuth()
@@ -22,12 +23,23 @@ const Business = () => {
     }
   }, [auth, status, router])
 
+  // Redirect if the token is expired
+  useEffect(() => {
+    async function checkAuth() {
+      const headers = await ApiProxy.getHeaders(true);
+      if (headers.redirectToLogin === "true") {
+        auth.logout()
+      }
+    }
+    checkAuth();
+  }, [auth, router]);
+
   return (
     <main>
-        <BusinessNavbar/>
-        <div className='pt-24 bg-cream2'>
-          <BusinessPage/>
-        </div>
+      <BusinessNavbar/>
+      <div className='pt-24 bg-cream2'>
+        <BusinessPage/>
+      </div>
     </main>
   )
 }

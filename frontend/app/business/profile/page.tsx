@@ -12,6 +12,10 @@ import EntryTimeChart from '../EntryTimeChart';
 import EstimateTimeChart from '../EstimateTimeChart';
 import EstimateDayChart from '../EstimateDayChart';
 import TopQueue from '../TopQueue';
+import ApiProxy from '@/app/api/proxy';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/AuthProvider';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const MY_BUSINESS_API_URL = "/api/business/";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
@@ -31,11 +35,24 @@ const ProfilePage = () => {
   const [businessCloseTime, setBusinessCloseTime] = useState('')
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null); // New file to be uploaded
-  // const [selectedFile, setSelectedFile] = useState(null); // New file to be uploaded
-  const [previewImage, setPreviewImage] = useState<string | null>(null); // Handles preview image
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true)
   const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
+
+  const auth = useAuth()
+  const router = useRouter()
+  useEffect(() => {
+    async function checkAuth() {
+      const headers = await ApiProxy.getHeaders(true);
+      if (headers.redirectToLogin === "true") {
+        auth.logout()
+      }
+    }
+    checkAuth();
+  }, [auth, router]);
+
   useEffect(() => {
     if (profile) {
       setProfileImage(profile.image);
@@ -45,10 +62,11 @@ const ProfilePage = () => {
   console.log("Profile: ", profileImage)
 
   useEffect(() => {
+    setIsLoading(false)
     if (myBusinessError) {
       console.log("Failed to load business", myBusinessError);
     } else if (!my_business) {
-      console.log("Loading business...");
+      setIsLoading(true)
     } else {
       console.log("Business data:", my_business);
     }
@@ -62,149 +80,145 @@ const ProfilePage = () => {
         }
     }
 }, [isModalOpen]);
-  const handleBusinessNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBusinessName(event.target.value);
-  }
 
-  const handleOpenTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBusinessOpenTime(event.target.value);
-  }
+const handleBusinessNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setBusinessName(event.target.value);
+}
 
-  const handleCloseTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setBusinessCloseTime(event.target.value);
-  }
+const handleOpenTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setBusinessOpenTime(event.target.value);
+}
+
+const handleCloseTimeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  setBusinessCloseTime(event.target.value);
+}
 
 
-  const isValidImageFile = (file: File): boolean => {
-    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
-    const lowerCaseName = file.name.toLowerCase();
-    const isExtensionValid = imageExtensions.some((ext) => lowerCaseName.endsWith(ext));
-    return file.type.startsWith("image/") && isExtensionValid;
-  }
+const isValidImageFile = (file: File): boolean => {
+  const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".webp"];
+  const lowerCaseName = file.name.toLowerCase();
+  const isExtensionValid = imageExtensions.some((ext) => lowerCaseName.endsWith(ext));
+  return file.type.startsWith("image/") && isExtensionValid;
+}
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    
-    if (file) {
-      if (isValidImageFile(file)) {
-        setSelectedFile(file); // Capture the selected file
-        console.log("This is a valid image file.");
-        const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
-        setPreviewImage(previewUrl);
-      } else {
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
-        if (fileInput) {
-            fileInput.value = ''; // Reset file input value
-        }
-        alert("Please select a valid image file.");
-        
-      }
+const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0];
+  
+  if (file) {
+    if (isValidImageFile(file)) {
+      setSelectedFile(file); 
+      console.log("This is a valid image file.");
+      const previewUrl = URL.createObjectURL(file); // Generate a temporary preview URL
+      setPreviewImage(previewUrl);
     } else {
-        setPreviewImage(profile.image); // Reset preview if no file is selected
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;;
+      if (fileInput) {
+          fileInput.value = '';
+      }
+      alert("Please select a valid image file.");
+      
     }
+  } else {
+      setPreviewImage(profile.image);
   }
+}
 
 
-  const handleEditClick = (event: React.ChangeEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (businessName && businessOpenTime && businessCloseTime) {
-      handleSubmit();
-      closeModal();
-    }
-    else {
-      console.log('No business details');
-    }
+const handleEditClick = (event: React.ChangeEvent<HTMLFormElement>) => {
+  event.preventDefault();
+  if (businessName && businessOpenTime && businessCloseTime) {
+    handleSubmit();
+    closeModal();
   }
+  else {
+    console.log('No business details');
+  }
+}
 
-  const openModal = () => {
-    setIsModalOpen(true);
-    if (my_business && my_business.length > 0) {
-      const business = my_business[0];
-      setBusinessName(business.name);
-      setBusinessOpenTime(business.open_time);
-      setBusinessCloseTime(business.close_time);
-      setPreviewImage(business.image);
-          }
-    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
-    if (modal) {
-      modal.showModal();
-    }
-  };
+const openModal = () => {
+  setIsModalOpen(true);
+  if (my_business && my_business.length > 0) {
+    const business = my_business[0];
+    setBusinessName(business.name);
+    setBusinessOpenTime(business.open_time);
+    setBusinessCloseTime(business.close_time);
+    setPreviewImage(business.image);
+        }
+  const modal = document.getElementById('profile_modal') as HTMLDialogElement;
+  if (modal) {
+    modal.showModal();
+  }
+};
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setBusinessName('');
-    setBusinessOpenTime('');
-    setBusinessCloseTime('');
-    setSelectedFile(null);
-    setPreviewImage(null);
-    const modal = document.getElementById('profile_modal') as HTMLDialogElement;
-    if (modal) {
-      modal.close();
-    }
-  };
+const closeModal = () => {
+  setIsModalOpen(false);
+  setBusinessName('');
+  setBusinessOpenTime('');
+  setBusinessCloseTime('');
+  setSelectedFile(null);
+  setPreviewImage(null);
+  const modal = document.getElementById('profile_modal') as HTMLDialogElement;
+  if (modal) {
+    modal.close();
+  }
+};
 
-
-  const handleSubmit = async () => {
-    try {
-      const response = await fetch(`/api/business/profile`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            name: businessName,
-            open_time: businessOpenTime,
-            close_time: businessCloseTime,
-        })
+const handleSubmit = async () => {
+  try {
+    const response = await fetch(`/api/business/profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+          name: businessName,
+          open_time: businessOpenTime,
+          close_time: businessCloseTime,
       })
+    })
+
+    if (!response.ok) {
+      console.log("Failed to save edited business")
+      toast.error("Failed to save edited business", {style: { marginTop: "70px" }})
+      return
+    }
+    
+    const data = await response.json()
+    console.log("Response:", data)
+
+    mutate(MY_BUSINESS_API_URL);
+  } catch (error) {
+    console.log("Error save edited business:", error)
+    
+  }
+
+  console.log(businessName, businessOpenTime, businessCloseTime);
+
+  const formData = new FormData();
+
+  if (selectedFile instanceof File) {
+      formData.append("file", selectedFile, selectedFile.name); // Append file with name
+      console.log("File appended:", selectedFile.name);
+  } else {
+      console.log("No valid file selected");
+      return;
+  }
+
+  try {
+      const response = await fetch(MY_BUSINESS_PROFILE_URL, {
+          method: "POST",
+          body: formData, 
+      });
 
       if (!response.ok) {
-        console.log("Failed to save edited business")
-        toast.error("Failed to save edited business", {style: { marginTop: "70px" }})
-        return
+          console.log("Failed to save new profile image");
+          return;
       }
-      
-      const data = await response.json()
-      console.log("Response:", data)
-
-      mutate(MY_BUSINESS_API_URL);
-    } catch (error) {
-      console.log("Error save edited business:", error)
-      
-    }
-
-    console.log(businessName, businessOpenTime, businessCloseTime);
-
-    const formData = new FormData();
-
-    if (selectedFile instanceof File) {
-        formData.append("file", selectedFile, selectedFile.name); // Append file with name
-        console.log("File appended:", selectedFile.name);
-    } else {
-        console.log("No valid file selected");
-        return;
-    }
-
-    try {
-        const response = await fetch(MY_BUSINESS_PROFILE_URL, {
-            method: "POST",
-            body: formData, // Automatically sets the content type for multipart/form-data
-        });
-
-        if (!response.ok) {
-            console.log("Failed to save new profile image");
-            return;
-        }
-
-        // Update data and close modal upon successful submission
-        // mutate(MY_BUSINESS_API_URL);
-        mutate(MY_BUSINESS_PROFILE_URL);
-        // closeModal();
-    } catch (error) {
-        console.log("Error saving edited business profile:", error);
-    }
-    closeModal();
+      mutate(MY_BUSINESS_PROFILE_URL);
+  } catch (error) {
+      console.log("Error saving edited business profile:", error);
+  }
+  closeModal();
 };
 
 
@@ -274,6 +288,10 @@ const ProfilePage = () => {
       </dialog>
       <BusinessNavbar />
       <div className='pt-16'/>
+      { isLoading ? (
+          <LoadingSpinner/>
+        ) : 
+      (  
       <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen bg-cream2'>
         <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4'>
           <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
@@ -376,6 +394,7 @@ const ProfilePage = () => {
         </div>
         </div>
       </div>
+      )}
     </>
   )
 }

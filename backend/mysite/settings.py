@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "ninja_jwt",
     # internal
     'my_queue',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -79,7 +80,9 @@ ROOT_URLCONF = 'mysite.urls'
 CORS_URLS_REGEX = r"^/api/.*$"
 # CORS_ALLOWED_ORIGINS = []
 
+
 CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "http://127.0.0.1:3000", "https://queue-management-taupe.vercel.app"]
+
 
 # ENV_CORS_ALLOWED_ORIGINS = config("CORS_ALLOWED_ORIGINS", cast=str, default="")
 # for origin in ENV_CORS_ALLOWED_ORIGINS.split(","):
@@ -187,9 +190,30 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 NINJA_JWT = {
-    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=120),
     'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=7),
 }
 
-MEDIA_URL = "/media/"
+
 MEDIA_ROOT = BASE_DIR / os.path.join(BASE_DIR, 'media')
+
+
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_REGION = os.getenv('AWS_REGION')
+AWS_STORAGE_BUCKET_NAME = "my-queue-bucket-isp"
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+
+AWS_S3_FILE_OVERWRITE = False
+MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+STORAGES = {
+    # media (image storage)
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+}
