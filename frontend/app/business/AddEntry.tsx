@@ -108,7 +108,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightGreen">
+          <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPink2">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
               {trackingCode && (
