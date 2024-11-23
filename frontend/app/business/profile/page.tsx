@@ -31,9 +31,9 @@ interface Business {
 }
 
 interface Summary {
-  queue_count: number;           
-  entry_count: number;   
-  avg_waiting_time: number;     
+  queue_count: number;
+  entry_count: number;
+  avg_waiting_time: number;
 }
 
 
@@ -402,7 +402,7 @@ const handleSubmit = async () => {
                       </div>
                   </div>
                 </div>
-            </div>  
+            </div>
 
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0 }}>
@@ -427,7 +427,7 @@ const handleSubmit = async () => {
           </div>
         </div>
         </div>
-      </div>  
+      </div>
       )}
     </>
   )

@@ -37,7 +37,7 @@ const Business = () => {
   return (
     <main>
       <BusinessNavbar/>
-      <div className='pt-24 bg-cream2'>
+      <div className='pt-24 bg-cream4'>
         <BusinessPage/>
       </div>
     </main>

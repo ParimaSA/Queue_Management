@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import daisyui from "daisyui";
+import { light } from "@mui/material/styles/createPalette";
 
 const config: Config = {
   content: [
@@ -22,7 +23,9 @@ const config: Config = {
         lightPurple5: '#D2C2EF',
         lightSky: '#BFECFF',
         lightYellow: '#FFF8C9',
-        lightPink: '#FDBFD5',
+        lightPink: '#D1AFC2',
+        lightPink2: "#ffddea",
+        lightPink3: "#ffeaf2",
         darkGrey1: '#27374D',
         darkGrey2: '#526D82',
         lightGrey1: '#9DB2BF',
@@ -32,6 +35,9 @@ const config: Config = {
         cream: '#FAF0E2',
         cream2: '#FEF9F2',
         cream3: '#FFF1E7',
+        cream4: "#fffdf8",
+        brightPink: '#C869B3',
+        brightPink2: '#DD98D6',
         lightOrange1: '#FFBFB6',
         lightOrange2: '#FFD5B6',
         lightOrange3: '#FFE8E2',
@@ -39,6 +45,18 @@ const config: Config = {
         lightBlue4: '#9fa2d4',
         lightPurple: '#9d70b4',
         lightPurple6: '#ebeaf6',
+        lightPurple7: '#cb86dd',
+        lightPurple8: '#e4d4f6',
+        lightGreen: "#e2fedc",
+        lightGreen2: "#96cbd0",
+        lightGreen3: "#aad9a0",
+        lightGreen4: "#7eda8f",
+        darkPink: "#f75ca2",
+        hotPink: "#f376a5",
+        darkGreen: "#789e84",
+        green: "#e3ffdd",
+        green2: "#b6ecaa",
+        green3: "#7eda8f",
       },
       height: {
         '26': '4rem',
