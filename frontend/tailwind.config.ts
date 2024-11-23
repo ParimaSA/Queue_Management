@@ -51,6 +51,7 @@ const config: Config = {
         lightGreen2: "#96cbd0",
         lightGreen3: "#aad9a0",
         lightGreen4: "#7eda8f",
+        lightGreen5: "#effaed",
         darkPink: "#f75ca2",
         hotPink: "#f376a5",
         darkGreen: "#789e84",

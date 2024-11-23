@@ -46,7 +46,7 @@ const EstimateDayChart: React.FC = () => {
                         datasets: [
                             {
                                 label: 'Average waiting time',
-                                backgroundColor: 'rgba(246, 185, 157)',
+                                backgroundColor: "#f692bf",
                                 data: entryData,
                             },
                         ],

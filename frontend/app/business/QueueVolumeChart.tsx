@@ -46,7 +46,7 @@ const QueueVolumeChart: React.FC = () => {
                         datasets: [
                             {
                                 label: 'Number of Entry',
-                                backgroundColor: '#b6ecaa',
+                                backgroundColor: "#f692bf",
                                 data: entryData,
                             },
                         ],

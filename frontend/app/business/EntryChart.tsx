@@ -38,8 +38,8 @@ const EntryChart = () => {
           entryData.complete_entry || 0,
           entryData.cancel_entry || 0,
         ],
-        backgroundColor: ['#FFCE56', '#4CAF50', '#FF5252'],
-        hoverBackgroundColor: ['#FFCE56', '#4CAF50', '#FF5252'],
+        backgroundColor: ['#cb86dd', "#b6ecaa", "#f376a5"],
+        hoverBackgroundColor: ['#cb86dd', "#b6ecaa", "#f376a5"],
       },
     ],
   };

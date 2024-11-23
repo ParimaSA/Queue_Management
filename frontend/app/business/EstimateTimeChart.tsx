@@ -49,7 +49,7 @@ const EstimateTimeChart: React.FC = () => {
                             {
                                 label: "Waiting Time(minute)",
                                 data: datasetData, // Heights of the bars
-                                backgroundColor: "rgba(255, 187, 186, 0.8)",
+                                backgroundColor: "#f692bf",
                             },
                         ],
                     },

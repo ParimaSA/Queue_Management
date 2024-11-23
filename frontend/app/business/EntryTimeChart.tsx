@@ -47,7 +47,7 @@ const EntryTimeChart: React.FC = () => {
                             {
                                 label: "Number of entry",
                                 data: datasetData,
-                                backgroundColor: "rgba(255, 187, 186, 0.8)",
+                                backgroundColor: "#f692bf",
                             },
                         ],
                     },
