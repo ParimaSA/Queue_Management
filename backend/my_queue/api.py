@@ -464,7 +464,6 @@ class AnalyticController:
                             output_field=DurationField()
                         )
                     )
-                    for ent in entry_with_waiting_time:
                     total_waiting_time = entry_with_waiting_time.aggregate(
                         total_waiting_time=Sum('waiting_time')
                     )['total_waiting_time']
