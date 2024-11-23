@@ -3,7 +3,6 @@ import React, { useRef, useEffect, useState } from "react";
 import { Chart, registerables } from "chart.js";
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
-import LoadingSpinner from "./components/LoadingSpinner";
 
 Chart.register(...registerables);
 const ENTRY_IN_TIME_SLOT_API_URL = "/api/analytic/time";
@@ -42,11 +41,9 @@ const EntryTimeChart: React.FC = () => {
         if (chartRef.current && chartData.length > 0) {
             const ctx = chartRef.current.getContext("2d");
             if (ctx) {
-                // Prepare labels and data for vertical bars
                 const labels = chartData.map((d) => d.timeRange);
                 const datasetData = chartData.map((d) => d.entry);
 
-                // Create Chart.js instance
                 chartInstanceRef.current = new Chart(ctx, {
                     type: "bar",
                     data: {
