@@ -4,9 +4,26 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import fetcher from "@/lib/fetcher";
 import QRCode from "qrcode";
+import Image from 'next/image';
 import useSWR from "swr";
 
 const ENTRY_TRACKING_CODE_URL = '/api/entry';
+
+interface Queue{
+  name: string;
+}
+
+interface EntryData {
+  id: number;
+  business: string;
+  queue: Queue;
+  name: string;
+  time_in: Date;
+  queue_ahead: number;
+  tracking_code: string;
+  Estimated: number;
+  status: string;
+}
 
 const CustomerPage: React.FC = () => {
   const router = useRouter();
@@ -145,76 +162,76 @@ const CustomerPage: React.FC = () => {
     <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
       {data.length > 0 ? (
         <div className="bg-white rounded-lg shadow-lg p-10 max-w-sm w-full text-center border-2 border-brown">
-          {data.map((item) => (
-              <div key={item.id}>
-                {/* Business Name */}
-                <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
-      
-                {/* Queue Name and Time In */}
-                <div className="text-brown mb-4 text-lg">
-                  <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
-                  <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
-                </div>
-      
-                {/* Queue Number */}
-                <h1 className="text-7xl font-bold text-amber-900 mb-2">{item.name}</h1>
-      
-                {/* QR Code */}
-                <div className="mx-auto w-32 h-32 flex items-center justify-center mb-3">
-                  {src ? <img src={src} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
-                </div>
+          {data.map((item: EntryData) => (
+            <div key={item.id}>
+              {/* Business Name */}
+              <h3 className="text-yellow-900 text-3xl font-bold mb-4 text-brown">{item.business}</h3>
+  
+              {/* Queue Name and Time In */}
+              <div className="text-brown mb-4 text-lg">
+                <p className=" text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
+                <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
+              </div>
+  
+              {/* Queue Number */}
+              <h1 className="text-7xl font-bold text-amber-900 mb-2">{item.name}</h1>
+  
+              {/* QR Code */}
+              <div className="mx-auto w-32 h-32 flex items-center justify-center mb-3">
+                {src ? <Image src={src} width={500} height={500} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+              </div>
 
-                {/* URL */}
-                <div className="text-black font-bold mb-8 text-sm">
+              {/* URL */}
+              <div className="text-black font-bold mb-8 text-sm">
                   <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>               
                 </div>
 
-                {/* Status */}  
-                <div className="text-amber-900 font-bold mb-3 text-lg">
-                  <p>[ Status: {item.status} ]</p>               
+              {/* Status */}  
+              <div className="text-amber-900 font-bold mb-3 text-lg">
+                <p>[ Status: {item.status} ]</p>               
+              </div>
+  
+              {/* Estimated Time and Queue Position */}
+              <div className="flex justify-around text-amber-700 text-lg font-semibold mb-3">
+                <div>
+                  <p>Estimated Time</p>
+                  <p>{item.Estimated ?? "null"}</p>
                 </div>
-
-                {/* Estimated Time and Queue Position */}
-                <div className="flex justify-around text-amber-700 text-lg font-semibold mb-3">
-                  <div>
-                    <p>Estimated Time</p>
-                    <p>{item.Estimated ?? "null"}</p>
-                  </div>
-                  <div>
-                    <p>Ahead of you</p>
-                    <p>{item.queue_ahead}</p>
-                  </div>
+                <div>
+                  <p>Ahead of you</p>
+                  <p>{item.queue_ahead}</p>
                 </div>
+              </div>
 
-                {/* Show message when it's the user's turn */}
-                {item.queue_ahead === 0 && (
-                  <div className="text-green-600 font-bold text-lg mb-2">
-                    Your turn has arrived!
-                  </div>
-                )}
+              {/* Show message when it's the user's turn */}
+              {item.queue_ahead === 0 && (
+                <div className="text-green-600 font-bold text-lg mb-2">
+                  Your turn has arrived!
+                </div>
+              )}
       
-                {/* Cancel Button */}
-                <button
-                  onClick={handleCancel}
+              {/* Cancel Button */}
+              <button
+                onClick={handleCancel}
                   disabled={isCancelling}
                   className={`btn btn-error bg-red-600 border-none text-white text-lg font-semibold mt-3 ${isCancelling ? 'btn-disabled' : ''}`}
                 >
                   {isCancelling ? 'Canceling...' : 'cancel'}
                 </button>
       
-                {/* Cancel Message */}
-                {cancelMessage && (
-                  <p className="mt-6 text-xl text-red-600 font-semibold">
-                    {cancelMessage}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xl">Loading...</p>
-        )}
-      </div>
+              {/* Cancel Message */}
+              {cancelMessage && (
+                <p className="mt-6 text-xl text-red-600 font-semibold">
+                  {cancelMessage}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xl">Loading...</p>
+      )}
+    </div>
   );
 }
 

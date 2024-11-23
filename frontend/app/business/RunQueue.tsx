@@ -1,12 +1,27 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
-import { useState } from 'react';
 
 const QUEUE_ENTRY_API_URL = `/api/queue/entry`;
 const ENTRY_API_URL = `/api/entry`;
 
-const RunQueue = ({queue}) => {
+interface Queue {
+  id: number; 
+  name: string;
+  prefix: string;
+}
+
+interface Entry {
+  id: string;
+  name: string;
+  status: string;
+}
+
+interface RunQueueProps {
+  queue: Queue;
+}
+
+const RunQueue: React.FC<RunQueueProps> = ({queue}) => {
   const queueId = queue.id
   const { data: entry, error: entryError } = useSWR(`${QUEUE_ENTRY_API_URL}/${queueId}`, fetcher);
 
@@ -28,7 +43,6 @@ const RunQueue = ({queue}) => {
         console.error("Failed to run queue:", errorData);
         return;
       }
-      const data = await response.json();
       mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
     } catch (error) {
       console.error("Error completing entry:", error);
@@ -49,7 +63,6 @@ const RunQueue = ({queue}) => {
         console.error("Fail to cancel this entry", errorData);
         return;
       }
-    const data = await response.json();
     mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
   } catch (error) {
       console.error("Error completing entry:", error);
@@ -59,7 +72,7 @@ const RunQueue = ({queue}) => {
   return (
     <>
       {entry.length > 0 ? (
-        entry.map((e, index) => (
+        entry.map((e: Entry, index: number) => (
           <div className='flex justify-between' key={`${e.id}-${index}`}>
             <h4 className='pt-4'>{e.name}</h4>
             <div className="dropdown dropdown-end" key={e.id}>
