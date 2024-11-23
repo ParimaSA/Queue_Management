@@ -6,6 +6,7 @@ import RunQueue from "./RunQueue";
 import EditQueue from "./EditQueue";
 import fetcher from "@/lib/fetcher";
 import useSWR, { mutate } from "swr";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 
@@ -19,7 +20,12 @@ interface Queue {
 const BusinessPage = () => {
   const { data: queueData, error: queueError } = useSWR<Queue[]>(BUSINESS_QUEUES_API_URL, fetcher);
   if (queueError) return <div>Failed to load queues</div>;
-  if (!queueData) return <div>Loading queues...</div>;
+  if (!queueData) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <LoadingSpinner />
+    </div>
+  )
+    
 
   const handleQueueAdded = () => {
     console.log("in handle queue add")

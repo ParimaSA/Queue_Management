@@ -19,12 +19,14 @@ interface AddEntryProps {
   queue: Queue[];
 }
 
+
 interface EntryData {
   queue_name: string;
   name: string;
   time_in: Date;
   queue_ahead: number;
   tracking_code: string;
+  status: string;
 }
 
 
@@ -33,13 +35,18 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
   const [trackingCode, setTrackingCode] = useState(null);
   const [entryData, setEntryData] = useState<EntryData | null>(null);
   const [src, setSrc] = useState<string | null>(null);
+  const [origin, setOrigin] = useState<string>('');
+
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
 
   useEffect(() => {
     if (trackingCode !== null) {
       console.log("Updated tracking code:", trackingCode);
       generate();
     }
-  }, [trackingCode]);
+  });
 
   useEffect(() => {
     if (!selectedQueue) {
@@ -90,7 +97,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
-    QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
+    QRCode.toDataURL(`${origin}/customer/${trackingCode}`).then(setSrc)
   }
 
   const formatDate = (isoDate: string | number | Date) => {
@@ -139,6 +146,11 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
                   {/* QR Code */}
                   <div className="mx-auto w-28 h-28 flex items-center justify-center">
                     {src ? <Image src={src} height={700} width={700} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+                  </div>
+
+                  {/* URL */}
+                  <div className="text-black font-bold mb-2 text-sm">
+                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
                   </div>
 
                   {/* URL */}

@@ -1,6 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 // Define types for AuthContext
 interface AuthContextType {
@@ -15,12 +16,14 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 const LOCAL_STORAGE_KEY = "is-logged-in";
 const LOCAL_USERNAME_KEY = "username";
+const LOGOUT_REDIRECT_URL = "/business/login"
 
 interface AuthProviderProps {
     children: ReactNode;
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const router = useRouter();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [username, setUsername] = useState("");
     
@@ -50,7 +53,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const logout = () => {
         setIsAuthenticated(false);
         localStorage.setItem(LOCAL_STORAGE_KEY, "0");
-        // router.replace(LOGOUT_REDIRECT_URL);
+        router.replace(LOGOUT_REDIRECT_URL);
     };
 
     return (
