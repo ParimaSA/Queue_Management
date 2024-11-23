@@ -159,81 +159,115 @@ const CustomerPage: React.FC = () => {
   generate()
 
   return (
-    <div className="bg-cream2 w-screen h-screen flex justify-center items-center">
-      {data.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-lg p-10 w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl text-center border-2 border-brown"
-          style={{ width: '80%', maxWidth: '800px', height: 'auto', resize: 'both', overflow: 'auto' }} // ทำให้สามารถลากขยายได้
-        >
-          {data.map((item: EntryData) => (
-            <div key={item.id}>
-              {/* Business Name */}
-              <h3 className="text-yellow-900 text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-brown">{item.business}</h3>
-  
-              {/* Queue Name and Time In */}
-              <div className="text-brown mb-4 text-lg sm:text-xl md:text-2xl">
-                <p className="text-amber-700 font-semibold">Queue Name: {item.queue.name}</p>
-                <p className="text-amber-700 font-semibold">Time in: {formatDate(item.time_in)}</p>
+    <div className="bg-cream2 w-screen h-screen flex justify-center items-center px-4 sm:px-6">
+    {data.length > 0 ? (
+      <div className="bg-white rounded-lg shadow p-4 sm:p-6 w-full lg:w-[40vw] md:w-[50vw] sm:w-[50vw] h-[82vh] sm:h-[84vh] md:h-[90vh] lg:h-[82vh] border-t-4 border-brown flex flex-col justify-between">
+        {data.map((item: EntryData) => (
+          <div key={item.id}>
+            {/* Business Name */}
+            <h3 className="text-brown text-lg sm:text-xl font-bold mb-2 text-center">
+              {item.business}
+            </h3>
+
+            {/* Queue Name and Time In */}
+            <div className="bg-brown/10 rounded-md p-3 mb-3 grid grid-cols-2 text-center">
+              <div>
+                <p className="text-gray-700 font-semibold">Queue Name</p>
+                <p className="text-amber-700 font-semibold text-sm">{item.queue.name}</p>
               </div>
-  
-              {/* Queue Number */}
-              <h1 className="font-bold text-amber-900 mb-2 text-6xl sm:text-7xl md:text-8xl">{item.name}</h1>
-  
-              {/* QR Code */}
-              <div className="mx-auto flex items-center justify-center mb-3" style={{ width: '30%', maxWidth: '200px', height: 'auto' }}>
-                {src ? <Image src={src} width={500} height={500} alt="QR Code" className="w-full h-full object-contain" /> : "Generating QR Code..."}
+              <div>
+                <p className="text-gray-700 font-semibold">Time In</p>
+                <p className="text-amber-700 font-semibold text-sm">{formatDate(item.time_in)}</p>
               </div>
-  
-              {/* URL */}
-              <div className="text-black font-bold mb-8 text-sm sm:text-base md:text-lg">
-                <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>
-              </div>
-  
-              {/* Status */}
-              <div className="text-amber-900 font-bold mb-3 text-lg sm:text-xl md:text-2xl">
-                <p>[ Status: {item.status} ]</p>
-              </div>
-  
-              {/* Estimated Time and Queue Position */}
-              <div className="flex justify-around text-amber-700 font-semibold mb-3 sm:text-xl md:text-2xl">
-                <div>
-                  <p>Estimated Time</p>
-                  <p>{item.Estimated ?? "null"}</p>
-                </div>
-                <div>
-                  <p>Ahead of you</p>
-                  <p>{item.queue_ahead}</p>
-                </div>
-              </div>
-  
-              {/* Show message when it's the user's turn */}
-              {item.queue_ahead === 0 && (
-                <div className="text-green-600 font-bold sm:text-xl md:text-2xl mb-2">
-                  Your turn has arrived!
-                </div>
-              )}
-  
-              {/* Cancel Button */}
-              <button
-                onClick={handleCancel}
-                disabled={isCancelling}
-                className={`btn btn-error bg-red-600 border-none text-white sm:text-xl md:text-2xl font-semibold mt-3 ${isCancelling ? 'btn-disabled' : ''}`}
-              >
-                {isCancelling ? 'Canceling...' : 'Cancel'}
-              </button>
-  
-              {/* Cancel Message */}
-              {cancelMessage && (
-                <p className="mt-6 sm:text-xl md:text-2xl text-red-600 font-semibold">
-                  {cancelMessage}
-                </p>
-              )}
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-xl">Loading...</p>
-      )}
-    </div>
+
+            {/* Queue Number */}
+            <div className="flex flex-col items-center mb-1">
+              <h1 className="font-bold text-amber-900 text-4xl sm:text-5xl mb-1">
+                {item.name}
+              </h1>
+              <p className="text-gray-500 font-medium text-sm">Your queue number</p>
+            </div>
+
+            {/* QR Code */}
+            <div className="flex justify-center mb-2">
+              <div className="w-[35vw] sm:w-[20vw] md:w-[20vw] lg:w-[12vw]">
+                {src ? (
+                  <Image
+                    src={src}
+                    width={100}
+                    height={100}
+                    alt="QR Code"
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  "Generating QR Code..."
+                )}
+              </div>
+            </div>
+
+            {/* URL */}
+            <div className="text-center text-blue-600 font-bold text-xs sm:text-sm mb-2">
+              <a
+                href={`${origin}/customer/${trackingCode}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                {origin}/customer/{trackingCode}
+              </a>
+            </div>
+
+            {/* Status */}
+            <p className="text-amber-900 font-bold text-lg mb-2 text-center">
+              Status: {item.status}
+            </p>
+
+            {/* Estimated Time and Queue Position */}
+            <div className="flex justify-around text-amber-700 font-semibold mb-3 sm:text-md md:text-md text-left">
+              <div>
+                <p className="text-gray-700 font-semibold">Estimated Time</p>
+                <p className="text-amber-700 font-bold">
+                  {item.Estimated ?? "null"}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-700 font-semibold">Ahead of You</p>
+                <p className="text-amber-700 font-bold">{item.queue_ahead}</p>
+              </div>
+            </div>
+
+            {/* Turn Notification */}
+            {item.queue_ahead === 0 && (
+              <div className="bg-green-100 text-green-700 font-bold text-sm rounded-md p-3 mb-3">
+                Your turn has arrived! Please proceed to the service point.
+              </div>
+            )}
+
+            {/* Cancel Button */}
+            <button
+              onClick={handleCancel}
+              disabled={isCancelling}
+              className={`w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out ${
+                isCancelling ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+            >
+              {isCancelling ? 'Canceling...' : 'Cancel'}
+            </button>
+
+            {/* Cancel Message */}
+            {cancelMessage && (
+              <p className="mt-4 text-center text-red-600 font-semibold text-sm">
+                {cancelMessage}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    ) : (
+      <p className="text-sm">Loading...</p>
+    )}
+  </div>
   ); 
 }
 
