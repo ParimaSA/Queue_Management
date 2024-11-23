@@ -554,3 +554,23 @@ class AnalyticController:
                 "complete_entry": entries.filter(status="completed").count(),
                 "cancel_entry": entries.filter(status="cancel").count()}
 
+    @http_get("/summary", auth=helpers.api_auth_user_required)
+    def get_summary_data(self, request):
+        """Return summary data of this business."""
+        queues = Queue.objects.filter(business__user=request.user)
+        entries = Entry.objects.filter(business__user=request.user)
+        waiting_time = entries.filter(time_out__isnull=False, status="completed")
+        waiting_time = waiting_time.annotate(
+            waiting_time=ExpressionWrapper(
+                F('time_out') - F('time_in'),
+                output_field=DurationField()
+            )
+        )
+        waiting_time = waiting_time.aggregate(average_waiting_time=Avg('waiting_time'))['average_waiting_time']
+        avg_waiting_time = 0
+        if waiting_time is not None:
+            avg_waiting_time =  math.ceil(waiting_time.total_seconds() / 60)
+        return {"queue_count": queues.count(),
+                "entry_count": entries.count(),
+                "avg_waiting_time": avg_waiting_time}
+

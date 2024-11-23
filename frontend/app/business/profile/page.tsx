@@ -19,6 +19,7 @@ import { useAuth } from '@/components/AuthProvider';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const MY_BUSINESS_API_URL = "/api/business/";
+const SUMMARY_API_URL = "/api/analytic/summary";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
 
 interface Business {
@@ -27,6 +28,12 @@ interface Business {
   open_time: string;  
   close_time: string; 
   image: string | null; 
+}
+
+interface Summary {
+  queue_count: number;           
+  entry_count: number;   
+  avg_waiting_time: number;     
 }
 
 
@@ -40,6 +47,7 @@ const ProfilePage = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true)
   const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
+  const { data: summaryData, error: summaryDataError } = useSWR<Summary>(SUMMARY_API_URL, fetcher)
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
 
   const auth = useAuth()
@@ -64,14 +72,14 @@ const ProfilePage = () => {
 
   useEffect(() => {
     setIsLoading(false)
-    if (myBusinessError) {
+    if (summaryDataError) {
       console.log("Failed to load business", myBusinessError);
-    } else if (!my_business) {
+    } else if (!summaryData) {
       setIsLoading(true)
     } else {
       console.log("Business data:", my_business);
     }
-  }, [my_business, myBusinessError]);
+  }, [summaryData, summaryDataError]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -343,11 +351,40 @@ const handleSubmit = async () => {
               </div>
               <div className='py-6'/>
               <TopQueue />
-          </div>
-          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0'>
-          <div role="tablist" className="tabs tabs-lifted">
-            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Time" defaultChecked/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" >
+              </div>
+
+          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0' style={{ minHeight: '90vh', position: 'sticky', top: 0, marginTop: "-60px"}}>
+          <div role="tablist" className="tabs tabs-lifted" style={{ minHeight: '90vh', position: 'sticky', top: 0,}}>
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Summary" defaultChecked/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0}}>
+            <h1 style={{ textAlign: 'center', fontSize: '25px', fontWeight: 'bold', fontFamily: 'Arial', marginTop: "5vh"}}>Entry Status</h1>
+              <EntryChart/>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '50px'}}>
+                <thead>
+                  <tr>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Number of Queue</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Number of Entry</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Average Waiting Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.queue_count || 0}
+                    </td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.entry_count || 0}
+                    </td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.avg_waiting_time || 0} minutes
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Time"/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0}}>
                 <div className="card bg-cream w-full h-76 shadow-xl">
                   <div className="card-body">
                   <h2 className="card-title">Time Slot Entries Chart</h2>
@@ -365,12 +402,13 @@ const handleSubmit = async () => {
                       </div>
                   </div>
                 </div>
-          </div>  
+            </div>  
+
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0 }}>
                 <div className="card bg-cream w-full h-76 shadow-xl">
                   <div className="card-body">
-                  <h2 className="card-title">Average Weekly Entries Chart</h2>
+                    <h2 className="card-title">Average Weekly Entries Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <WeeklyEntryChart />
                     </div>
@@ -380,22 +418,16 @@ const handleSubmit = async () => {
                 <div className="card bg-cream w-full h-76 shadow-xl">
                   <div className="card-body">
                     <h2 className="card-title">Waiting Time by Day Chart</h2>
-                      <div className='h-56 w-full flex justify-center items-center'>
-                        <EstimateDayChart/>
-                      </div>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EstimateDayChart/>
+                    </div>
                   </div>
                 </div>
-            </div>
-
-            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
-              <h1>Entry Status</h1>
-              <EntryChart/>
             </div>
           </div>
         </div>
         </div>
-      </div>
+      </div>  
       )}
     </>
   )
