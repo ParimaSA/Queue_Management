@@ -48,8 +48,12 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0);
   const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
-  const { data: summaryData, error: summaryDataError } = useSWR<Summary>(SUMMARY_API_URL, fetcher)
+  const { data: summaryData, error: summaryDataError } = useSWR<Summary>(SUMMARY_API_URL, fetcher, {
+    refreshInterval: 1000,
+    revalidateOnFocus: true,
+  })
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
 
   const auth = useAuth()
@@ -70,7 +74,18 @@ const ProfilePage = () => {
     }
   }, [profile]);
 
-  console.log("Profile: ", profileImage)
+  useEffect(() => {
+    if (summaryData){
+      router.refresh()
+    }
+  }, [router, summaryData]);
+
+  useEffect(() => {
+    if (summaryData) {
+      setRefreshKey((prevKey) => prevKey + 1); 
+    }
+  }, [summaryData]);
+
 
   useEffect(() => {
     setIsLoading(false)
@@ -360,7 +375,7 @@ const handleSubmit = async () => {
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Summary" defaultChecked/>
             <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0}}>
             <h1 style={{ textAlign: 'center', fontSize: '25px', fontWeight: 'bold', fontFamily: 'Arial', marginTop: "5vh"}}>Entry Status</h1>
-              <EntryChart/>
+              <EntryChart key={refreshKey}/>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '50px', border: '2px solid gray-400'}}>
                 <thead>
                   <tr>
