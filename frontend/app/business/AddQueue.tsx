@@ -20,6 +20,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [allPass, setAllPass] = useState(true)
   const Alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const hospitalQueues = [
     'Heart', 'Cancer', 'Bone & Spine', 'Brain', 'Trauma', 'Health Check-up', 
@@ -74,16 +75,16 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
     if (newQueue && (newAlphabet || !isPrefix)) {
       console.log('New Queue:', newQueue);
       console.log('New Alphabet:', newAlphabet);
-      const success = await createNewQueue(newQueue, newAlphabet);
-      if (success) {
+      const response = await createNewQueue(newQueue, newAlphabet);
+      if (!response?.errorData) {
         console.log("success add queue")
         onQueueAdded();
         toast.success(`Queue ${newQueue} is successfully created.`, {style: { marginTop: "70px" }})
-        closeModal();
       }
-      else {
-        toast.error(`Queue ${newQueue} can not be created.`, {style: { marginTop: "70px" }})
+      else{
+        toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
       }
+      closeModal();
     } else {
       console.log('No queue added');
     }
@@ -107,12 +108,11 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
 
       const data = await response.json()
       if (data.error) {
-        return false;
+        return {errorData: data.error};
       }
-      return true
+      return
     } catch (error) {
-      console.log('Error creating queue:', error);
-      return false
+      return {errorData: `Error creating queue: ${error}`};
     }
   };
 
@@ -186,16 +186,26 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
         toast.error('Invalid template selected!', { style: { marginTop: "70px" } });
         return;
       }
-  
+      setAllPass(true)
       for (const [index, queue] of Template.entries()) {
-        const success = await createNewQueue(queue, Alphabet[index]);
-        if (!success) {
-          toast.error(`Failed to add queue: ${queue}`, { style: { marginTop: "70px" } });
+        const response = await createNewQueue(queue, Alphabet[index]);
+        if (!response?.errorData){
+          onQueueAdded();
         }
-        onQueueAdded();
+        else if (response.errorData.includes("maximum")){
+          setAllPass(false)
+          toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+          break
+        }
+        else{
+          setAllPass(false)
+          toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+        }
+      }
+      if (allPass) {
+        toast.success('All queues have been added!', { style: { marginTop: "70px" } });
       }
       closeTemplateModal();
-        toast.success('All queues have been added!', { style: { marginTop: "70px" } });
     }
   };
 
