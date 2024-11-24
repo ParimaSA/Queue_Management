@@ -114,22 +114,22 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-110 overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
+          <div className="card shadow-xl h-[78vh] overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3">Add Entry</h1>
               <div className='space-x-3 flex py-2'>
-                <select className="select select-bordered lg:w-100 md:w-100 sm:w-90 h-26" onChange={handleSelectedChange}>
+                <select className="select select-bordered lg:w-[100vw] md:w-[100vw] sm:w-[90vw] h-[8vh]" onChange={handleSelectedChange}>
                   {queue.map(q => (
                     <option key={q.id} value={q.id}>{q.name}</option>
                   ))}
                 </select>
                 <div className="card-actions">
-                  <button className='btn h-26 lg:w-16 md:w-16 sm:w-8' onClick={handleAddClick}>
+                  <button className='btn h-[8vh] lg:w-full md:w-full sm:w-full' onClick={handleAddClick}>
                     Add
                   </button>
                 </div>
               </div>
-              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-83 overflow-hidden w-full">
+              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-[55vh] overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">

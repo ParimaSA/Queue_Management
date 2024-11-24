@@ -342,7 +342,7 @@ const handleSubmit = async () => {
               <TopQueue />
           </div>
           <div className='lg:col-span-2 md:col-span-3 sm:col-span-3'>
-            <div className="card bg-cream w-full h-76 shadow-xl">
+            <div className="card bg-cream w-full h-[40vh] shadow-xl">
               <div className="card-body">
               <h2 className="card-title">Average Weekly Entries Chart</h2>
                 <div className='h-56 w-full flex justify-center items-center'>
@@ -350,8 +350,8 @@ const handleSubmit = async () => {
                 </div>
               </div>
             </div>
-            <div className='pt-8'/>
-            <div className="card bg-cream w-full h-76 shadow-xl">
+            <div className='pt-6'/>
+            <div className="card bg-cream w-full h-[40vh] shadow-xl">
               <div className="card-body">
                 <h2 className="card-title">Queue Volume by Time Slot Chart</h2>
                   <div className='h-56 w-full flex justify-center items-center'>
