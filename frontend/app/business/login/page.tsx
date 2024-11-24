@@ -1,31 +1,39 @@
 "use client";
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
 import { signIn } from "next-auth/react";
 import LoginForm from '../components/LoginForm';
-import { useEffect } from 'react';
+import { fredoka } from '@/app/fonts/fonts';
 
 const LoginPage: React.FC = () => {
-  const auth = useAuth()
-  const router = useRouter()
+  const auth = useAuth();
+  const router = useRouter();
 
   // Redirect if the user is authenticated
   useEffect(() => {
     if (auth.isAuthenticated) {
-        auth.login()
-        router.replace('/business')
+      auth.login();
+      router.replace('/business');
     }
-  })
+  }, [auth, router]);
 
-    return (
-      <>
-      <div className='flex justify-center items-center min-h-screen'>
-        <div className="card lg:w-122 md:w-100 sm:w-90 h-100 shadow-xl flex justify-center items-center" style={{background: '#ffeaf2'}}>
-          <div className="card-body flex flex-col justify-center items-center">
-            <label className='text-4xl text-center text-darkPink font-bold'>Login</label>
-            <button onClick={() => signIn("google")} className='btn btn-primary lg:w-90 md:w-90 sm:w-70 mt-8 bg-white text-black text-base border-none hover:bg-darkGreen hover:text-white'>
-            <svg 
+  return (
+    <>
+      <div className='flex justify-center items-center min-h-screen bg-cream2'>
+        <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[90vh] lg:h-[80vh] md:h-[80vh] sm:h-[80vh]rounded-xl shadow-2xl flex justify-center items-center">
+          <div className="card-body flex flex-col justify-center items-center px-8 py-10">
+            <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
+              <h1 className="text-4xl md:text-5xl text-darkGreen font-extrabold">
+                Welcome Back!
+              </h1>
+              <p className="mt-4 text-lg text-gray-600">Please login to your account to continue</p>
+            </div>
+            <button
+              onClick={() => signIn("google")}
+              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 bg-white text-black text-base border-none hover:bg-gradient-to-r from-brightPink to-brightPink1 shadow-lg transform transition-all duration-300'
+            >
+              <svg 
               xmlns="http://www.w3.org/2000/svg" 
               viewBox="0 0 50 40"
               fill="currentColor"
@@ -41,8 +49,8 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
-      </>
+    </>
   );
-}
+};
 
 export default LoginPage;

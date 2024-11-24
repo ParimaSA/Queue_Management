@@ -18,7 +18,6 @@ const EstimateTimeChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
     const [isLoading, setIsLoading] = useState(true)
-
     const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
     const [chartData, setChartData] = useState<{ timeRange: string; entry: number }[]>([]);
 

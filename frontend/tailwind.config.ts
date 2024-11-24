@@ -59,6 +59,10 @@ const config: Config = {
         green: "#e3ffdd",
         green2: "#b6ecaa",
         green3: "#7eda8f",
+        brightPink: '#FFC4DD',
+        brightPink1: '#E4AEC5',
+        darkGreen: '#295939',
+        darkGreen1: '#82A284',
       },
       height: {
         '26': '4rem',

@@ -606,4 +606,3 @@ class AnalyticController:
         return {"queue_count": queues.count(),
                 "entry_count": entries.count(),
                 "avg_waiting_time": avg_waiting_time}
-

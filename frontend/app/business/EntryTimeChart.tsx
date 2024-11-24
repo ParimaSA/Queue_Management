@@ -82,7 +82,6 @@ const EntryTimeChart: React.FC = () => {
                 });
             }
         }
-
         return () => {
             if (chartInstanceRef.current) {
                 chartInstanceRef.current.destroy();

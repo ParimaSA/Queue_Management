@@ -94,7 +94,7 @@ const EstimateDayChart: React.FC = () => {
     if (isLoading) {
         return <span className="loading loading-bars loading-xs"></span>
     }
-
+  
     return <canvas ref={chartRef} />;
 }
 
