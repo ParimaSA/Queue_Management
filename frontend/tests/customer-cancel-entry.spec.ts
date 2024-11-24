@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.vercel.app/';
 
-test('Business Owner Login and Check Profile', async ({ page }) => {
+test('Customer can cancel the entry', async ({ page }) => {
     await page.goto(`${baseURL}`);
     
     // Click on Business Owner button
