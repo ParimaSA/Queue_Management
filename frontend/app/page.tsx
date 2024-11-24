@@ -3,19 +3,6 @@ import Link from 'next/link';
 import { fredoka } from './fonts/fonts';
 
 const Home = () => {
-  const backgroundImageStyle = {
-    backgroundImage: 'url(../public/home.png)',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    height: '100vh',
-    color: 'white',
-    margin: 0,
-    padding: 0,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-};
-
   return (
     <>
       <main className="flex flex-col justify-center items-center min-h-screen bg-green lg:px-32 md:px-20 sm:px-10"
