@@ -12,16 +12,6 @@ const Business = () => {
   const auth = useAuth()
   const router = useRouter()
   const { status } = useSession();
-  
-  // Redirect if the user is not authenticated
-  useEffect(() => {
-    if (status === "authenticated"){
-      auth.login()
-    }
-    if (!auth.isAuthenticated && status === "unauthenticated") {
-        router.replace('/business/login')
-    }
-  }, [auth, status, router])
 
   // Redirect if the token is expired
   useEffect(() => {
@@ -33,6 +23,16 @@ const Business = () => {
     }
     checkAuth();
   }, [auth, router]);
+
+  // Redirect if the user is not authenticated
+  useEffect(() => {
+    if (status === "authenticated"){
+      auth.login()
+    }
+    if (!auth.isAuthenticated && status === "unauthenticated") {
+        router.replace('/business/login')
+    }
+  }, [auth, status, router])
 
   return (
     <main>
