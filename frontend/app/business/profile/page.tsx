@@ -305,7 +305,7 @@ const handleSubmit = async () => {
       (  
       <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen'>
         <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4' style={{ minHeight: '90vh', position: 'sticky', top: 0}}>
-          <div className='lg:col-span-1 md:col-span-3 sm:col-span-3 bg-white'>
+          <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
               <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPink3">
                 <div className="card-body">
                     <div className='flex justify-end'>
