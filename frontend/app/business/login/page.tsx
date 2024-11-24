@@ -20,7 +20,9 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <div className='flex justify-center items-center min-h-screen bg-cream2'>
+      <div className='flex justify-center items-center min-h-screen bg-cream2'
+           style={{ backgroundImage: `url('/register.png')`, backgroundSize: 'cover' }}
+      >
         <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[90vh] lg:h-[80vh] md:h-[80vh] sm:h-[80vh]rounded-xl shadow-2xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center px-8 py-10">
             <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>

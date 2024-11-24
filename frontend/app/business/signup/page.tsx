@@ -64,7 +64,9 @@ const SignUpForm = () => {
     };
       
   return (
-    <div className='flex justify-center items-center min-h-screen'>
+    <div className='flex justify-center items-center min-h-screen'
+        style={{ backgroundImage: `url('/register.png')`, backgroundSize: 'cover' }}
+    >
         <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[80vh] shadow-xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center">
             <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
