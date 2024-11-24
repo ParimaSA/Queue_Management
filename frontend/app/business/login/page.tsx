@@ -24,14 +24,14 @@ const LoginPage: React.FC = () => {
         <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[90vh] lg:h-[80vh] md:h-[80vh] sm:h-[80vh]rounded-xl shadow-2xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center px-8 py-10">
             <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
-              <h1 className="text-4xl md:text-5xl text-darkGreen font-extrabold">
+              <h1 className="text-4xl md:text-5xl text-darkPink font-extrabold">
                 Welcome Back!
               </h1>
               <p className="mt-4 text-lg text-gray-600">Please login to your account to continue</p>
             </div>
             <button
               onClick={() => signIn("google")}
-              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 bg-white text-black text-base border-none hover:bg-gradient-to-r from-brightPink to-brightPink1 shadow-lg transform transition-all duration-300'
+              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 shadow-lg transform transition-all duration-300 bg-white text-black text-base border-none hover:bg-darkGreen2 hover:text-white'
             >
               <svg 
               xmlns="http://www.w3.org/2000/svg" 

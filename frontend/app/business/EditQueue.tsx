@@ -203,7 +203,7 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
             <br></br>
             <form onSubmit={(e) => { e.preventDefault() }}>
                 <div className='flex space-x-3'>
-                    <button type="submit" className='btn btn-primary' onClick={handleAddClick}>Save</button>
+                    <button type="submit" className='btn bg-hotPink border-white hover:bg-darkPink' onClick={handleAddClick}>Save</button>
                     <button type="button" className='btn' onClick={() => handleDeleteClick(QueueId)}>Delete</button>
                 </div>
             </form>

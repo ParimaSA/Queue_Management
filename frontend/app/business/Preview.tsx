@@ -17,7 +17,7 @@ function Preview(props: Prop) {
                     <h1>Preview</h1>
                 </div>
                 <div className="pt-8" />
-                <div className="card bg-base-100 w-full shadow-xl bg-lightPurple2">
+                <div className="card bg-base-100 w-full shadow-xl bg-lightGreen">
                     <div className="card-body">
                         <div className="card-title justify-between">
                             <h2>All Queue</h2>

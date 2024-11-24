@@ -109,6 +109,8 @@ class BusinessController:
         """Create new queue for business."""
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
+        if business.queue_set.all().count() >= 16:
+            return {"error": f"The maximum number of queue you can create is 16."}
         same_queue_name = Queue.objects.filter(
             business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
@@ -326,6 +328,10 @@ class QueueController:
             queue = Queue.objects.get(business=business, pk=queue_id)
         except Queue.DoesNotExist:
             return {'error': 'This queue not belong to your business.'}
+
+        waiting_entry = Entry.objects.filter(queue=queue, status="waiting")
+        if waiting_entry.count() >= 15:
+            return {'error': 'There are 15 people waiting in this queue. Please clear the queue before adding new entry.'}
 
         new_entry = Entry.objects.create(
             business=business, queue=queue, status="waiting"

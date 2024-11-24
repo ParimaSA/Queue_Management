@@ -20,6 +20,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [allPass, setAllPass] = useState(true)
   const Alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const hospitalQueues = [
     'Heart', 'Cancer', 'Bone & Spine', 'Brain', 'Trauma', 'Health Check-up', 
@@ -74,16 +75,16 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
     if (newQueue && (newAlphabet || !isPrefix)) {
       console.log('New Queue:', newQueue);
       console.log('New Alphabet:', newAlphabet);
-      const success = await createNewQueue(newQueue, newAlphabet);
-      if (success) {
+      const response = await createNewQueue(newQueue, newAlphabet);
+      if (!response?.errorData) {
         console.log("success add queue")
         onQueueAdded();
         toast.success(`Queue ${newQueue} is successfully created.`, {style: { marginTop: "70px" }})
-        closeModal();
       }
-      else {
-        toast.error(`Queue ${newQueue} can not be created.`, {style: { marginTop: "70px" }})
+      else{
+        toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
       }
+      closeModal();
     } else {
       console.log('No queue added');
     }
@@ -107,12 +108,11 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
 
       const data = await response.json()
       if (data.error) {
-        return false;
+        return {errorData: data.error};
       }
-      return true
+      return
     } catch (error) {
-      console.log('Error creating queue:', error);
-      return false
+      return {errorData: `Error creating queue: ${error}`};
     }
   };
 
@@ -186,16 +186,26 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
         toast.error('Invalid template selected!', { style: { marginTop: "70px" } });
         return;
       }
-  
+      setAllPass(true)
       for (const [index, queue] of Template.entries()) {
-        const success = await createNewQueue(queue, Alphabet[index]);
-        if (!success) {
-          toast.error(`Failed to add queue: ${queue}`, { style: { marginTop: "70px" } });
+        const response = await createNewQueue(queue, Alphabet[index]);
+        if (!response?.errorData){
+          onQueueAdded();
         }
-        onQueueAdded();
+        else if (response.errorData.includes("maximum")){
+          setAllPass(false)
+          toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+          break
+        }
+        else{
+          setAllPass(false)
+          toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+        }
+      }
+      if (allPass) {
+        toast.success('All queues have been added!', { style: { marginTop: "70px" } });
       }
       closeTemplateModal();
-        toast.success('All queues have been added!', { style: { marginTop: "70px" } });
     }
   };
 
@@ -209,7 +219,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
             </button>
             <div className='flex justify-between mt-4'>
               <h3 className="font-bold text-lg">Add Queue</h3>
-              <button type="button" className="text-sm mr-0 flex justify-end text-blue-500" onClick={handlePreview}>See Preview <PreviewIcon/></button>
+              <button type="button" className="text-sm mr-0 flex justify-end text-darkGreen2" onClick={handlePreview}>See Preview <PreviewIcon/></button>
             </div>
             <br />
             <label className="input input-bordered flex items-center gap-2">
@@ -255,7 +265,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
             { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
-              <button type="submit" className="btn btn-primary">Add</button>
+              <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
             </div>              
           </form>
         </div>
@@ -330,7 +340,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
                 />
               )}
               <div className='form-control flex space-x-2 mt-5'>
-                <button type="submit" className="btn btn-primary">Add {selectedTemplate} Template</button>
+                <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add {selectedTemplate} Template</button>
               </div> 
             </div>
           ): <p className="text-xl text-center mt-10 text-gray-500">Please select queue template to see preview</p>}       
