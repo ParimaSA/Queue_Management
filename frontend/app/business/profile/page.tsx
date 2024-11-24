@@ -304,7 +304,7 @@ const handleSubmit = async () => {
         ) : 
       (  
       <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen'>
-        <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4'>
+        <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4' style={{ minHeight: '90vh', position: 'sticky', top: 0}}>
           <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
               <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPink3">
                 <div className="card-body">
@@ -355,10 +355,10 @@ const handleSubmit = async () => {
               <TopQueue />
               </div>
 
-          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0' style={{ minHeight: '90vh', position: 'sticky', top: 0, marginTop: "-60px"}}>
-          <div role="tablist" className="tabs tabs-lifted" style={{ minHeight: '90vh', position: 'sticky', top: 0,}}>
+          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0' style={{ position: 'sticky', top: 0}}>
+          <div role="tablist" className="tabs tabs-lifted" style={{ position: 'sticky', top: 0,}}>
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Summary" defaultChecked/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0}}>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0}}>
             <h1 style={{ textAlign: 'center', fontSize: '25px', fontWeight: 'bold', fontFamily: 'Arial', marginTop: "5vh"}}>Entry Status</h1>
               <EntryChart/>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '50px', border: '2px solid gray-400'}}>
@@ -386,7 +386,7 @@ const handleSubmit = async () => {
             </div>
 
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Time"/>
-            <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0}}>
+            <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
                   <h2 className="card-title">Time Slot Entries Chart</h2>
@@ -407,7 +407,7 @@ const handleSubmit = async () => {
             </div>
 
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0 }}>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
                     <h2 className="card-title">Average Weekly Entries Chart</h2>
@@ -427,7 +427,7 @@ const handleSubmit = async () => {
                 </div>
             </div>
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue"/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0, marginTop: 0 }}>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
                     <h2 className="card-title">Queue Entries Chart</h2>
