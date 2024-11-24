@@ -41,7 +41,7 @@ const TopQueue = () => {
                 <tbody>
                     {top_queue && top_queue.length > 0 ? (
                     top_queue.map((queue: Queue, index: number) => (
-                        <tr key={queue.id} className={`hover text-xl ${index === 0 ? 'bg-green3' : index === 1 ? 'bg-green2' : 'bg-green'}`}>
+                        <tr key={queue.id} className={`hover text-xl ${index === 0 ? 'bg-green3' : index === 1 ? 'bg-green2' : 'bg-lightGreen6'}`}>
                         <th>{index + 1}</th>
                         <td>{queue.name}</td>
                         </tr>

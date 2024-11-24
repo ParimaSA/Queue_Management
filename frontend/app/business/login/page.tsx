@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
             </div>
             <button
               onClick={() => signIn("google")}
-              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 shadow-lg transform transition-all duration-300 bg-white text-black text-base border-none hover:bg-darkGreen2 hover:text-white'
+              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 shadow-lg transform transition-all duration-300 bg-white text-black text-base border-none hover:bg-green4 hover:text-white'
             >
               <svg 
               xmlns="http://www.w3.org/2000/svg" 

@@ -54,7 +54,7 @@ const EstimateQueueChart: React.FC = () => {
                             {
                                 label: "Average waiting time (minute)",
                                 data: datasetData,
-                                backgroundColor: "#ffcde8",
+                                backgroundColor: "#57c8ac",
                             },
                         ],
                     },
