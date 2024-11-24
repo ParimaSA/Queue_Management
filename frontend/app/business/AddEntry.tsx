@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { mutate } from 'swr';
 import QRCode from 'qrcode';
+import { toast } from "react-toastify";
 import Image from 'next/image';
 import { useReactToPrint } from 'react-to-print'
 import LocalPrintshopIcon from '@mui/icons-material/LocalPrintshop';
@@ -79,11 +80,15 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       })
 
       if (!response.ok) {
-        console.log("Failed to add entry")
         return
       }
 
       const data = await response.json()
+      console.log("data:", data)
+      if (data.error){
+        toast.error(`${data.error}`, { style: { marginTop: "70px" } });
+        return
+      }
       console.log("Response:", data)
       setTrackingCode(data.tracking_code)
       setEntryData(data)
