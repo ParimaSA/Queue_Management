@@ -13,27 +13,27 @@ interface Entry{
     waiting_time: number;
 }
 
-const WeeklyEntryChart: React.FC = () => {
+const EstimateDayChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
-    const { data: avg_weekly_entry, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
+    const { data: avg_waiting_time, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
     const [entryData, setEntryData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
 
     useEffect(() => {
         if (entryError) {
             console.log("Failed to load avg", entryError);
-        } else if (!avg_weekly_entry) {
+        } else if (!avg_waiting_time) {
             console.log("Loading business...");
         } else {
-            console.log("Avg data:", avg_weekly_entry);
+            console.log("Avg data:", avg_waiting_time);
             const updatedEntryData = entryData.map((_, dayIndex) => {
-                const entry = avg_weekly_entry.find(entry => entry.day - 1 === dayIndex);
-                return entry ? entry.entry_count || 0 : 0;
+                const entry = avg_waiting_time.find(entry => entry.day - 1 === dayIndex);
+                return entry ? entry.waiting_time || 0 : 0;
             });
             setEntryData(updatedEntryData);
             console.log("Avg data2:", entryData);
         }
-    }, [avg_weekly_entry, entryError]);
+    }, [avg_waiting_time, entryError]);
 
     useEffect(() => {
         if (chartRef.current) {
@@ -45,7 +45,7 @@ const WeeklyEntryChart: React.FC = () => {
                         labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                         datasets: [
                             {
-                                label: 'Number of Entry',
+                                label: 'Average waiting time',
                                 backgroundColor: 'rgba(246, 185, 157)',
                                 data: entryData,
                             },
@@ -59,7 +59,7 @@ const WeeklyEntryChart: React.FC = () => {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Number of entry',
+                                    text: 'Average waiting time (minute)',
                                     color: '#333',
                                     font: {
                                         weight: 'bold'
@@ -92,4 +92,4 @@ const WeeklyEntryChart: React.FC = () => {
     return <canvas ref={chartRef} />;
 }
 
-export default WeeklyEntryChart;
+export default EstimateDayChart;

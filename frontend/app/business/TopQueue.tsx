@@ -5,7 +5,7 @@ import fetcher from "@/lib/fetcher";
 import useSWR from "swr";
 import { useEffect} from 'react';
 
-const TOP_QUEUE_API_URL = "/api/business/top_queues";
+const TOP_QUEUE_API_URL = "/api/analytic/top_queues";
 
 interface Queue{
     id: number;

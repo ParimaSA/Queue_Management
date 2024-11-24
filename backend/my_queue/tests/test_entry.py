@@ -140,6 +140,7 @@ class CustomerTestCase(TestCase):
                 "time_out": None,
                 "status": "waiting",
                 "queue_ahead": 0,
+                "estimate_waiting_time": -1,
             }
         ]
         self.assertEqual(response.json(), response_data)
