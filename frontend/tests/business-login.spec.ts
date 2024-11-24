@@ -5,8 +5,8 @@ const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.ver
 test('Business Owner Login and Check Profile', async ({ page }) => {
   await page.goto(`${baseURL}`);
   
-  // Click on Business Owner button
-  await page.getByRole('button', { name: 'Business Owner' }).click();
+  // Click on Start Now button
+  await page.getByRole('button', { name: 'Start Now!' }).click();
 
   // Login
   await page.getByPlaceholder('Username').fill('PwTest');
@@ -27,5 +27,4 @@ test('Business Owner Login and Check Profile', async ({ page }) => {
   const element = page.locator('text="PwRestaurant"');
   await expect(element).toBeVisible();
   await expect(element).toHaveText('PwRestaurant');
-
 });

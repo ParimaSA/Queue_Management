@@ -5,8 +5,8 @@ const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.ver
 test('Customer can cancel the entry', async ({ page }) => {
     await page.goto(`${baseURL}`);
     
-    // Click on Business Owner button
-    await page.getByRole('button', { name: 'Start Now' }).click();
+    // Click on Start Now button
+    await page.getByRole('button', { name: 'Start Now!' }).click();
 
     // Login
     await page.getByPlaceholder('Username').fill('PwTest');
