@@ -293,7 +293,7 @@ const handleSubmit = async () => {
               />
             </label>
             <br />
-            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Save</button>
           </form>
         </div>
       </dialog>
@@ -343,7 +343,7 @@ const handleSubmit = async () => {
                       my_business.map(business => (
                         <div
                           key={business.id}
-                          className='text-xl flex justify-center py-4 bg-lightPurple8 rounded-full font-bold'
+                          className='text-xl flex justify-center py-4 bg-lightPink4 rounded-full font-bold'
                         >
                           {business.name}
                         </div>

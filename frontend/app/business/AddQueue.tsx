@@ -209,7 +209,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
             </button>
             <div className='flex justify-between mt-4'>
               <h3 className="font-bold text-lg">Add Queue</h3>
-              <button type="button" className="text-sm mr-0 flex justify-end text-blue-500" onClick={handlePreview}>See Preview <PreviewIcon/></button>
+              <button type="button" className="text-sm mr-0 flex justify-end text-darkGreen2" onClick={handlePreview}>See Preview <PreviewIcon/></button>
             </div>
             <br />
             <label className="input input-bordered flex items-center gap-2">
@@ -255,7 +255,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
             { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
-              <button type="submit" className="btn btn-primary">Add</button>
+              <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
             </div>              
           </form>
         </div>
@@ -330,7 +330,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
                 />
               )}
               <div className='form-control flex space-x-2 mt-5'>
-                <button type="submit" className="btn btn-primary">Add {selectedTemplate} Template</button>
+                <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add {selectedTemplate} Template</button>
               </div> 
             </div>
           ): <p className="text-xl text-center mt-10 text-gray-500">Please select queue template to see preview</p>}       

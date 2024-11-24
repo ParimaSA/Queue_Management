@@ -40,7 +40,7 @@ const BusinessPage = () => {
           <AddEntry queue={queueData}/>
         </div>
         <div className="lg:col-span-7 md:col-span-10 sm:col-span-10">
-          <div className="card bg-base-100 w-full h-[78vh] shadow-xl bg-lightPurple2 overflow-y-auto">
+          <div className="card bg-base-100 w-full h-[78vh] shadow-xl bg-lightGreen overflow-y-auto">
               <div className="card-body">
                 <div className="card-title justify-between">
                   <h2>All Queue</h2>
