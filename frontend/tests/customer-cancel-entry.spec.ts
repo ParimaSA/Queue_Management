@@ -6,7 +6,7 @@ test('Business Owner Login and Check Profile', async ({ page }) => {
     await page.goto(`${baseURL}`);
     
     // Click on Business Owner button
-    await page.getByRole('button', { name: 'Business Owner' }).click();
+    await page.getByRole('button', { name: 'Start Now' }).click();
 
     // Login
     await page.getByPlaceholder('Username').fill('PwTest');
@@ -20,22 +20,19 @@ test('Business Owner Login and Check Profile', async ({ page }) => {
     await page.getByRole('combobox').selectOption('140');
     await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
   
-    const page1Promise = page.waitForEvent('popup');
+    // Navigate to queue ticket page    
+    const ticketPromise = page.waitForEvent('popup');
     await page.getByRole('link', { name: 'https://queue-management-' }).click();
-    const page1 = await page1Promise;
+    const ticketPage = await ticketPromise;
 
     // Cancel entry
-    await page1.getByRole('button', { name: 'Cancel' }).click();
+    await ticketPage.getByRole('button', { name: 'Cancel' }).click();
 
-    // Wait for redirect to no queu entry page
-    
-    // await expect(page).toHaveURL(`${baseURL}business`);
+    // Wait for the navigation event triggered by Cancel
+    await expect(ticketPage).toHaveURL(`${baseURL}customer`);
 
-    // await page.waitForURL(`${baseURL}customer`);
-    // await expect(page).toHaveURL(`${baseURL}customer`);
-
-    await page.waitForTimeout(4000);
-    const element = page.locator('text="No queue entry found."');
+    // Verify the text "No queue entry found." is visible after canceling
+    const element = ticketPage.locator('text="No queue entry found."');
     await expect(element).toBeVisible();
     await expect(element).toHaveText("No queue entry found.");
 });
