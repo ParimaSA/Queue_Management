@@ -5,45 +5,47 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 Chart.register(...registerables);
-const ENTRY_IN_TIME_SLOT_API_URL = "/api/analytic/time";
+const ENTRY_IN_QUEUE_API_URL = "/api/analytic/queue";
 
-const EntryTimeChart: React.FC = () => {
-    interface Slot {
-        start_time: number;
+
+const EntryQueueChart: React.FC = () => {
+    interface Queue {
+        queue: string;
         entry_count: number;
-        num_entry: number;
+        waiting_time: number;
     }
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
     const [isLoading, setIsLoading] = useState(true)
-    const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
-
-    const [chartData, setChartData] = useState<{ timeRange: string; entry: number }[]>([]);
+    const { data: entryData, error: entryError } = useSWR<Queue[]>(ENTRY_IN_QUEUE_API_URL, fetcher);
+    const [chartData, setChartData] = useState<{ queue: string; entry: number }[]>([]);
 
     useEffect(() => {
         setIsLoading(false)
         if (entryError) {
             console.error("Failed to load data", entryError);
         } 
-        else if (!entry_in_time_slot){
+        else if (!entryData){
             setIsLoading(true)
         }
         else {
-            const updatedData = entry_in_time_slot.map((slot) => ({
-                timeRange: `${slot.start_time}:00 - ${slot.start_time+2}:00`,
-                entry: slot.num_entry || 0,
+            const updatedData = entryData.map((queue) => ({
+                queue: queue.queue,
+                entry: queue.entry_count || 0,
             }));
             setChartData(updatedData);
         }
-    }, [entry_in_time_slot, entryError]);
+    }, [entryData, entryError]);
 
     useEffect(() => {
         if (chartRef.current && chartData.length > 0) {
             const ctx = chartRef.current.getContext("2d");
             if (ctx) {
-                const labels = chartData.map((d) => d.timeRange);
+                // Prepare labels and data for vertical bars
+                const labels = chartData.map((d) => d.queue);
                 const datasetData = chartData.map((d) => d.entry);
 
+                // Create Chart.js instance
                 chartInstanceRef.current = new Chart(ctx, {
                     type: "bar",
                     data: {
@@ -63,7 +65,7 @@ const EntryTimeChart: React.FC = () => {
                             x: {
                                 title: {
                                     display: true,
-                                    text: "Time Ranges",
+                                    text: "Queue",
                                     color: "#333",
                                     font: { weight: "bold" },
                                 },
@@ -82,6 +84,7 @@ const EntryTimeChart: React.FC = () => {
                 });
             }
         }
+
         return () => {
             if (chartInstanceRef.current) {
                 chartInstanceRef.current.destroy();
@@ -96,4 +99,4 @@ const EntryTimeChart: React.FC = () => {
     return <canvas ref={chartRef} />;
 };
 
-export default EntryTimeChart;
+export default EntryQueueChart;

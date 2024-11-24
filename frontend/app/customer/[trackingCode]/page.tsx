@@ -187,12 +187,12 @@ const CustomerPage: React.FC = () => {
               <div className="text-black font-bold mb-5 text-sm sm:text-base md:text-lg">
                 <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>
               </div>
-  
+
               {/* Status */}
               <div className="text-amber-900 font-bold mb-3 text-lg sm:text-xl md:text-2xl">
                 <p>[ Status: {item.status} ]</p>
               </div>
-  
+
               {/* Estimated Time and Queue Position */}
               <div className="flex justify-around text-amber-700 font-semibold mb-3 sm:text-lg md:text-xl">
                 <div>
@@ -234,7 +234,7 @@ const CustomerPage: React.FC = () => {
         <p className="text-xl">Loading...</p>
       )}
     </div>
-  ); 
+  );
 }
 
 export default CustomerPage;

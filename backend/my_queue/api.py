@@ -506,7 +506,7 @@ class AnalyticController:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 
     @http_get("/weekly", auth=helpers.api_auth_user_required)
-    def get_average_weekly_entry(self, request):
+    def analytic_in_day(self, request):
         """Return a list of the average number of entries for each day of the week."""
         try:
             business = Business.objects.get(user=request.user)
@@ -545,4 +545,64 @@ class AnalyticController:
         except Entry.DoesNotExist:
             return JsonResponse({"msg": "No entries found for this business queue."}, status=404)
 
+    @http_get("/queue", auth=helpers.api_auth_user_required)
+    def analytic_in_queue(self, request):
+        """Return a list of the number of entries and average waiting time for each queue."""
+        try:
+            business = Business.objects.get(user=request.user)
+        except Business.DoesNotExist:
+            return JsonResponse({"msg": "You don't have business yet."}, status=404)
 
+        try:
+            queues = Queue.objects.filter(business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "No queue found for this business."}, status=404)
+
+        all_queue_entry = []
+        for queue in queues:
+            entry = Entry.objects.filter(business=business, queue=queue)
+
+            queue_entry = entry.annotate(
+                waiting_time=ExpressionWrapper(
+                    F('time_out') - F('time_in'),
+                    output_field=DurationField()
+                )
+            ).aggregate(
+                avg_waiting_time=Avg("waiting_time"),
+                entry_count=Count("id")
+            )
+
+            all_queue_entry.append({"queue": queue.name,
+                                    "entry_count": queue_entry["entry_count"],
+                                    "waiting_time": (queue_entry["avg_waiting_time"].total_seconds() / 60)
+                                    if queue_entry["avg_waiting_time"] else 0})
+        return all_queue_entry
+
+    @http_get("/entry", auth=helpers.api_auth_user_required)
+    def get_entry_number(self, request):
+        """Return a list of the number of entries of this business."""
+        entries = Entry.objects.filter(business__user=request.user)
+        return {"total_entry": entries.count(),
+                "waiting_entry": entries.filter(status="waiting").count(),
+                "complete_entry": entries.filter(status="completed").count(),
+                "cancel_entry": entries.filter(status="cancel").count()}
+
+    @http_get("/summary", auth=helpers.api_auth_user_required)
+    def get_summary_data(self, request):
+        """Return summary data of this business."""
+        queues = Queue.objects.filter(business__user=request.user)
+        entries = Entry.objects.filter(business__user=request.user)
+        waiting_time = entries.filter(time_out__isnull=False, status="completed")
+        waiting_time = waiting_time.annotate(
+            waiting_time=ExpressionWrapper(
+                F('time_out') - F('time_in'),
+                output_field=DurationField()
+            )
+        )
+        waiting_time = waiting_time.aggregate(average_waiting_time=Avg('waiting_time'))['average_waiting_time']
+        avg_waiting_time = 0
+        if waiting_time is not None:
+            avg_waiting_time =  math.ceil(waiting_time.total_seconds() / 60)
+        return {"queue_count": queues.count(),
+                "entry_count": entries.count(),
+                "avg_waiting_time": avg_waiting_time}
