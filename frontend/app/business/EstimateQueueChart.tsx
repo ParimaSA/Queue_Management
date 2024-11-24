@@ -31,7 +31,7 @@ const EstimateQueueChart: React.FC = () => {
         else {
             const updatedData = entryData.map((queue) => ({
                 queue: queue.queue,
-                waiting_time: queue.entry_count || 0,
+                waiting_time: queue.waiting_time || 0,
             }));
             setChartData(updatedData);
         }

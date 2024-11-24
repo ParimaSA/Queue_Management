@@ -468,7 +468,7 @@ class AnalyticController:
             return JsonResponse({"msg": "No queue found for this business."}, status=404)
 
         try:
-            entry = Entry.objects.filter(business=business, queue__in=queues)
+            entry = Entry.objects.filter(business=business, queue__in=queues, status="completed")
             date_range = Entry.objects.filter(business=business, queue__in=queues
                                               ).aggregate(first_entry=Min("time_in"),
                                                           last_entry=Max("time_in"))
@@ -534,7 +534,7 @@ class AnalyticController:
                 last_entry = date_range["last_entry"]
                 total_week = ((last_entry - first_entry).days // 7) + 1
 
-                entry = Entry.objects.filter(business=business, queue__in=queues)
+                entry = Entry.objects.filter(queue__in=queues, status="completed", time_out__isnull=False)
 
                 weekly_entry = entry.annotate(
                     waiting_time=ExpressionWrapper(
@@ -566,7 +566,7 @@ class AnalyticController:
 
         all_queue_entry = []
         for queue in queues:
-            entry = Entry.objects.filter(business=business, queue=queue)
+            entry = Entry.objects.filter(queue=queue, status="completed", time_out__isnull=False)
 
             queue_entry = entry.annotate(
                 waiting_time=ExpressionWrapper(
