@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
@@ -31,6 +31,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [allPass, setAllPass] = useState(true)
   const { data: queueData, error: queueError } = useSWR<Queue[]>(BUSINESS_QUEUE_API_URL, fetcher);
+  const [allQueue, setAllQueue] = useState<number | null>(null);
   const Alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const hospitalQueues = [
     'Heart', 'Cancer', 'Bone & Spine', 'Brain', 'Trauma', 'Health Check-up', 
@@ -71,6 +72,12 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
     'Boarding (Regular)', 
     'Boarding (Priority)'
   ];
+
+  useEffect(() => {
+    if (queueData && queueData.length > 0) {
+      setAllQueue(queueData[0].id);
+    }
+  }, [queueData]);
 
   const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewQueue(event.target.value)
@@ -231,7 +238,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
         });
   
         if (!response.ok) {
-          console.error("Failed to delete queue");
+          console.error("Failed to delete queue: ", queueError);
           return;
         }
       }
