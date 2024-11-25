@@ -76,8 +76,13 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   useEffect(() => {
     if (queueData && queueData.length > 0) {
       setAllQueue(queueData[0].id);
+      console.log("1: ", allQueue)
     }
   }, [queueData]);
+
+  useEffect(() => {
+    console.log("Updated allQueue: ", allQueue);
+  }, [allQueue]);
 
   const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewQueue(event.target.value)
