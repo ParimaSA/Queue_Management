@@ -279,7 +279,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
             <h2 className='mb-4'>Select Queue Template</h2>
             <div className="grid grid-cols-2 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
               <div>
-                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Restaurant" ? "bg-gray-300" : "bg-lightPurple5"}`} type="button" onClick={() => selectTemplate("Restaurant")}>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Restaurant" ? "bg-gray-300" : "bg-lightPurple8"}`} type="button" onClick={() => selectTemplate("Restaurant")}>
                   Restaurant
                 </button>
               </div>
@@ -294,12 +294,12 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
                 </button>
               </div>
               <div>
-                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Government Service Center" ? "bg-gray-300" : "bg-lightOrange2"}`} type="button" onClick={() => selectTemplate("Government Service Center")}>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Government Service Center" ? "bg-gray-300" : "bg-lightGreen6"}`} type="button" onClick={() => selectTemplate("Government Service Center")}>
                   Government Service Center
                 </button>
               </div>
               <div>
-                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Airport" ? "bg-gray-300" : "bg-lightPink"}`} type="button" onClick={() => selectTemplate("Airport")}>
+                <button className={`btn w-full p-3 rounded-full ${selectedTemplate === "Airport" ? "bg-gray-300" : "bg-lightPink3"}`} type="button" onClick={() => selectTemplate("Airport")}>
                   Airport
                 </button>
               </div>
@@ -348,8 +348,8 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
         </div>
       </dialog>
       <div className="flex space-x-2">
-        <button className="btn flex justify-end" onClick={openTemplateModal}>Queue Template</button>
-        <button className="btn" onClick={openModal}>
+        <button className="btn flex justify-end bg-lightPurple8 hover:bg-purple" onClick={openTemplateModal}>Queue Template</button>
+        <button className="btn bg-lightPurple8 hover:bg-purple" onClick={openModal}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
           <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
         </svg>

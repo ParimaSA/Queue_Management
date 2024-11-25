@@ -64,11 +64,13 @@ const SignUpForm = () => {
     };
       
   return (
-    <div className='flex justify-center items-center min-h-screen'>
+    <div className='flex justify-center items-center min-h-screen'
+        style={{ backgroundImage: `url('/register.png')`, backgroundSize: 'cover' }}
+    >
         <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[80vh] shadow-xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center">
             <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
-                <h1 className="text-4xl md:text-5xl text-darkPink font-extrabold">
+                <h1 className="text-4xl md:text-5xl text-green5 font-extrabold">
                   Sign Up
                 </h1>
                 <p className="mt-4 text-lg text-gray-600">Enter your details to create your account</p>
@@ -159,13 +161,13 @@ const SignUpForm = () => {
                   />
                 </div>    
                 <div className='pt-8'/>
-                <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-green3 text-white hover:bg-darkGreen2 border-none'>
+                <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-purple text-white hover:bg-purple2 border-none'>
                   Sign up
                 </button>
                 <div className='pt-6'/>
                 <div className='space-x-3'>
                   <label>Already have an account?</label>
-                  <Link href='/business/login' className='text-blue-500 hover:underline'>Login</Link>
+                  <Link href='/business/login' className='text-darkPink hover:underline'>Login</Link>
                 </div>
             </form>
           </div>

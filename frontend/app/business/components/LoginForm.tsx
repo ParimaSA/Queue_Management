@@ -92,12 +92,12 @@ export default function LoginForm() {
         </div>
         <div className='pt-8'/>
         <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
-            <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-gradient-to-r from-green3 to-green2 text-white hover:bg-darkGreen border-none text-xl'>Login</button>
+            <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-green3 text-white hover:bg-green5 border-none text-xl'>Login</button>
         </div>
         <div className='pt-7'/>
         <div className='flex items-center space-x-2'>
             <label>Does not have an account?</label>
-            <Link href='/business/signup' className='text-blue-500 hover:underline'>Sign up</Link>
+            <Link href='/business/signup' className='text-darkPink hover:underline'>Sign up</Link>
         </div>
       </form>
     );

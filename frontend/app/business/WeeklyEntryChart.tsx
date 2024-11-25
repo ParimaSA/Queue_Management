@@ -48,7 +48,7 @@ const WeeklyEntryChart: React.FC = () => {
                         datasets: [
                             {
                                 label: 'Number of Entry',
-                                backgroundColor: "#ffcde8",
+                                backgroundColor: "#e4d4f6",
                                 data: entryData,
                             },
                         ],

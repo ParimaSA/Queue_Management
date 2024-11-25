@@ -20,7 +20,9 @@ const LoginPage: React.FC = () => {
 
   return (
     <>
-      <div className='flex justify-center items-center min-h-screen bg-cream2'>
+      <div className='flex justify-center items-center min-h-screen bg-cream2'
+           style={{ backgroundImage: `url('/register.png')`, backgroundSize: 'cover' }}
+      >
         <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[90vh] lg:h-[80vh] md:h-[80vh] sm:h-[80vh]rounded-xl shadow-2xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center px-8 py-10">
             <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
@@ -31,7 +33,7 @@ const LoginPage: React.FC = () => {
             </div>
             <button
               onClick={() => signIn("google")}
-              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 shadow-lg transform transition-all duration-300 bg-white text-black text-base border-none hover:bg-darkGreen2 hover:text-white'
+              className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[40vw] mt-8 shadow-lg transform transition-all duration-300 bg-white text-black text-base border-none hover:bg-green4 hover:text-white'
             >
               <svg 
               xmlns="http://www.w3.org/2000/svg" 

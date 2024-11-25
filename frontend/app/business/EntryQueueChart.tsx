@@ -54,7 +54,7 @@ const EntryQueueChart: React.FC = () => {
                             {
                                 label: "Number of entry",
                                 data: datasetData,
-                                backgroundColor: "#ffcde8",
+                                backgroundColor: "#57c8ac",
                             },
                         ],
                     },
