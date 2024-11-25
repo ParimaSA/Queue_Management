@@ -119,15 +119,10 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
 
       if (!response.ok) {
         console.log("Failed to save edited queue")
-        // const data = await response.json()
-        // if (data.error) {
-        //   return {errorData: data.error};
-        // }
+
         return
       }
-      // else{
-      //   toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
-      // }
+
       
       const data = await response.json()
       console.log("Response:", data)
