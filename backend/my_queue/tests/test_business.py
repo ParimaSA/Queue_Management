@@ -79,7 +79,7 @@ class BusinessQueueTestCase(BaseTestCase):
     def test_create_business_queue(self):
         """Test to create new queue for business."""
         token = self.login(username="testuser", password="test1234")
-        queue_data = {"name": "New Queue", "prefix": "NQ"}
+        queue_data = {"name": "New Queue", "prefix": "N"}
         response = self.client.post(
             "/api/business/queues",
             data=json.dumps(queue_data),  # Convert the dictionary to a JSON string
@@ -92,11 +92,11 @@ class BusinessQueueTestCase(BaseTestCase):
             {"msg": f'Queue {queue_data["name"]} is successfully created.'},
         )
         self.assertEqual(Queue.objects.count(), 2)
-        self.assertTrue(Queue.objects.filter(name="New Queue", prefix="NQ").exists())
+        self.assertTrue(Queue.objects.filter(name="New Queue", prefix="N").exists())
 
         queue = Queue.objects.last()
         self.assertEqual(queue.name, "New Queue")
-        self.assertEqual(queue.prefix, "NQ")
+        self.assertEqual(queue.prefix, "N")
         self.assertEqual(queue.business, self.business)
         self.assertEqual(queue.estimated_time, None)
 
