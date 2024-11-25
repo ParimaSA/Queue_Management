@@ -5,35 +5,37 @@ import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
 
 Chart.register(...registerables);
-const ENTRY_IN_TIME_SLOT_API_URL = "/api/business/entry_in_time_slot";
+const AVG_WEEKLY_ENTRY_API_URL = "/api/analytic/day";
 
-const QueueVolumeChart: React.FC = () => {
-    interface Slot {
-        start_time: number;
-        entry_count: number;
-    }
+interface Entry{
+    day: number;
+    entry_count: number;
+    waiting_time: number;
+}
 
+const EstimateDayChart: React.FC = () => {
     const chartRef = useRef<HTMLCanvasElement>(null);
     const chartInstanceRef = useRef<Chart | null>(null);
-    const { data: entry_in_time_slot, error: entryError } = useSWR<Slot[]>(ENTRY_IN_TIME_SLOT_API_URL, fetcher);
-    const [entryData, setEntryData] = useState<number[]>([]);
-    const [timeSlot, setTimeSlot] = useState<number[]>([]);
+    const [isLoading, setIsLoading] = useState(true)
+    const { data: avg_waiting_time, error: entryError } = useSWR<Entry[]>(AVG_WEEKLY_ENTRY_API_URL, fetcher);
+    const [entryData, setEntryData] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
 
     useEffect(() => {
+        setIsLoading(false)
         if (entryError) {
             console.log("Failed to load avg", entryError);
-        } else if (!entry_in_time_slot) {
-            console.log("Loading business...");
+        } else if (!avg_waiting_time) {
+            setIsLoading(true)
         } else {
-            console.log("Slot data:", entry_in_time_slot);
-            const updatedEntryData = entry_in_time_slot.map(slot => slot.entry_count || 0);
-            const updatedTimeSlot = entry_in_time_slot.map(time => time.start_time || 0);
-            console.log("Entry data populated: ", updatedEntryData);
-            console.log("Time Slot: ", updatedTimeSlot);
+            console.log("Avg data:", avg_waiting_time);
+            const updatedEntryData = entryData.map((_, dayIndex) => {
+                const entry = avg_waiting_time.find(entry => entry.day - 1 === dayIndex);
+                return entry ? entry.waiting_time || 0 : 0;
+            });
             setEntryData(updatedEntryData);
-            setTimeSlot(updatedTimeSlot);
+            console.log("Avg data2:", entryData);
         }
-    }, [entry_in_time_slot, entryError]);
+    }, [avg_waiting_time, entryError]);
 
     useEffect(() => {
         if (chartRef.current) {
@@ -42,10 +44,10 @@ const QueueVolumeChart: React.FC = () => {
                 chartInstanceRef.current = new Chart(ctx, {
                     type: 'bar',
                     data: {
-                        labels: timeSlot,
+                        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
                         datasets: [
                             {
-                                label: 'Number of Entry',
+                                label: 'Average waiting time (minute)',
                                 backgroundColor: "#ffcde8",
                                 data: entryData,
                             },
@@ -59,7 +61,7 @@ const QueueVolumeChart: React.FC = () => {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Number of entry',
+                                    text: 'Average waiting time (minute)',
                                     color: '#333',
                                     font: {
                                         weight: 'bold'
@@ -70,7 +72,7 @@ const QueueVolumeChart: React.FC = () => {
                                 beginAtZero: true,
                                 title: {
                                     display: true,
-                                    text: 'Time',
+                                    text: 'Day',
                                     color: '#333',
                                     font: {
                                         weight: 'bold'
@@ -89,7 +91,11 @@ const QueueVolumeChart: React.FC = () => {
         };
     }, [entryData]);
 
+    if (isLoading) {
+        return <span className="loading loading-bars loading-xs"></span>
+    }
+  
     return <canvas ref={chartRef} />;
 }
 
-export default QueueVolumeChart;
+export default EstimateDayChart;

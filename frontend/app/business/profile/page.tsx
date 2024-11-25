@@ -8,7 +8,12 @@ import Image from 'next/image';
 import { toast } from "react-toastify";
 import BusinessNavbar from '../components/BusinessNavbar';
 import WeeklyEntryChart from '../WeeklyEntryChart';
-import QueueVolumeChart from '../QueueVolumeChart';
+import EntryTimeChart from '../EntryTimeChart';
+import EstimateTimeChart from '../EstimateTimeChart';
+import EstimateDayChart from '../EstimateDayChart';
+import EstimateQueueChart from '../EstimateQueueChart';
+import EntryQueueChart from '../EntryQueueChart';
+import EntryChart from '../EntryChart';
 import TopQueue from '../TopQueue';
 import ApiProxy from '@/app/api/proxy';
 import { useRouter } from 'next/navigation';
@@ -16,6 +21,7 @@ import { useAuth } from '@/components/AuthProvider';
 import LoadingSpinner from '../components/LoadingSpinner';
 
 const MY_BUSINESS_API_URL = "/api/business/";
+const SUMMARY_API_URL = "/api/analytic/summary";
 const MY_BUSINESS_PROFILE_URL = "/api/business/profile"
 
 interface Business {
@@ -24,6 +30,12 @@ interface Business {
   open_time: string;  
   close_time: string; 
   image: string | null; 
+}
+
+interface Summary {
+  queue_count: number;
+  entry_count: number;
+  avg_waiting_time: number;
 }
 
 
@@ -36,7 +48,12 @@ const ProfilePage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true)
+  const [refreshKey, setRefreshKey] = useState(0);
   const { data: my_business, error: myBusinessError } = useSWR<Business[]>(MY_BUSINESS_API_URL, fetcher)
+  const { data: summaryData, error: summaryDataError } = useSWR<Summary>(SUMMARY_API_URL, fetcher, {
+    refreshInterval: 1000,
+    revalidateOnFocus: true,
+  })
   const { data: profile } = useSWR(MY_BUSINESS_PROFILE_URL, fetcher);
 
   const auth = useAuth()
@@ -57,18 +74,29 @@ const ProfilePage = () => {
     }
   }, [profile]);
 
-  console.log("Profile: ", profileImage)
+  useEffect(() => {
+    if (summaryData){
+      router.refresh()
+    }
+  }, [router, summaryData]);
+
+  useEffect(() => {
+    if (summaryData) {
+      setRefreshKey((prevKey) => prevKey + 1); 
+    }
+  }, [summaryData]);
+
 
   useEffect(() => {
     setIsLoading(false)
-    if (myBusinessError) {
+    if (summaryDataError) {
       console.log("Failed to load business", myBusinessError);
-    } else if (!my_business) {
+    } else if (!summaryData) {
       setIsLoading(true)
     } else {
       console.log("Business data:", my_business);
     }
-  }, [my_business, myBusinessError]);
+  }, [summaryData, summaryDataError]);
 
   useEffect(() => {
     if (!isModalOpen) {
@@ -280,7 +308,7 @@ const handleSubmit = async () => {
               />
             </label>
             <br />
-            <button type="submit" className="btn btn-primary">Save</button>
+            <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Save</button>
           </form>
         </div>
       </dialog>
@@ -290,13 +318,13 @@ const handleSubmit = async () => {
           <LoadingSpinner/>
         ) : 
       (  
-      <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen bg-cream2'>
-        <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4'>
+      <div className='px-4 sm:px-4 sm:py-4 md:px-8 lg:px-12 py-4 md:py-8 lg:py-12 min-h-screen'>
+        <div className='grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-3 gap-4' style={{ minHeight: '90vh', position: 'sticky', top: 0}}>
           <div className='lg:col-span-1 md:col-span-3 sm:col-span-3'>
-              <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPurple4">
+              <div className="card bg-base-100 sm:w-full md:w-full lg:w-96 shadow-xl bg-lightPink3">
                 <div className="card-body">
                     <div className='flex justify-end'>
-                      <button className="btn rounded-full bg-cream1" onClick={openModal}>
+                      <button className="btn rounded-full" onClick={openModal}>
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                           <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                         </svg>
@@ -330,7 +358,7 @@ const handleSubmit = async () => {
                       my_business.map(business => (
                         <div
                           key={business.id}
-                          className='text-xl flex justify-center py-4 bg-lightPurple5 rounded-full font-bold'
+                          className='text-xl flex justify-center py-4 bg-lightPink4 rounded-full font-bold'
                         >
                           {business.name}
                         </div>
@@ -340,26 +368,106 @@ const handleSubmit = async () => {
               </div>
               <div className='py-6'/>
               <TopQueue />
-          </div>
-          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3'>
-            <div className="card bg-cream w-full h-76 shadow-xl">
-              <div className="card-body">
-              <h2 className="card-title">Average Weekly Entries Chart</h2>
-                <div className='h-56 w-full flex justify-center items-center'>
-                  <WeeklyEntryChart />
-                </div>
               </div>
+
+          <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0' style={{ position: 'sticky', top: 0}}>
+          <div role="tablist" className="tabs tabs-lifted" style={{ position: 'sticky', top: 0,}}>
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Summary" defaultChecked/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0}}>
+            <h1 style={{ textAlign: 'center', fontSize: '25px', fontWeight: 'bold', fontFamily: 'Arial', marginTop: "5vh"}}>Entry Status</h1>
+              <EntryChart key={refreshKey}/>
+              <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '50px', border: '2px solid gray-400'}}>
+                <thead>
+                  <tr>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Number of Queue</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Number of Entry</th>
+                    <th style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>Average Waiting Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.queue_count || 0}
+                    </td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.entry_count || 0}
+                    </td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px', textAlign: 'center' }}>
+                      {summaryData?.avg_waiting_time || 0} minutes
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-            <div className='pt-8'/>
-            <div className="card bg-cream w-full h-76 shadow-xl">
-              <div className="card-body">
-                <h2 className="card-title">Queue Volume by Time Slot Chart</h2>
-                  <div className='h-56 w-full flex justify-center items-center'>
-                    <QueueVolumeChart />
+
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Time"/>
+            <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                  <h2 className="card-title">Time Slot Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EntryTimeChart />
+                    </div>
                   </div>
-              </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Waiting Time by Time Slot Chart</h2>
+                      <div className='h-56 w-full flex justify-center items-center'>
+                        <EstimateTimeChart/>
+                      </div>
+                  </div>
+                </div>
             </div>
+
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Average Weekly Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <WeeklyEntryChart />
+                    </div>
+                  </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Waiting Time by Day Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EstimateDayChart/>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue"/>
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Queue Entries Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EntryQueueChart />
+                    </div>
+                  </div>
+                </div>
+                <div className='pt-8'/>
+                <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
+                  <div className="card-body">
+                    <h2 className="card-title">Waiting Time by Queue Chart</h2>
+                    <div className='h-56 w-full flex justify-center items-center'>
+                      <EstimateQueueChart/>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
+            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
+              Tab content 3
+            </div> */}
           </div>
+        </div>
         </div>
       </div>
       )}

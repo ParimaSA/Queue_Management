@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from "react-toastify";
+import { fredoka } from '@/app/fonts/fonts';
 
 interface FormData {
     username: string;
@@ -64,13 +65,18 @@ const SignUpForm = () => {
       
   return (
     <div className='flex justify-center items-center min-h-screen'>
-        <div className="card bg-base-100 lg:w-122 md:w-100 sm:w-90 bg-lightPurple6 h-100 shadow-xl flex justify-center items-center">
+        <div className="card bg-white lg:w-[60vw] md:w-[50vw] sm:w-[50vw] h-[80vh] shadow-xl flex justify-center items-center">
           <div className="card-body flex flex-col justify-center items-center">
-            <label className='text-4xl text-center font-bold text-darkPurple2 flex justify-center items-center m-0'>Sign Up</label>
+            <div className={`${fredoka.className} text-center flex flex-col justify-center items-center`}>
+                <h1 className="text-4xl md:text-5xl text-darkPink font-extrabold">
+                  Sign Up
+                </h1>
+                <p className="mt-4 text-lg text-gray-600">Enter your details to create your account</p>
+            </div>
             <form onSubmit={handleSubmit}>
               {error && <p className="text-red-500">{error}</p>}
               <div className='pt-7'/>
-                <div className="input input-bordered flex items-center gap-2 w-90 lg:w-90 md:w-90 sm:w-70">
+                <div className="input input-bordered flex items-center gap-2 lg:w-[40vw] md:w-[40vw] sm:w-[30vw]">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
@@ -90,7 +96,7 @@ const SignUpForm = () => {
                   />
                 </div>
                 <div className='pt-8'/>
-                  <label className="input input-bordered flex items-center gap-2 lg:w-90 md:w-90 sm:w-70">
+                  <label className="input input-bordered flex items-center gap-2 lg:w-[40vw] md:w-[40vw] sm:w-[30vw]">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                     </svg>
@@ -105,7 +111,7 @@ const SignUpForm = () => {
                     />
                   </label>
                 <div className='pt-8'/>
-                <div className="input input-bordered flex items-center gap-2 lg:w-90 md:w-90 sm:w-70">
+                <div className="input input-bordered flex items-center gap-2 lg:w-[40vw] md:w-[40vw] sm:w-[30vw]">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
@@ -129,7 +135,7 @@ const SignUpForm = () => {
                   />
                 </div>
                 <div className='pt-8'/>
-                <div className="input input-bordered flex items-center gap-2 lg:w-90 md:w-90 sm:w-70">
+                <div className="input input-bordered flex items-center gap-2 lg:w-[40vw] md:w-[40vw] sm:w-[30vw]">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
@@ -153,7 +159,7 @@ const SignUpForm = () => {
                   />
                 </div>    
                 <div className='pt-8'/>
-                <button type="submit" className='btn btn-primary lg:w-90 md:w-90 sm:w-70 items-center rounded-full bg-darkPurple2 text-white hover:bg-purple-900 border-none'>
+                <button type="submit" className='btn btn-primary lg:w-[40vw] md:w-[40vw] sm:w-[30vw] items-center rounded-full bg-green3 text-white hover:bg-darkGreen2 border-none'>
                   Sign up
                 </button>
                 <div className='pt-6'/>

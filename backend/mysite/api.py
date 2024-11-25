@@ -3,12 +3,12 @@
 from ninja import NinjaAPI, Schema
 from ninja_extra import NinjaExtraAPI
 from ninja_jwt.controller import NinjaJWTDefaultController
-from my_queue.api import BusinessController, QueueController, EntryController
+from my_queue.api import BusinessController, QueueController, EntryController, AnalyticController
 
 
 api = NinjaExtraAPI()
 api.register_controllers(NinjaJWTDefaultController)
-api.register_controllers(BusinessController, QueueController, EntryController)
+api.register_controllers(BusinessController, QueueController, EntryController, AnalyticController)
 
 class UserSchema(Schema):
     username: str
