@@ -3,6 +3,8 @@
 from typing import List
 
 import boto3
+from dateutil.utils import today
+
 from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from .schemas import (
@@ -261,6 +263,24 @@ class BusinessController:
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
+    @http_get("/last-entry", auth=helpers.api_auth_user_required)
+    def get_last_entry(self, request):
+        """Return last entry for each queue"""
+        queues = Queue.objects.filter(business__user=request.user)
+        date = datetime.today().date()
+        last_entry_for_each_queue = []
+        for queue in queues:
+            last_entry = queue.entry_set.filter(status="completed", time_in__date=date).order_by("time_out")
+            if last_entry:
+                last_entry = last_entry[last_entry.count()-1].name
+            else:
+                last_entry = "-"
+
+            last_entry_for_each_queue.append({"queue": queue.name,
+                                              "last_entry": last_entry})
+        print(last_entry_for_each_queue)
+        return last_entry_for_each_queue
+
     @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
     def get_queue_detail(self, request, queue_id: int):
         business = Business.objects.get(user=request.user)
@@ -268,18 +288,6 @@ class QueueController:
             queue = Queue.objects.get(pk=queue_id, business=business)
         except Queue.DoesNotExist:
             return {'error': 'This queue is not belong to your business.'}
-        return queue
-
-    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
-    def get_queue_detail(self, request, queue_id: int):
-        """
-        Get queue detail of a specified queue.
-        """
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=queue_id, business=business)
-        except Queue.DoesNotExist:
-            return JsonResponse({"msg": "Cannot edit this queue."}, status=404)
         return queue
 
     @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
