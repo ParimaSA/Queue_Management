@@ -13,6 +13,7 @@ const QUEUE_API_URL = "/api/queue/";
 
 interface AddQueueProps {
   onQueueAdded: () => void;
+  queueData: Queue[] | null;
 }
 
 interface Queue {
@@ -22,7 +23,7 @@ interface Queue {
 }
 
 
-const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
+const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isPrefix, setIsPrefix] = useState(false)
@@ -30,8 +31,6 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [allPass, setAllPass] = useState(true)
-  const { data: queueData, error: queueError } = useSWR<Queue[]>(BUSINESS_QUEUE_API_URL, fetcher);
-  const [allQueue, setAllQueue] = useState<number | null>(null);
   const Alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
   const hospitalQueues = [
     'Heart', 'Cancer', 'Bone & Spine', 'Brain', 'Trauma', 'Health Check-up', 
@@ -72,17 +71,6 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
     'Boarding (Regular)', 
     'Boarding (Priority)'
   ];
-
-  useEffect(() => {
-    if (queueData && queueData.length > 0) {
-      setAllQueue(queueData[0].id);
-      console.log("1: ", allQueue)
-    }
-  }, [queueData]);
-
-  useEffect(() => {
-    console.log("Updated allQueue: ", allQueue);
-  }, [allQueue]);
 
   const handleQueueChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewQueue(event.target.value)
@@ -232,9 +220,14 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
   };
 
   const handleDeleteAll = async () => {
+    if (!queueData || queueData.length === 0) {
+      toast.warning("No queues to delete.", { style: { marginTop: "70px" } });
+      return;
+    }
+
     try {
-      for (const queue of queueData || []) {
-        console.log("delete: ", queue.name);
+      const deletePromises = queueData.map(async (queue) => {
+        console.log("Deleting: ", queue.name);
         const response = await fetch(`${QUEUE_API_URL}/${queue.id}`, {
           method: "DELETE",
           headers: {
@@ -243,13 +236,17 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded }) => {
         });
   
         if (!response.ok) {
-          console.error("Failed to delete queue: ", queueError);
-          return;
+          throw new Error(`Failed to delete queue with id: ${queue.id}`);
         }
-      }
-      mutate(BUSINESS_QUEUE_API_URL);
+      });
+      await Promise.all(deletePromises);
+      console.log("All queues deleted successfully.");
+
+      onQueueAdded()
+      toast.success("All queues deleted successfully.", { style: { marginTop: "70px" } });
     } catch (error) {
       console.error("Error occurred while deleting queues:", error);
+      toast.error("An error occurred while deleting queues. Please try again.", { style: { marginTop: "70px" } });
     }
   };
   
