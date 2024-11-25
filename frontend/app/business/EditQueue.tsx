@@ -4,6 +4,7 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { mutate } from 'swr';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { toast } from "react-toastify";
 
 const BUSINESS_QUEUES_API_URL = "/api/business/queues/";
 const QUEUE_API_URL = "/api/queue/";
@@ -39,12 +40,19 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
     setEditedAlphabet(event.target.value);
   }
 
-  const handleAddClick = () => {
+  const handleAddClick = async() => {
 
   if (editedQueue && (editedAlphabet || !isPrefix)) {
-    handleSubmit(QueueId);
+    const response = await handleSubmit(QueueId);
     console.log('New Queue:', editedQueue);
     console.log('New Alphabet', editedAlphabet);
+    if (!response?.errorData) {
+      console.log("success add queue")
+      toast.success(`Queue ${queue.name} is successfully created.`, {style: { marginTop: "70px" }})
+    }
+    else{
+      toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+    }
     closeModal(QueueId);
 
   }
@@ -111,11 +119,22 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
 
       if (!response.ok) {
         console.log("Failed to save edited queue")
+        // const data = await response.json()
+        // if (data.error) {
+        //   return {errorData: data.error};
+        // }
         return
       }
+      // else{
+      //   toast.error(`${response.errorData}`, { style: { marginTop: "70px" } });
+      // }
       
       const data = await response.json()
       console.log("Response:", data)
+      if (data.error) {
+        console.log("Error:", data.error)
+        return {errorData: data.error};
+      }
 
       mutate(BUSINESS_QUEUES_API_URL);
     } catch (error) {
