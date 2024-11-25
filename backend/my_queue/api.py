@@ -119,10 +119,6 @@ class BusinessController:
         if len(data_dict.get("prefix", "")) > 1:
             return {"error": "The prefix must be a single character."}
         
-        # if not data_dict.get("prefix", "").isalpha():
-        #     return {"error": "The prefix must be an alphabet letter."}
-        
-        print("data_dict", data_dict)
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {"msg": f"Queue {new_queue.name} is successfully created."}
@@ -305,16 +301,11 @@ class QueueController:
             queue = Queue.objects.get(pk=queue_id, business=business)
         except Queue.DoesNotExist:
             return JsonResponse({"msg": "Cannot edit this queue."}, status=404)
-        print("prefix", edit_attrs.prefix)
         if len(edit_attrs.prefix) > 1:
             return {"error": "The prefix must be a single character."}
-        # if not edit_attrs.prefix.isalpha():
-        #     return {"error": "The prefix must be an alphabet letter."}        
-        # if not edit_attrs.prefix.strip():
-        #     return {"error": "The prefix cannot be blank or contain only spaces."}
-        
         for attr, value in edit_attrs.dict().items():
             setattr(queue, attr, value)
+            
         queue.save()
         return JsonResponse(
             {
