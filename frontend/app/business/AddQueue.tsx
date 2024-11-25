@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
 import Preview from './Preview';
-import useSWR, { mutate } from 'swr';
-import fetcher from '@/lib/fetcher';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 const QUEUE_API_URL = "/api/queue/";
