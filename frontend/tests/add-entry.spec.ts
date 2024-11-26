@@ -6,7 +6,7 @@ test('Add queue entry and verify queue ticket appears', async ({ page }) => {
   await page.goto(`${baseURL}`);
   
   // Login as Business Owner
-  await page.getByRole('button', { name: 'Business Owner' }).click();
+  await page.getByRole('button', { name: 'Start Now!' }).click();
   await page.getByPlaceholder('Username').fill('PwTest');
   await page.getByPlaceholder('Password').fill('hackme11');
   await page.getByRole('button', { name: 'Login' }).click();
