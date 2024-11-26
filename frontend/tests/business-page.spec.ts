@@ -16,9 +16,6 @@ test('Check components on Business page', async ({ page }) => {
   await page.waitForURL(`${baseURL}business`);
   await expect(page).toHaveURL(`${baseURL}business`);
 
-  await page.waitForURL(`${baseURL}business`);
-  await expect(page).toHaveURL(`${baseURL}business`);
-
   // Check if the card title "Add Entry" is visible
   await page.waitForSelector('h1.card-title', { state: 'visible' });
   const cardTitle = page.locator('h1.card-title', { hasText: 'Add Entry' });
