@@ -26,8 +26,7 @@ test('Check components on Business page', async ({ page }) => {
   await expect(selectDropdown).toBeVisible();
 
   // Check the Add button
-  const addButton = page.locator('button.btn').nth(0);
-  await expect(addButton).toBeVisible();
+  await page.getByRole('combobox').selectOption('138');
   await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
 
   // Check if the entry data is visible once populated
