@@ -77,6 +77,7 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
 
   // Add Reservation Entry
   await page.waitForTimeout(2000);
+  await page.getByRole('combobox').selectOption('139');
   const addEntryButton = page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button');
   await moveCursorAndClick(addEntryButton);
   addEntryButton.click()
@@ -99,20 +100,20 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
   // Verify returned to the correct page
   await expect(page).toHaveURL(`${baseURL}business`);
 
-  // Find all entries with "A<number>"
-  const entries = await page.locator('div').filter({ hasText: /A\d+waitingcompletecancel$/ }).allTextContents();
+  // Find all entries with "C<number>"
+  const entries = await page.locator('div').filter({ hasText: /C\d+waitingcompletecancel$/ }).allTextContents();
 
   // Extract numbers from entries and find the smallest one
   const smallestEntry = entries
     .map((entry) => {
-      const match = entry.match(/A(\d+)/); // Extract the number after "A"
+      const match = entry.match(/(C\d+)/); // Extract the number after "C"
       return match ? parseInt(match[1], 10) : null;
     })
     .filter((num) => num !== null)
     .sort((a, b) => a - b)[0];
 
   if (smallestEntry !== undefined) {
-    const smallestEntryText = `A${smallestEntry}waitingcompletecancel`;
+    const smallestEntryText = `C${smallestEntry}waitingcompletecancel`;
     // Click the waiting button for the smallest entry
     await page.locator('div').filter({ hasText: new RegExp(`^${smallestEntryText}$`) }).getByRole('button').click({ force: true });
 
