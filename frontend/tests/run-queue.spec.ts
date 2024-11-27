@@ -1,37 +1,85 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, Locator } from '@playwright/test';
 
-const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.vercel.app/'; 
+const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.vercel.app/';
 
-test('Add queue entry and verify queue ticket appears', async ({ page }) => {
+test('Add queue entry and verify queue ticket appears with accurate cursor movement', async ({ page }) => {
   await page.goto(`${baseURL}`);
   
+  // Add a custom cursor
+  await page.addStyleTag({
+    content: `
+      .playwright-cursor {
+        width: 20px;
+        height: 20px;
+        background-color: black;
+        border: 2px solid white;
+        border-radius: 50%;
+        position: absolute;
+        z-index: 9999;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        transition: transform 0.1s ease-out;
+      }
+    `
+  });
+
+  // Add cursor element
+  await page.evaluate(() => {
+    const cursor = document.createElement('div');
+    cursor.classList.add('playwright-cursor');
+    document.body.appendChild(cursor);
+  });
+
+  // Move cursor to element and click
+  async function moveCursorAndClick(locator: Locator) {
+    const elementHandle = await locator.elementHandle();
+    if (elementHandle) {
+      const box = await elementHandle.boundingBox();
+      if (box) {
+        await page.evaluate(({ x, y }) => {
+          const cursor = document.querySelector('.playwright-cursor');
+          cursor.style.left = `${x}px`;
+          cursor.style.top = `${y}px`;
+        }, { x: box.x + box.width / 2, y: box.y + box.height / 2 }); // Center of the element
+        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+      }
+    }
+  }
+
   // Click on Start Now button
-  await page.waitForTimeout(1000);
-  await page.getByRole('button', { name: 'Start Now!' }).click();
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
+  await moveCursorAndClick(page.getByRole('button', { name: 'Start Now!' }));
 
   // Login
+  await page.waitForTimeout(2000);
+  await moveCursorAndClick(page.getByPlaceholder('Username'));
   await page.getByPlaceholder('Username').fill('PwTest');
-  await page.waitForTimeout(500);
+  await page.waitForTimeout(2000);
+  await moveCursorAndClick(page.getByPlaceholder('Password'));
   await page.getByPlaceholder('Password').fill('hackme11');
-  await page.waitForTimeout(500);
-  await page.getByRole('button', { name: 'Login' }).click();
+  await page.waitForTimeout(2000);
+  await moveCursorAndClick(page.getByRole('button', { name: 'Login' }));
 
   await page.waitForURL(`${baseURL}business`);
   await expect(page).toHaveURL(`${baseURL}business`);
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
 
   // Add Reservation Entry
-  await page.waitForTimeout(500);
-  await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
-  await page.waitForTimeout(1000);
+  await page.waitForTimeout(2000);
+  const addEntryButton = page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button');
+  await moveCursorAndClick(addEntryButton);
+  addEntryButton.click()
 
-  // Navigate to queue ticket page    
+  // Navigate to queue ticket page
+  await page.waitForTimeout(2000);
   const ticketPromise = page.waitForEvent('popup');
+  const ticketLink = page.getByRole('link', { name: 'https://queue-management-' });
+  await moveCursorAndClick(ticketLink);
   await page.getByRole('link', { name: 'https://queue-management-' }).click();
   await page.waitForTimeout(1000);
   const ticketPage = await ticketPromise;
-  await ticketPage.waitForTimeout(1000);
+  await ticketPage.waitForTimeout(2000);
 
   // Bring the main page to front and navigate back to business page
   await page.bringToFront(); // Switch focus back to the main tab
@@ -44,19 +92,20 @@ test('Add queue entry and verify queue ticket appears', async ({ page }) => {
   // Find all entries with "A<number>"
   const entries = await page.locator('div').filter({ hasText: /A\d+waitingcompletecancel$/ }).allTextContents();
 
-  // Extract numbers from entries
+  // Extract numbers from entries and find the smallest one
   const smallestEntry = entries
     .map((entry) => {
       const match = entry.match(/A(\d+)/); // Extract the number after "A"
       return match ? parseInt(match[1], 10) : null;
     })
-    .filter((num) => num !== null) // Remove null values
-    .sort((a, b) => a - b)[0]; // Sort numbers and get the smallest one
+    .filter((num) => num !== null)
+    .sort((a, b) => a - b)[0];
 
   if (smallestEntry !== undefined) {
     const smallestEntryText = `A${smallestEntry}waitingcompletecancel`;
     // Click the waiting button for the smallest entry
     await page.locator('div').filter({ hasText: new RegExp(`^${smallestEntryText}$`) }).getByRole('button').click();
+
     // Click the complete button in the dropdown
     await page.getByRole('button', { name: 'complete' }).click();
   } else {
@@ -66,5 +115,5 @@ test('Add queue entry and verify queue ticket appears', async ({ page }) => {
 
   // Bring the ticket page to the front
   await ticketPage.bringToFront();
-  await ticketPage.waitForTimeout(1000);
+  await ticketPage.waitForTimeout(2000);
 });
