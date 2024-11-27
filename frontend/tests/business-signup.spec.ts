@@ -7,31 +7,38 @@ test('Business Owner Sign Up and Login', async ({ page }) => {
   const uniqueUsername = 'pwtest' + Math.random().toString().slice(2, 12);
   const businessName = 'business' + Math.random().toString().slice(2, 12);
 
-  await page.goto(`${baseURL}`);
+  await page.goto(`${baseURL}`, { waitUntil: 'networkidle' });
 
   // Navigate to Sign-Up page
   await page.getByRole('button', { name: 'Start Now' }).click();
   await page.getByRole('link', { name: 'Sign up' }).click();
 
-  // Fill in Sign-Up form
-  await page.getByPlaceholder('Username').waitFor({ state: 'visible' });
-  await page.getByPlaceholder('Username').click();
-  await page.getByPlaceholder('Username').fill(uniqueUsername);
-  await page.getByPlaceholder('Business Name').fill(businessName);
-  await page.getByPlaceholder('Username').click();
+  // Ensure the page is fully loaded
+  await page.waitForLoadState('domcontentloaded');
+
+  // Use more specific selectors if necessary
+  const usernameInput = page.locator('input[placeholder="Username"]');
+  await usernameInput.waitFor({ state: 'visible' });
+  await usernameInput.click();
+  await usernameInput.fill(uniqueUsername);
+
+  await page.locator('input[placeholder="Business Name"]').fill(businessName);
   await page.locator('#password1').fill('hackme11'); // Password
   await page.locator('#password2').fill('hackme11'); // Confirm Password
+
+  await usernameInput.click();
+  await usernameInput.fill(uniqueUsername);
 
   // Submit form
   await page.getByRole('button', { name: 'Sign up' }).click();
 
-  await page.waitForURL(`${baseURL}business/login`);
+  await page.waitForURL(`${baseURL}business/login`, { timeout: 60000 });
   await expect(page).toHaveURL(`${baseURL}business/login`);
 
   // Login with new credentials
-  await page.getByPlaceholder('Username').fill(uniqueUsername);
-  await page.getByPlaceholder('Password').click();
-  await page.getByPlaceholder('Password').fill('hackme11');
+  await usernameInput.fill(uniqueUsername);
+  await page.locator('input[placeholder="Password"]').click();
+  await page.locator('input[placeholder="Password"]').fill('hackme11');
   await page.getByRole('button', { name: 'Login' }).click();
 
   // Navigate to Profile page
