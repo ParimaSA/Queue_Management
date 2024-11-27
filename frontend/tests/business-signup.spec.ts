@@ -3,9 +3,9 @@ import { test, expect } from '@playwright/test';
 const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.vercel.app/';
 
 test('Business Owner Sign Up and Login', async ({ page }) => {
-  // Generate unique username and business name
-  const uniqueUsername = 'pwtest' + Date.now();
-  const businessName = 'business' + Date.now();
+  // Generate unique username and business name using random numbers
+  const uniqueUsername = 'pwtest' + Math.random().toString().slice(2, 12);
+  const businessName = 'business' + Math.random().toString().slice(2, 12);
 
   await page.goto(`${baseURL}`);
 
@@ -14,6 +14,7 @@ test('Business Owner Sign Up and Login', async ({ page }) => {
   await page.getByRole('link', { name: 'Sign up' }).click();
 
   // Fill in Sign-Up form
+  await page.getByPlaceholder('Username').waitFor({ state: 'visible' });
   await page.getByPlaceholder('Username').click();
   await page.getByPlaceholder('Username').fill(uniqueUsername);
   await page.getByPlaceholder('Business Name').fill(businessName);
