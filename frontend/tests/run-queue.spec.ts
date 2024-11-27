@@ -127,5 +127,4 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
 
   // Bring the ticket page to the front
   await ticketPage.bringToFront();
-  await ticketPage.waitForTimeout(2000);
 });
