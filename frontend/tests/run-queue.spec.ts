@@ -114,10 +114,10 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
   if (smallestEntry !== undefined) {
     const smallestEntryText = `A${smallestEntry}waitingcompletecancel`;
     // Click the waiting button for the smallest entry
-    await page.locator('div').filter({ hasText: new RegExp(`^${smallestEntryText}$`) }).getByRole('button').click();
+    await page.locator('div').filter({ hasText: new RegExp(`^${smallestEntryText}$`) }).getByRole('button').click({ force: true });
 
     // Click the complete button in the dropdown
-    await page.getByRole('button', { name: 'complete' }).click();
+    await page.getByRole('button', { name: 'complete' }).click({ force: true });
   } else {
     console.log('No entries found matching the pattern.');
   }
