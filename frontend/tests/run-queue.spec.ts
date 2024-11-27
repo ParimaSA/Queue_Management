@@ -75,9 +75,10 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
   await expect(page).toHaveURL(`${baseURL}business`);
   await page.waitForTimeout(2000);
 
-  // Add Reservation Entry
+  // Add Takeaway Entry
   await page.waitForTimeout(2000);
   await page.getByRole('combobox').selectOption('139');
+  await page.waitForTimeout(1000);
   const addEntryButton = page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button');
   await moveCursorAndClick(addEntryButton);
   addEntryButton.click()
@@ -106,7 +107,7 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
   // Extract numbers from entries and find the smallest one
   const smallestEntry = entries
     .map((entry) => {
-      const match = entry.match(/(C\d+)/); // Extract the number after "C"
+      const match = entry.match(/C(\d+)/); // Extract the number after "C"
       return match ? parseInt(match[1], 10) : null;
     })
     .filter((num) => num !== null)
