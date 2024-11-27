@@ -5,7 +5,7 @@ const baseURL = process.env.TEST_BASE_URL || 'https://queue-management-taupe.ver
 test('Add queue entry and verify queue ticket appears with accurate cursor movement', async ({ page }) => {
   await page.goto(`${baseURL}`);
   
-  // Add a custom cursor
+  // Add a custom cursor to the page
   await page.addStyleTag({
     content: `
       .playwright-cursor {
@@ -23,29 +23,39 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
     `
   });
 
-  // Add cursor element
+  // Append cursor element to the DOM
   await page.evaluate(() => {
     const cursor = document.createElement('div');
     cursor.classList.add('playwright-cursor');
     document.body.appendChild(cursor);
   });
 
-  // Move cursor to element and click
+  // Function to move cursor to an element and click
   async function moveCursorAndClick(locator: Locator) {
     const elementHandle = await locator.elementHandle();
     if (elementHandle) {
       const box = await elementHandle.boundingBox();
       if (box) {
+        // Calculate the center position of the element
+        const centerX = box.x + box.width / 2;
+        const centerY = box.y + box.height / 2;
+  
+        // Update cursor position using evaluate to interact within the browser context
         await page.evaluate(({ x, y }) => {
-          const cursor = document.querySelector('.playwright-cursor');
-          cursor.style.left = `${x}px`;
-          cursor.style.top = `${y}px`;
-        }, { x: box.x + box.width / 2, y: box.y + box.height / 2 }); // Center of the element
-        await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
-        await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+          const cursor = document.querySelector('.playwright-cursor') as HTMLElement; // Correct type assertion
+          if (cursor) {
+            cursor.style.left = `${x}px`;
+            cursor.style.top = `${y}px`;
+          }
+        }, { x: centerX, y: centerY });
+  
+        // Perform the mouse move and click actions
+        await page.mouse.move(centerX, centerY);
+        await page.mouse.click(centerX, centerY);
       }
     }
   }
+  
 
   // Click on Start Now button
   await page.waitForTimeout(2000);
