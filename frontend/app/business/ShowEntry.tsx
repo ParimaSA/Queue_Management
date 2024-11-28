@@ -44,7 +44,7 @@ const BusinessPage = () => {
               <div className="card-body">
                 <div className="card-title justify-between">
                   <h2>All Queue</h2>
-                  <AddQueue onQueueAdded={handleQueueAdded} />
+                  <AddQueue onQueueAdded={handleQueueAdded} queueData={queueData} />
                 </div>
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">
                   {queueData.map(q => (
