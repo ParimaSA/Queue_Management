@@ -116,6 +116,10 @@ class BusinessController:
             business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
             return {"error": f"Queue with name {data_dict['name']} already exist."}
+
+        if len(data_dict.get("prefix", "")) > 1:
+            return {"error": "The prefix must be a single character."}
+
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {"msg": f"Queue {new_queue.name} is successfully created."}
