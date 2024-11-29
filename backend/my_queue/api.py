@@ -59,7 +59,6 @@ def serialize_single_entry(entry):
         queue_ahead=queue_ahead,
         estimate_waiting_time=estimate_waiting
     )
-    print(entry_detail)
     return entry_detail
 
 def calculate_estimate_waiting_time(entry, entry_ahead):
@@ -130,7 +129,7 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        queue_list = Queue.objects.filter(business=business)
+        queue_list = Queue.objects.filter(business=business).order_by("id")
         return queue_list
 
     @http_post("/email-register", response=dict, auth=helpers.api_auth_user_or_guest)
@@ -239,7 +238,6 @@ class BusinessController:
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES['file']
-        print("file", file, file.size)
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
@@ -266,7 +264,7 @@ class QueueController:
     @http_get("/last-entry", auth=helpers.api_auth_user_required)
     def get_last_entry(self, request):
         """Return last entry for each queue"""
-        queues = Queue.objects.filter(business__user=request.user)
+        queues = Queue.objects.filter(business__user=request.user).order_by("id")
         date = datetime.today().date()
         last_entry_for_each_queue = []
         for queue in queues:
@@ -275,10 +273,8 @@ class QueueController:
                 last_entry = last_entry[last_entry.count()-1].name
             else:
                 last_entry = "-"
-
-            last_entry_for_each_queue.append({"queue": queue.name,
+            last_entry_for_each_queue.append({"name": queue.name,
                                               "last_entry": last_entry})
-        print(last_entry_for_each_queue)
         return last_entry_for_each_queue
 
     @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
