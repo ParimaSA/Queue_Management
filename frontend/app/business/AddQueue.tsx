@@ -319,7 +319,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
             { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
-              <button type="submit" disabled={errorMessage || !newQueue || (isPrefix && !newAlphabet) } className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
+              <button type="submit" disabled={!!errorMessage || !newQueue || (isPrefix && !newAlphabet)} className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
             </div>              
           </form>
         </div>
