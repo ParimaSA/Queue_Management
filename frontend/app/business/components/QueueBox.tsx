@@ -13,7 +13,7 @@ interface QueueBoxProps {
 const QueueBox: React.FC<QueueBoxProps> = ({ queues }) => {
   return (
     <div
-      className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(250px,_1fr))] place-items-center"
+      className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(400px,_1fr))] place-items-center"
     >
       {queues.map((queue, index) => (
         <div
@@ -21,7 +21,20 @@ const QueueBox: React.FC<QueueBoxProps> = ({ queues }) => {
           className="min-h-[150px] w-full flex justify-center bg-white shadow-lg rounded-lg ml-10 mr-10 p-4 pl-10 pr-10 text-center hover:shadow-xl transition-transform transform hover:-translate-y-1"
         >
             <div className="flex justify-between items-center w-full">
-                <h3 className="text-3xl font-bold text-gray-700">{queue.name}</h3>
+                <h3
+                    className={`font-bold text-gray-700 ${
+                        queue.name.length > 15 ? "text-2xl" : "text-3xl"
+                    }`}
+                    style={{
+                        display: 'inline-block',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        transition: 'font-size 0.2s ease',
+                    }}
+                    >
+                    {queue.name}
+                </h3>               
                 <span
                     className={`text-4xl py-2 px-4 rounded-full pl-10 pr-10 ${
                         queue.last_entry!=="-" ? "bg-green3 text-white" : ""
