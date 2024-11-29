@@ -8,11 +8,12 @@ import BusinessNavbar from "../components/BusinessNavbar";
 import fetcher from "@/lib/fetcher";
 import ApiProxy from "@/app/api/proxy";
 import LoadingSpinner from "../components/LoadingSpinner";
+import QueueBox from "../components/QueueBox";
 
 const LAST_ENTRY_API_URL = "/api/business/queues/last_entry";
 
 interface Queue {
-  queue: string;
+  name: string;
   last_entry: string;
 }
 
@@ -21,7 +22,7 @@ const BoardPage = () => {
     LAST_ENTRY_API_URL,
     fetcher,
     {
-      refreshInterval: 5000,
+      refreshInterval: 1000,
       revalidateOnFocus: true,
     }
   );
@@ -54,26 +55,9 @@ const BoardPage = () => {
         ) : boardData?.length ? (
           <div className="mt-10">
             <h1 className="mt-10 font-bold text-4xl">Queue Board</h1>
-            <table className="mx-auto border-collapse border border-gray-300 bg-white w-full max-w-[80vw]">
-              <thead>
-                <tr>
-                  <th className="border border-gray-300 px-4 py-2 bg-lightPink3">Queue</th>
-                  <th className="border border-gray-300 px-4 py-2 bg-lightPink3">Entry</th>
-                </tr>
-              </thead>
-              <tbody>
-                {boardData.map((item, index) => (
-                  <tr key={index}>
-                    <td className="border border-gray-300 px-4 py-2 text-center text-xl font-bold">
-                      {item.queue}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 text-center">
-                      {item.last_entry}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="ml-10 mr-10 mt-20">
+              <QueueBox queues={boardData}/>
+            </div>
           </div>
         ) : (
           <div className="flex items-center justify-center h-[70vh]">
