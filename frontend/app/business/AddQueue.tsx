@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
-import Preview from './Preview';
+import Preview from './components/Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 const QUEUE_API_URL = "/api/queue/";
