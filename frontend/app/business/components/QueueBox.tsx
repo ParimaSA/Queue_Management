@@ -24,7 +24,7 @@ const QueueBox: React.FC<QueueBoxProps> = ({ queues }) => {
                 <h3 className="text-3xl font-bold text-gray-700">{queue.name}</h3>
                 <span
                     className={`text-4xl py-2 px-4 rounded-full pl-10 pr-10 ${
-                        queue.last_entry!=="-" ? "bg-lightGreen2 text-white" : ""
+                        queue.last_entry!=="-" ? "bg-green3 text-white" : ""
                     }`}
                     >
                     {queue.last_entry || "-"}
