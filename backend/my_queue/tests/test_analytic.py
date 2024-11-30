@@ -18,7 +18,6 @@ class Analytic(BaseTestCase):
         self.business = Business.objects.create(
             user=User.objects.get(username="owner1"), name="Teenoi")
 
-        # business_names = ["Teenoi", "Sushiro"]
         queue_types = ["Big", "Small"]
 
         base_time = make_aware(datetime(2024, 1, 1, 9, 0, 0))
@@ -90,10 +89,8 @@ class Analytic(BaseTestCase):
         data = response.json()
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data[1]["start_time"], 8)
-
-        avg_sec = sum([(e.time_out-e.time_in).total_seconds()
-                      for e in Entry.objects.filter(business__user__username="owner1", time_out__isnull=False, status="completed")]) / len(data)
-        avg_waiting_mins = avg_sec / 60
+        my_entry = Entry.objects.filter(business__user__username="owner1", time_out__isnull=False, status="completed")
+        avg_waiting_mins = self.calculate_average_waiting_time(my_entry)
         self.assertAlmostEqual(
             data[1]["estimate_waiting"], avg_waiting_mins, delta=5.0)
         self.assertEqual(data[1]["num_entry"], 8)
@@ -141,13 +138,101 @@ class Analytic(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data["queue_count"], 2)
         self.assertEqual(data["entry_count"], 8)
-        entries = Entry.objects.filter(business__user__username="owner1", time_out__isnull=False, status="completed")
-            
+        entries = Entry.objects.filter(
+            business__user__username="owner1", time_out__isnull=False, status="completed")
+
         # Calculate total waiting time
-        total_waiting_time = sum([(e.time_out - e.time_in).total_seconds() for e in entries])
-        
-        avg_waiting_mins = total_waiting_time / len(entries) / 60 if entries else 0
+        avg_waiting_mins = self.calculate_average_waiting_time(entries)
         self.assertAlmostEqual(
             data["avg_waiting_time"], avg_waiting_mins, delta=5.0)
+
+    def calculate_average_waiting_time(self, entries):
+        total_waiting_time = sum(
+            [(e.time_out - e.time_in).total_seconds() for e in entries])
+
+        avg_waiting_mins = total_waiting_time / \
+            len(entries) / 60 if entries else 0
+
+        return avg_waiting_mins
+
+    def test_analytic_in_day(self):
+        """Test that the number of entries in a day is returned."""
+        Entry.objects.create(
+            queue=Queue.objects.get(name="Small"),
+            business=self.business,
+            time_in=make_aware(datetime(2024, 1, 2, 14, 5, 0)),
+            time_out=make_aware(datetime(2024, 1, 2, 15, 0, 0)),
+            status="completed",
+        )
+
+        token = self.login(username="owner1", password="123")
+        response = self.client.get(
+            "/api/analytic/weekly",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        my_entry = Entry.objects.filter(
+            business__user__username="owner1", time_out__isnull=False, status="completed")
+        data = response.json()
+        entry_day_one = my_entry.filter(time_in__day=1)
+        entry_day_two = my_entry.filter(time_in__day=2)
+        avg_day_one = self.calculate_average_waiting_time(entry_day_one)
+        avg_day_two = self.calculate_average_waiting_time(entry_day_two)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data[0]["day"], 2)
+        self.assertEqual(data[1]["day"], 3)
+        self.assertAlmostEqual(
+            data[0]["waiting_time"], avg_day_one, delta=5.0)
+        self.assertAlmostEqual(
+            data[1]["waiting_time"], avg_day_two, delta=5.0)
+
+    def test_analytic_in_day_no_business(self):
+        """Test that an error message is shown if the user has no business."""
+        User.objects.create_user(username="testuser", password="test1234")
+        token = self.login(username="testuser", password="test1234")
+        response = self.client.get(
+            "/api/analytic/weekly",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        self.no_business(response)
+
+    def test_analytic_in_queue(self):
+        """Test that the number of entries in a queue is returned."""
+        Entry.objects.create(
+            queue=Queue.objects.get(name="Small"),
+            business=self.business,
+            time_in=make_aware(datetime(2024, 1, 1, 13, 0, 0)),
+            status="waiting",
+        )
+        token = self.login(username="owner1", password="123")
+        response = self.client.get(
+            "/api/analytic/queue",
+            headers={"Authorization": f"Bearer {token}"},
+        )
         
-    
+        data = response.json()
+        my_entry = Entry.objects.filter(
+            business__user__username="owner1", time_out__isnull=False, status="completed")
+        big_entry = my_entry.filter(queue__name="Big")
+        small_entry = my_entry.filter(queue__name="Small")
+        avg_small = self.calculate_average_waiting_time(big_entry)
+        avg_big = self.calculate_average_waiting_time(small_entry)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data[0]["queue"], "Big")
+        self.assertEqual(data[1]["queue"], "Small")
+        self.assertEqual(data[0]["entry_count"], 5)
+        # does not count the one that is waiting
+        self.assertEqual(data[1]["entry_count"], 3) 
+        
+        self.assertAlmostEqual(data[0]["waiting_time"], avg_big, delta=5.0)
+        self.assertAlmostEqual(data[1]["waiting_time"], avg_small, delta=5.0)
+
+    def test_analytic_in_queue_no_business(self):
+        """Test that an error message is shown if the user has no business."""
+        User.objects.create_user(username="testuser", password="test1234")
+        token = self.login(username="testuser", password="test1234")
+        response = self.client.get(
+            "/api/analytic/queue",
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        self.no_business(response)
