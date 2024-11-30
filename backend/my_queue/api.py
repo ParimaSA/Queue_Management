@@ -57,10 +57,8 @@ def serialize_single_entry(entry):
         queue_ahead=queue_ahead,
         estimate_waiting_time=estimate_waiting
     )
-    # print(entry_detail)
     return entry_detail
 
-#TODO test
 def calculate_estimate_waiting_time(entry, entry_ahead):
     queue = entry.queue
     entries = Entry.objects.filter(queue=queue, time_out__isnull=False, status="completed")
@@ -228,14 +226,12 @@ class BusinessController:
             image_url = business.profile_image_url
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        print("image", image_url)
         return {"image": image_url}
 
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES['file']
-        # print("file", file, file.size)
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
