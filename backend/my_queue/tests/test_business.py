@@ -1,7 +1,10 @@
 import json
 from datetime import time
+import unittest
+from django.core.files.uploadedfile import SimpleUploadedFile
+from unittest.mock import MagicMock, patch
 from django.contrib.auth.models import User
-from my_queue.models import Business, Queue
+from my_queue.models import Business, Queue, get_default_profile_image
 from my_queue.schemas import BusinessRegisterSchema, BusinessUpdatedSchema
 from .base import BaseTestCase
 
@@ -243,8 +246,10 @@ class BusinessRegister(BaseTestCase):
     #                      'msg': 'Business account is successfully created.'})
 
 
-
 class BusinessProfile(BaseTestCase):
+
+    DEFAULT_PROFILE = get_default_profile_image()
+
     def send_request_business_updated(self, edit_attrs, token):
         response = self.client.put(
             "/api/business/business_updated",
@@ -253,13 +258,14 @@ class BusinessProfile(BaseTestCase):
             headers={"Authorization": f"Bearer {token}"},
         )
         return response
-    
+
     def test_edit_business_profile(self):
         """Test the business edit profile update endpoint with multiple formats"""
         test_cases = [
             {
                 "name": "New Business Name",
-                "open_time": time(9, 0).strftime("%H:%M:%S"),  # time converted to string
+                # time converted to string
+                "open_time": time(9, 0).strftime("%H:%M:%S"),
                 "close_time": time(17, 0).strftime("%H:%M:%S"),
             },
             {
@@ -271,20 +277,23 @@ class BusinessProfile(BaseTestCase):
         for edit_attrs in test_cases:
             with self.subTest(edit_attrs=edit_attrs):
                 token = self.login(username="testuser", password="test1234")
-                response = self.send_request_business_updated(edit_attrs, token)
+                response = self.send_request_business_updated(
+                    edit_attrs, token)
                 self.assertEqual(
                     response.json(),
                     {"msg": f"Successfully updated the details of 'New Business Name'."},
                 )
                 self.business.refresh_from_db()
                 self.assertEqual(self.business.name, "New Business Name")
-                self.assertEqual(self.business.open_time.strftime("%H:%M:%S"), "09:00:00")
-                self.assertEqual(self.business.close_time.strftime("%H:%M:%S"), "17:00:00")
+                self.assertEqual(self.business.open_time.strftime(
+                    "%H:%M:%S"), "09:00:00")
+                self.assertEqual(self.business.close_time.strftime(
+                    "%H:%M:%S"), "17:00:00")
                 self.assertEqual(response.status_code, 200)
-                
+
     def test_edit_business_profile_fail(self):
         """Test the business edit profile update endpoint with invalid data"""
-        
+
         # invalid time format
         edit_attrs = {
             "name": "New Business Name",
@@ -295,18 +304,18 @@ class BusinessProfile(BaseTestCase):
         response = self.send_request_business_updated(edit_attrs, token)
         self.business.refresh_from_db()
         self.assertEqual(response.json(), {
-                "detail": [
-                    {
-                        "type": "time_parsing",
-                        "loc": ["body", "edit_attrs", "open_time"],
-                        "msg": "Input should be in a valid time format, invalid character in second",
-                        "ctx": {"error": "invalid character in second"},
-                    }
-                ]
-            },
+            "detail": [
+                {
+                    "type": "time_parsing",
+                    "loc": ["body", "edit_attrs", "open_time"],
+                    "msg": "Input should be in a valid time format, invalid character in second",
+                    "ctx": {"error": "invalid character in second"},
+                }
+            ]
+        },
         )
         self.assertEqual(response.status_code, 422)
-        
+
     def test_edit_business_profile_unauthenticated(self):
         """Test the business edit profile update endpoint for users with no business"""
         User.objects.create_user(username="testuser2", password="test1234")
@@ -318,10 +327,89 @@ class BusinessProfile(BaseTestCase):
         }
         response = self.send_request_business_updated(edit_attrs, token)
         self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {"msg": "Cannot edit this business."})
+        self.assertEqual(response.json(), {
+                         "msg": "Cannot edit this business."})
 
-
+    def get_profile_image(self, token):
+        response = self.client.get(
+            "/api/business/profile", headers={"Authorization": f"Bearer {token}"}
+        )
+        return response
 
     def test_business_profile(self):
-        """Test the business profile update endpoint"""
-        pass
+        """Test get the business profile for business no profile."""
+        token = self.login(username="testuser", password="test1234")
+        response = self.get_profile_image(token)
+        # default profile image
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"image": self.DEFAULT_PROFILE})
+
+    def test_no_business(self):
+        """Test get the business profile for no business."""
+        User.objects.create_user(
+            username="testuser2", password="test1234")
+        token = self.login(username="testuser2", password="test1234")
+        response = self.get_profile_image(token)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
+        
+    def test_upload_profile_image_no_business(self):
+        """Test to upload profile image for no business."""
+        User.objects.create_user(
+            username="testuser2", password="test1234")
+        token = self.login(username="testuser2", password="test1234")
+        test_image = SimpleUploadedFile(
+            name="test_image.jpg",
+            content=b"file_content_here",  
+            content_type="image/jpeg"
+        )
+        response = self.client.post(
+            "/api/business/profile", 
+            {"file": test_image},
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Bearer {token}"
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
+        
+    @patch('my_queue.models.Business.objects.get')
+    @patch('my_queue.models.Business.image', new_callable=MagicMock)
+    def test_upload_profile_image_success(self, mock_image, mock_get):
+        # Simulate an uploaded file
+        test_image = SimpleUploadedFile(
+            name="test_image.jpg",
+            content=b"file_content_here",  # Replace with valid binary content of an image
+            content_type="image/jpeg"
+        )
+
+        # Create a mock business object
+        mock_business = MagicMock(spec=Business)
+        mock_business.image = MagicMock()
+        mock_business.image.name = 'mocked_image.jpg'
+        mock_business.image.url = '/media/mocked_image.jpg'
+        mock_business.image.save = MagicMock()
+        mock_business.image.delete = MagicMock()
+
+        # Mock the return of the Business object
+        mock_get.return_value = mock_business
+
+        # Simulate login and get the token
+        token = self.login(username="testuser", password="test1234")
+
+        # Perform the POST request to upload the image
+        response = self.client.post(
+            "/api/business/profile",  
+            {"file": test_image},
+            format="multipart",
+            HTTP_AUTHORIZATION=f"Bearer {token}"
+        )
+        # Check the response
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("mocked_image.jpg", response.json().get("business", ""))
+        self.assertIn("uploaded", response.json().get("msg", ""))
+
+        # Check that the save method was called
+        mock_business.image.save.assert_called_with(
+            test_image.name, unittest.mock.ANY, save=True
+        )
+        mock_business.image.delete.assert_called_once()
