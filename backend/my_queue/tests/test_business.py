@@ -72,6 +72,17 @@ class ShowBusinessTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[3]["entry_count"], 1)
+    
+    def test_get_entry_in_time_slot_no_business(self):
+        """Test to retrieve the number of entries in a time slot."""
+        User.objects.create_user(username="testuser2", password="test1234")
+        token = self.login(username="testuser2", password="test1234")
+        response = self.client.get(
+            "/api/business/entry_in_time_slot",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
 
 
 
@@ -160,7 +171,7 @@ class BusinessQueueTestCase(BaseTestCase):
         self.assertEqual(response.json(), {
                          "error": 'Queue with name New Queue already exist.'})
 
-    def create_business_queue_exceed_limit(self):
+    def test_create_business_queue_exceed_limit(self):
         """Test to create new queue for business."""
         # Fail
         token = self.login(username="testuser", password="test1234")
@@ -211,7 +222,7 @@ class BusinessQueueTestCase(BaseTestCase):
                 data=json.dumps(queue_data),
                 content_type="application/json",
                 headers={"Authorization": f"Bearer {token}"})
-            if i < 14:
+            if i <= 14:
                 self.assertEqual(response.json(),
                                  {"msg": f"Queue {queue_names[i]} is successfully created."})
             else:  # exceed limit
@@ -280,6 +291,19 @@ class BusinessRegister(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.all().last().email,data_dict["email"])
         self.assertEqual(User.objects.all().last().username,data_dict["email"])
+    
+    def test_email_register_fail(self):
+        """Test the email registration endpoint."""
+        data_dict = {"email": ""}
+
+        response = self.client.post(
+            "/api/business/email-register",
+            data=json.dumps(data_dict),
+            content_type="application/json",
+        )
+
+        response_data = response.json()
+        self.assertEqual(response_data, {"error": "Email is required"} )
 
 
 
