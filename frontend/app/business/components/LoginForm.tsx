@@ -96,7 +96,7 @@ export default function LoginForm() {
         </div>
         <div className='pt-7'/>
         <div className='flex items-center space-x-2'>
-            <label>Does not have an account?</label>
+            <label className='text-black'>Does not have an account?</label>
             <Link href='/business/signup' className='text-darkPink hover:underline'>Sign up</Link>
         </div>
       </form>

@@ -166,7 +166,7 @@ const SignUpForm = () => {
                 </button>
                 <div className='pt-6'/>
                 <div className='space-x-3'>
-                  <label>Already have an account?</label>
+                  <label className='text-black'>Already have an account?</label>
                   <Link href='/business/login' className='text-darkPink hover:underline'>Login</Link>
                 </div>
             </form>
