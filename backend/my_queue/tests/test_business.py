@@ -227,23 +227,24 @@ class BusinessRegister(BaseTestCase):
         self.assertEqual(response.json(), {'msg': 'Can not create this account',
                          'error': '{"username": [{"message": "A user with that username already exists.", "code": "unique"}]}'})
 
-    # TODO
-    # def test_email_register(self):
-    #     """Test the email registration endpoint."""
-    #     # data_dict = BusinessRegisterSchema(username="new_user", password1="hackme11",
-    #     #                                    password2="hackme11", business_name="New Business").dict()
+    def test_email_register(self):
+        """Test the email registration endpoint."""
+        
+        data_dict = {"email": "abc@gmail.com"}
 
-    #     data_dict = {"email": "abc@gmail.com"}
-    #     # success
-    #     response = self.client.post(
-    #         "/api/business/email-register",
-    #         # Convert the dictionary to a JSON string
-    #         data=json.dumps(data_dict),
-    #         content_type="application/json",
-    #     )
+        response = self.client.post(
+            "/api/business/email-register",
+            data=json.dumps(data_dict),
+            content_type="application/json",
+        )
 
-    #     self.assertEqual(response.json(), {
-    #                      'msg': 'Business account is successfully created.'})
+        response_data = response.json()
+        self.assertIn("access_token", response_data)
+        self.assertIn("refresh_token", response_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(User.objects.all().last().email,data_dict["email"])
+        self.assertEqual(User.objects.all().last().username,data_dict["email"])
+
 
 
 class BusinessProfile(BaseTestCase):
