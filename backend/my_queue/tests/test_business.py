@@ -1,10 +1,12 @@
+
 import json
-from datetime import time
+from datetime import time, datetime, timedelta
 import unittest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.utils.timezone import make_aware
 from unittest.mock import MagicMock, patch
 from django.contrib.auth.models import User
-from my_queue.models import Business, Queue, get_default_profile_image
+from my_queue.models import Business, Entry, Queue, get_default_profile_image
 from my_queue.schemas import BusinessRegisterSchema, BusinessUpdatedSchema
 from .base import BaseTestCase
 
@@ -37,6 +39,40 @@ class ShowBusinessTestCase(BaseTestCase):
             "/api/business", headers={"Authorization": f"Bearer {token}"}
         )
         self.assertEqual(response.json(), [])
+        
+
+
+    def test_get_entry_in_time_slot(self):
+        """Test to retrieve the number of entries in a time slot."""
+        token = self.login(username="testuser", password="test1234")
+        base_time = make_aware(datetime(2024, 1, 1, 13, 0, 0))  # Ensure timezone-aware datetime
+        Entry.objects.create(
+            queue=self.queue,
+            business=self.business,
+            time_in=base_time,
+            status="waiting",
+        )
+        Entry.objects.create(
+            queue=self.queue,
+            business=self.business,
+            time_in=make_aware(datetime(2024, 1, 1, 15, 0, 0)) + timedelta(weeks=1),  
+            status="waiting",
+        )
+        Entry.objects.create(
+            queue=self.queue,
+            business=self.business,
+            time_in=base_time + timedelta(weeks=1),  # One week later
+            status="waiting",
+        )
+
+        response = self.client.get(
+            "/api/business/entry_in_time_slot",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()[3]["entry_count"], 1)
+
 
 
 class BusinessQueueTestCase(BaseTestCase):

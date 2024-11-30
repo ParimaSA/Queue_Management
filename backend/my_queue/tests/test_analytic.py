@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 
 from django.contrib.auth.models import User
 from django.utils.timezone import make_aware
-from django.utils import timezone
 from .base import BaseTestCase
 from my_queue.models import Entry, Business, Queue
 
@@ -44,11 +43,6 @@ class Analytic(BaseTestCase):
                     time_out=entry_time + timedelta(minutes=30),
                     status="completed",
                 )
-
-    def test_print(self):
-        for e in Entry.objects.all():
-            print(e.queue.name, e.time_in, e.time_out, e.status)
-            print("-----")
 
     def no_business(self, response):
         """Test that an error message is shown if the user has no business."""
