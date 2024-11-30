@@ -48,7 +48,7 @@ const BusinessPage = () => {
                 </div>
                 <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-4">
                   {queueData.map(q => (
-                    <div className="card h-[50vh] shadow-xl bg-white" key={q.id}>
+                    <div className="card min-h-[50vh] h-auto shadow-xl bg-white" key={q.id}>
                       <div className="card-body">
                         <div className="flex justify-between">
                           <h2 className="card-title text-black">{q.name}</h2>

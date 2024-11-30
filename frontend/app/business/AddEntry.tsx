@@ -119,7 +119,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-[78vh] overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
+          <div className="card shadow-xl min-h-[78vh] h-auto overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
               <h1 className="card-title text-bold mt-3 text-black">Add Entry</h1>
               <div className='space-x-3 flex py-2'>
@@ -134,7 +134,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
                   </button>
                 </div>
               </div>
-              <div className="card bg-white shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-[55vh] overflow-hidden w-full">
+              <div className="card bg-white shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 min-h-[55vh] h-auto overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">
