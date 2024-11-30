@@ -354,16 +354,18 @@ const handleSubmit = async () => {
                         </div>
                       </div>
                     </div>
-                    {my_business ? (
-                      my_business.map(business => (
-                        <div
-                          key={business.id}
-                          className='text-xl flex justify-center py-4 bg-lightPink4 rounded-full font-bold text-black'
-                        >
-                          {business.name}
-                        </div>
-                      ))
-                    ) : null}
+                    <div className="max-w-full overflow-x-auto bg-lightPink4 rounded-full w-full">
+                      {my_business ? (
+                        my_business.map(business => (
+                          <div
+                            key={business.id}
+                            className="text-xl flex-shrink-0 py-4 px-6 font-bold text-black whitespace-nowrap"
+                          >
+                            {business.name}
+                          </div>
+                        ))
+                      ) : null}
+                    </div>
                 </div>
               </div>
               <div className='py-6'/>
