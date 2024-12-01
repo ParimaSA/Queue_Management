@@ -26,10 +26,11 @@ test('Check components on Business page', async ({ page }) => {
   await expect(selectDropdown).toBeVisible();
 
   // Check the Add button
-  await page.getByRole('combobox').selectOption('138');
+  await page.getByRole('combobox').selectOption({ label: 'Takeaway' });
   await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
 
   // Check if the entry data is visible once populated
+  await page.waitForSelector('text=Queue Name: ');
   const queueName = page.getByText('Queue Name: ');
   await expect(queueName).toBeVisible();
   

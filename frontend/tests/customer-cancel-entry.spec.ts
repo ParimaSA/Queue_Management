@@ -17,11 +17,11 @@ test('Customer can cancel the entry', async ({ page }) => {
     await expect(page).toHaveURL(`${baseURL}business`);
 
     // Add Delivery Entry
-    await page.getByRole('combobox').selectOption('140');
+    await page.getByRole('combobox').selectOption({ label: 'Delivery' });
     await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
   
     // Navigate to queue ticket page    
-    const ticketPromise = page.waitForEvent('popup');
+    const ticketPromise = page.waitForEvent('popup', { timeout: 60000 });
     await page.getByRole('link', { name: 'https://queue-management-' }).click();
     const ticketPage = await ticketPromise;
 

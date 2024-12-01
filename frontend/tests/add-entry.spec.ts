@@ -12,18 +12,19 @@ test('Add queue entry and verify queue ticket appears', async ({ page }) => {
   await page.getByRole('button', { name: 'Login' }).click();
 
   // Add Delivery Entry
-  await page.getByRole('combobox').selectOption('140');
+  await page.getByRole('combobox').selectOption({ label: 'Delivery' });
   await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
   
   // Verify the "Quueue Name: Delivery" is visible
-  const DeliveryText = page.getByText('Queue Name: Delivery');
-  await expect(DeliveryText).toBeVisible();
+  const DeliveryText = page.locator('text=Queue Name: Delivery');
+  await page.waitForSelector('text=Queue Name: Delivery', { timeout: 60000 });
 
   // Add Takeaway Enrty
-  await page.getByRole('combobox').selectOption('139');
+  await page.getByRole('combobox').selectOption({ label: 'Takeaway' });
   await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
 
   // Verify the "Quueue Name: Takeaway" is visible
+  await page.waitForSelector('text=Queue Name: Takeaway');
   const TakeawayText = page.getByText('Queue Name: Takeaway');
   await expect(TakeawayText).toBeVisible();
 

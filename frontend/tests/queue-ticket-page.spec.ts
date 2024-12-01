@@ -17,7 +17,7 @@ test('Check components on the queue ticket', async ({ page }) => {
     await expect(page).toHaveURL(`${baseURL}business`);
 
     // Add Delivery Entry
-    await page.getByRole('combobox').selectOption('140');
+    await page.getByRole('combobox').selectOption({ label: 'Delivery' });
     await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
   
     // Navigate to queue ticket page

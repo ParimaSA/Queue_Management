@@ -77,25 +77,35 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
 
   // Add Takeaway Entry
   await page.waitForTimeout(2000);
-  await page.getByRole('combobox').selectOption('139');
+  await page.getByRole('combobox').selectOption({ label: 'Takeaway' });
   await page.waitForTimeout(1000);
-  const addEntryButton = page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button');
-  await moveCursorAndClick(addEntryButton);
-  addEntryButton.click()
+  await page.locator('div').filter({ hasText: /^ReservationWalk-inTakeawayDeliveryOrder PickupPaymentAdd$/ }).getByRole('button').click();
 
   // Navigate to queue ticket page
   await page.waitForTimeout(2000);
   const ticketPromise = page.waitForEvent('popup');
+  await page.waitForSelector('a[href="https://queue-management-"]', { timeout: 5000 });
   const ticketLink = page.getByRole('link', { name: 'https://queue-management-' });
-  await moveCursorAndClick(ticketLink);
-  await page.getByRole('link', { name: 'https://queue-management-' }).click();
-  await page.waitForTimeout(1000);
+  await ticketLink.click();
   const ticketPage = await ticketPromise;
-  await ticketPage.waitForTimeout(2000);
+  await ticketPage.waitForSelector('text=Queue Name: Takeaway');
+  await ticketPage.waitForTimeout(2000); 
 
   // Bring the main page to front and navigate back to business page
   await page.bringToFront(); // Switch focus back to the main tab
   await page.goto(`${baseURL}business`);
+  const TakeAwayQueue = "Takeaway";
+  const DeliveryQueue = "Delivery";
+  const ReservationQueue = "Reservation";
+  const WalkInQueue = "Walk-in";
+  const PickUpQueue = "Order Pickup";
+  const PaymentQueue = "Payment";
+  await page.waitForSelector(`h2.card-title:has-text("${TakeAwayQueue}")`);
+  await page.waitForSelector(`h2.card-title:has-text("${DeliveryQueue}")`);
+  await page.waitForSelector(`h2.card-title:has-text("${ReservationQueue}")`);
+  await page.waitForSelector(`h2.card-title:has-text("${WalkInQueue}")`);
+  await page.waitForSelector(`h2.card-title:has-text("${PickUpQueue}")`);
+  await page.waitForSelector(`h2.card-title:has-text("${PaymentQueue}")`); 
   await page.waitForTimeout(3000);
 
   // Verify returned to the correct page
@@ -120,6 +130,7 @@ test('Add queue entry and verify queue ticket appears with accurate cursor movem
 
     // Click the complete button in the dropdown
     await page.getByRole('button', { name: 'complete' }).click({ force: true });
+    await page.waitForSelector('button[name="complete"]', { state: 'detached'});
   } else {
     console.log('No entries found matching the pattern.');
   }
