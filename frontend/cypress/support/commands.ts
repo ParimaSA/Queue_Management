@@ -11,7 +11,20 @@
 //
 //
 // -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
+Cypress.Commands.add('login', (username: string, password: string) => {
+    cy.visit('https://queue-management-taupe.vercel.app/business/login')
+    cy.get('input[name="username"]').type(username);
+    cy.get('input[name="password"]').type(password);
+        cy.wait(500);
+
+    cy.get(
+        'body > div.flex.justify-center.items-center.min-h-screen.bg-cream2 > ' +
+        'div > div > form > ' +
+        'div.__className_9b0445.text-center.flex.flex-col.justify-center.items-center > ' +
+         'button'
+        ).click();     
+  });
+  
 //
 //
 // -- This is a child command --
@@ -25,13 +38,15 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 //
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      login(username: string, password: string): Chainable<void>;
+      drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+      dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
+    }
+  }
+}
+
+export {}; 
