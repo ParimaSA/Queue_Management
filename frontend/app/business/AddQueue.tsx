@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
-import Preview from './Preview';
+import Preview from './components/Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 const QUEUE_API_URL = "/api/queue/";
@@ -25,6 +25,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isPrefix, setIsPrefix] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -76,6 +77,14 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
 
   const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewAlphabet(event.target.value)
+    setErrorMessage('')
+    const newPrefix = event.target.value
+    if (newPrefix && !/^[a-zA-Z]$/.test(newPrefix)){
+      setErrorMessage("Prefix must be an alphabetic character.")
+    }
+    if (newPrefix && newPrefix.length > 1){
+      setErrorMessage("Prefix can be only one character.")
+    }
   };
 
   const handleAddClick = async (event: React.FormEvent<HTMLFormElement> ) => {
@@ -159,6 +168,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
   const handlePrefixToggle = ()=> {
     setIsPrefix(!isPrefix)
     setNewAlphabet('')
+    setErrorMessage('')
   }
 
   const handleExplanation = () => {
@@ -274,13 +284,18 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
             <br />
             <div className="form-control flex space-x-2">
               <label className="label cursor-pointer">
-                <p className='text-sm'>Set Prefix</p>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-success ml-0"
-                  checked={isPrefix}
-                  onChange={handlePrefixToggle}/>
-                <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                <div className='flex 1'>
+                  <p className='text-sm'>Set Prefix</p>
+                  { errorMessage && (<p className='text-sm text-red-500 ml-2'>   ({ errorMessage })</p>)}
+                </div>
+                <div className='flex items-center'>  
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-success ml-0"
+                    checked={isPrefix}
+                    onChange={handlePrefixToggle}/>
+                  <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                </div>  
               </label>
             </div>
             { isPrefix && (
@@ -304,7 +319,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
             { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
-              <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
+              <button type="submit" disabled={!!errorMessage || !newQueue || (isPrefix && !newAlphabet)} className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
             </div>              
           </form>
         </div>
@@ -387,15 +402,15 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
         </div>
       </dialog>
       <div className="flex space-x-2">
-        <button className="btn flex justify-end bg-lightPurple8 hover:bg-purple" onClick={openTemplateModal}>Queue Template</button>
-        <button className="btn bg-lightPurple8 hover:bg-purple" onClick={openModal}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6">
+        <button className="btn flex justify-end bg-lightPurple8 hover:bg-purple text-black" onClick={openTemplateModal}>Queue Template</button>
+        <button className="btn bg-lightPurple8 hover:bg-purple text-black" onClick={openModal}>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-6 text-black">
           <path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" />
         </svg>
           Add Queue
         </button>
         <button className="btn bg-lightPurple1 hover:bg-purple rounded-full" onClick={handleDeleteAll}>
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="size-6 text-black">
           <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
         </svg>
         </button>

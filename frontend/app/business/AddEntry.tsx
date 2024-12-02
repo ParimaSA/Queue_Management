@@ -37,6 +37,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
   const [entryData, setEntryData] = useState<EntryData | null>(null);
   const [src, setSrc] = useState<string | null>(null);
   const [origin, setOrigin] = useState<string>('');
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -92,6 +93,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       console.log("Response:", data)
       setTrackingCode(data.tracking_code)
       setEntryData(data)
+      handleShorten()
       console.log("entry: ", entryData)
       mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
       generate();
@@ -99,6 +101,31 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       console.log("Error adding entry:", error)
     }
   };
+
+  const handleShorten = () => {
+    const fullUrl = `${origin}/customer/${trackingCode}`;
+    console.log("URL being shortened: ", fullUrl);
+  
+    fetch('/api/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: fullUrl }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.shortUrl) {
+          setShortUrl(data.shortUrl);
+        } else {
+          setShortUrl(fullUrl);
+        }
+      })
+      .catch((err) => {
+        console.error('Error shortening URL:', err);
+      });
+  };
+  
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
@@ -119,22 +146,22 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
   return (
     <>  
-          <div className="card shadow-xl h-[78vh] overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
+          <div className="card shadow-xl min-h-[78vh] h-auto overflow-hidden lg:w-full md:w-full sm:w-full bg-lightPurple1">
             <div className="card-body">
-              <h1 className="card-title text-bold mt-3">Add Entry</h1>
+              <h1 className="card-title text-bold mt-3 text-black">Add Entry</h1>
               <div className='space-x-3 flex py-2'>
-                <select className="select select-bordered lg:w-[100vw] md:w-[100vw] sm:w-[90vw] h-[8vh]" onChange={handleSelectedChange}>
+                <select className="select select-bordered lg:w-[100vw] md:w-[100vw] sm:w-[90vw] h-[8vh] bg-white text-black" onChange={handleSelectedChange}>
                   {queue.map(q => (
                     <option key={q.id} value={q.id}>{q.name}</option>
                   ))}
                 </select>
                 <div className="card-actions">
-                  <button className='btn h-[8vh] lg:w-full md:w-full sm:w-full' onClick={handleAddClick}>
+                  <button className='btn h-[8vh] lg:w-full md:w-full sm:w-full bg-white text-black' onClick={handleAddClick}>
                     Add
                   </button>
                 </div>
               </div>
-              <div className="card bg-base-100 shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 h-[55vh] overflow-hidden w-full">
+              <div className="card bg-white shadow-xl lg:col-span-2 md:col-span-2 sm:col-span-10 min-h-[55vh] h-auto overflow-hidden w-full">
               {entryData ? (
               <div ref={ contentRef }>
                 <div className="card-body text-center">
@@ -155,7 +182,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
                   {/* URL */}
                   <div className="text-black font-bold mb-2 text-sm">
-                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
+                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{shortUrl}</a>                 
                   </div>
 
                   {/* Estimated Time and Queue Position */}

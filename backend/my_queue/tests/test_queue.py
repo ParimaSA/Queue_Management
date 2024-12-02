@@ -16,7 +16,7 @@ class EditQueueTest(BaseTestCase):
         edit_attrs = {"name": "Take Away", "prefix": "B"}
 
         response = self.client.put(
-            f"/api/queue/{self.queue.id}",
+            f"/api/queue/edit/{self.queue.id}",
             data=json.dumps(edit_attrs),
             content_type="application/json",
             headers={"Authorization": f"Bearer {token}"},
@@ -52,7 +52,7 @@ class EditQueueTest(BaseTestCase):
         edit_attrs = {"name": "Ok", "prefix": "B"}
         token = self.login(username="testuser", password="test1234")
         response = self.client.put(
-            f"/api/queue/9999",
+            f"/api/queue/edit/9999",
             data=json.dumps(edit_attrs),
             content_type="application/json",
             headers={"Authorization": f"Bearer {token}"},
@@ -111,7 +111,7 @@ class DeleteQueueTestCase(BaseTestCase):
         """Test that a business can delete their queue."""
         token = self.login(username="testuser", password="test1234")
         response = self.client.delete(
-            f"/api/queue/{self.queue.id}", headers={"Authorization": f"Bearer {token}"}
+            f"/api/queue/delete/{self.queue.id}", headers={"Authorization": f"Bearer {token}"}
         )
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), None)  # Response should be empty
@@ -128,7 +128,7 @@ class DeleteQueueTestCase(BaseTestCase):
         )
 
         response = self.client.delete(
-            f"/api/queue/{another_queue.id}",
+            f"/api/queue/delete/{another_queue.id}",
             headers={"Authorization": f"Bearer {token}"},
         )
         self.assertEqual(response.status_code, 404)

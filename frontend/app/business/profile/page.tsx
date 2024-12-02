@@ -7,14 +7,14 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { toast } from "react-toastify";
 import BusinessNavbar from '../components/BusinessNavbar';
-import WeeklyEntryChart from '../WeeklyEntryChart';
-import EntryTimeChart from '../EntryTimeChart';
-import EstimateTimeChart from '../EstimateTimeChart';
-import EstimateDayChart from '../EstimateDayChart';
-import EstimateQueueChart from '../EstimateQueueChart';
-import EntryQueueChart from '../EntryQueueChart';
-import EntryChart from '../EntryChart';
-import TopQueue from '../TopQueue';
+import WeeklyEntryChart from '../components/chart/WeeklyEntryChart';
+import EntryTimeChart from '../components/chart/EntryTimeChart';
+import EstimateTimeChart from '../components/chart/EstimateTimeChart';
+import EstimateDayChart from '../components/chart/EstimateDayChart';
+import EstimateQueueChart from '../components/chart/EstimateQueueChart';
+import EntryQueueChart from '../components/chart/EntryQueueChart';
+import EntryChart from '../components/chart/EntryChart';
+import TopQueue from '../components/TopQueue';
 import ApiProxy from '@/app/api/proxy';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/AuthProvider';
@@ -354,16 +354,18 @@ const handleSubmit = async () => {
                         </div>
                       </div>
                     </div>
-                    {my_business ? (
-                      my_business.map(business => (
-                        <div
-                          key={business.id}
-                          className='text-xl flex justify-center py-4 bg-lightPink4 rounded-full font-bold'
-                        >
-                          {business.name}
-                        </div>
-                      ))
-                    ) : null}
+                    <div className="max-w-full overflow-x-auto bg-lightPink4 rounded-full w-full">
+                      {my_business ? (
+                        my_business.map(business => (
+                          <div
+                            key={business.id}
+                            className="text-xl text-center flex-shrink-0 py-4 px-6 font-bold text-black whitespace-nowrap"
+                          >
+                            {business.name}
+                          </div>
+                        ))
+                      ) : null}
+                    </div>
                 </div>
               </div>
               <div className='py-6'/>
@@ -373,7 +375,7 @@ const handleSubmit = async () => {
           <div className='lg:col-span-2 md:col-span-3 sm:col-span-3 ml-0' style={{ position: 'sticky', top: 0}}>
           <div role="tablist" className="tabs tabs-lifted" style={{ position: 'sticky', top: 0,}}>
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Summary" defaultChecked/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0}}>
+            <div role="tabpanel" className="tab-content bg-white text-black border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0}}>
             <h1 style={{ textAlign: 'center', fontSize: '25px', fontWeight: 'bold', fontFamily: 'Arial', marginTop: "5vh"}}>Entry Status</h1>
               <EntryChart key={refreshKey}/>
               <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '50px', border: '2px solid gray-400'}}>
@@ -404,7 +406,7 @@ const handleSubmit = async () => {
             <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                  <h2 className="card-title">Time Slot Entries Chart</h2>
+                  <h2 className="card-title text-black">Time Slot Entries Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <EntryTimeChart />
                     </div>
@@ -413,7 +415,7 @@ const handleSubmit = async () => {
                 <div className='pt-8'/>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Waiting Time by Time Slot Chart</h2>
+                    <h2 className="card-title text-black">Waiting Time by Time Slot Chart</h2>
                       <div className='h-56 w-full flex justify-center items-center'>
                         <EstimateTimeChart/>
                       </div>
@@ -422,10 +424,10 @@ const handleSubmit = async () => {
             </div>
 
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Day"/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
+            <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Average Weekly Entries Chart</h2>
+                    <h2 className="card-title text-black">Average Weekly Entries Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <WeeklyEntryChart />
                     </div>
@@ -434,7 +436,7 @@ const handleSubmit = async () => {
                 <div className='pt-8'/>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Waiting Time by Day Chart</h2>
+                    <h2 className="card-title text-black">Waiting Time by Day Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <EstimateDayChart/>
                     </div>
@@ -442,10 +444,10 @@ const handleSubmit = async () => {
                 </div>
             </div>
             <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue"/>
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
+            <div role="tabpanel" className="tab-content bg-white border-base-300 rounded-box p-6 w-full h-full" style={{ minHeight: '75vh', position: 'sticky', top: 0 }}>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Queue Entries Chart</h2>
+                    <h2 className="card-title text-black">Queue Entries Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <EntryQueueChart />
                     </div>
@@ -454,18 +456,13 @@ const handleSubmit = async () => {
                 <div className='pt-8'/>
                 <div className="card bg-lightGreen5 w-full h-76 shadow-xl">
                   <div className="card-body">
-                    <h2 className="card-title">Waiting Time by Queue Chart</h2>
+                    <h2 className="card-title text-black">Waiting Time by Queue Chart</h2>
                     <div className='h-56 w-full flex justify-center items-center'>
                       <EstimateQueueChart/>
                     </div>
                   </div>
                 </div>
             </div>
-
-            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
-              Tab content 3
-            </div> */}
           </div>
         </div>
         </div>
