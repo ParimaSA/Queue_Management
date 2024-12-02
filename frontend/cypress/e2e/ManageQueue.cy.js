@@ -30,7 +30,7 @@ describe('Manage queue', () => {
         cy.get('.card-title').contains('Test1').should('be.visible');
 
         // Edit queue
-        cy.get('button').find('svg.size-6.text-black').eq(3).click({ force: true });
+        cy.get('button').find('svg.size-6.text-black').eq(4).click({ force: true });
         cy.get('.grow.font-light').eq(2).clear({ force: true }).type('New', { force: true });
         cy.get('.grow.font-light').eq(3).clear({ force: true }).type('N', { force: true });
         cy.wait(1000)
