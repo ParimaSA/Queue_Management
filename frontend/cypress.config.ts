@@ -8,5 +8,6 @@ export default defineConfig({
     },
     viewportWidth: 1280,
     viewportHeight: 800,
+    retries: 3,
   },
 });
