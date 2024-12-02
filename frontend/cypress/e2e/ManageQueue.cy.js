@@ -1,4 +1,4 @@
-describe('Add Entry and run queue', () => {
+describe('Manage queue', () => {
     const baseURL = 'https://queue-management-taupe.vercel.app/';
     let ticket;
   

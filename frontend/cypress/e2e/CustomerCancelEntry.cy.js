@@ -1,4 +1,4 @@
-describe('Add Entry and run queue', () => {
+describe('Customer cancel queue entry', () => {
     const baseURL = 'https://queue-management-taupe.vercel.app/';
     let ticket;
   
@@ -37,7 +37,7 @@ describe('Add Entry and run queue', () => {
         
         // Cancel entry from customer queue ticket page
         cy.get('body > div.bg-cream2.w-screen.h-screen.flex.justify-center.items-center > div > div > button').click()
-        
+
         // Check No queue entry found page
         cy.get('body > main > div > div > div > h1').contains('No queue entry found.').should('be.visible')
     });   
