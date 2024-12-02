@@ -37,6 +37,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
   const [entryData, setEntryData] = useState<EntryData | null>(null);
   const [src, setSrc] = useState<string | null>(null);
   const [origin, setOrigin] = useState<string>('');
+  const [shortUrl, setShortUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -92,6 +93,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       console.log("Response:", data)
       setTrackingCode(data.tracking_code)
       setEntryData(data)
+      handleShorten()
       console.log("entry: ", entryData)
       mutate(`${QUEUE_ENTRY_API_URL}/${queueId}`);
       generate();
@@ -99,6 +101,31 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
       console.log("Error adding entry:", error)
     }
   };
+
+  const handleShorten = () => {
+    const fullUrl = `${origin}/customer/${trackingCode}`;
+    console.log("URL being shortened: ", fullUrl);
+  
+    fetch('/api/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: fullUrl }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.shortUrl) {
+          setShortUrl(data.shortUrl);
+        } else {
+          setShortUrl(fullUrl);
+        }
+      })
+      .catch((err) => {
+        console.error('Error shortening URL:', err);
+      });
+  };
+  
 
   const generate = () => {
     console.log('to generate: ', trackingCode)
@@ -155,7 +182,7 @@ const AddEntry: React.FC<AddEntryProps>  = ({ queue }) => {
 
                   {/* URL */}
                   <div className="text-black font-bold mb-2 text-sm">
-                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>                 
+                    <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{shortUrl}</a>                 
                   </div>
 
                   {/* Estimated Time and Queue Position */}

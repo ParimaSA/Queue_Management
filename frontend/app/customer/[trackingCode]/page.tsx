@@ -28,6 +28,7 @@ interface EntryData {
 const CustomerPage: React.FC = () => {
   const router = useRouter();
   const { trackingCode } = useParams();
+  const [shortUrl, setShortUrl] = useState('')
   const [src, setSrc] = useState<string | null>(null);
   const [origin, setOrigin] = useState<string>('');
 
@@ -153,6 +154,31 @@ const CustomerPage: React.FC = () => {
     }
   };
 
+  const handleShorten = () => {
+    const fullUrl = `${origin}/customer/${trackingCode}`;
+    console.log("URL being shortened: ", fullUrl);
+  
+    fetch('/api/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ url: fullUrl }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.shortUrl) {
+          setShortUrl(data.shortUrl);
+        } else {
+          setShortUrl(fullUrl);
+        }
+      })
+      .catch((err) => {
+        console.error('Error shortening URL:', err);
+      });
+  };
+  handleShorten()
+
   const generate = () => {
     QRCode.toDataURL(`${window.location.origin}/customer/${trackingCode}`).then(setSrc)
   }
@@ -185,7 +211,7 @@ const CustomerPage: React.FC = () => {
   
               {/* URL */}
               <div className="text-black font-bold mb-5 text-sm sm:text-base md:text-lg">
-                <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{origin}/customer/{trackingCode}</a>
+                <a href={`${origin}/customer/${trackingCode}`} target="_blank" rel="noopener noreferrer">{shortUrl}</a>
               </div>
 
               {/* Status */}
