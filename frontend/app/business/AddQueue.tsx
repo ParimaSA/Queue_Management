@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { toast } from "react-toastify";
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import PreviewIcon from '@mui/icons-material/Preview';
-import Preview from './Preview';
+import Preview from './components/Preview';
 
 const BUSINESS_QUEUE_API_URL = "/api/business/queues";
 const QUEUE_API_URL = "/api/queue/";
@@ -25,6 +25,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
   const [newQueue, setNewQueue] = useState('')
   const [newAlphabet, setNewAlphabet] = useState('')
   const [isPrefix, setIsPrefix] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
   const [isExplanation, setIsExplanation] = useState(false)
   const [isPreview, setIsPreview] = useState(false)
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -76,6 +77,14 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
 
   const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setNewAlphabet(event.target.value)
+    setErrorMessage('')
+    const newPrefix = event.target.value
+    if (newPrefix && !/^[a-zA-Z]$/.test(newPrefix)){
+      setErrorMessage("Prefix must be an alphabetic character.")
+    }
+    if (newPrefix && newPrefix.length > 1){
+      setErrorMessage("Prefix can be only one character.")
+    }
   };
 
   const handleAddClick = async (event: React.FormEvent<HTMLFormElement> ) => {
@@ -159,6 +168,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
   const handlePrefixToggle = ()=> {
     setIsPrefix(!isPrefix)
     setNewAlphabet('')
+    setErrorMessage('')
   }
 
   const handleExplanation = () => {
@@ -274,13 +284,18 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
             <br />
             <div className="form-control flex space-x-2">
               <label className="label cursor-pointer">
-                <p className='text-sm'>Set Prefix</p>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-success ml-0"
-                  checked={isPrefix}
-                  onChange={handlePrefixToggle}/>
-                <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                <div className='flex 1'>
+                  <p className='text-sm'>Set Prefix</p>
+                  { errorMessage && (<p className='text-sm text-red-500 ml-2'>   ({ errorMessage })</p>)}
+                </div>
+                <div className='flex items-center'>  
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-success ml-0"
+                    checked={isPrefix}
+                    onChange={handlePrefixToggle}/>
+                  <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                </div>  
               </label>
             </div>
             { isPrefix && (
@@ -304,7 +319,7 @@ const AddQueue: React.FC<AddQueueProps> = ({ onQueueAdded, queueData }) => {
             { isPreview && (newQueue && (newAlphabet || !isPrefix)) && (<Preview newQueue={Array.isArray(newQueue) ? newQueue : [newQueue]} newAlphabet={Array.isArray(newAlphabet) ? newAlphabet : [newAlphabet]} />)}
             <br />
             <div className='form-control flex space-x-2'>
-              <button type="submit" className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
+              <button type="submit" disabled={!!errorMessage || !newQueue || (isPrefix && !newAlphabet)} className="btn btn-primary bg-hotPink hover:bg-darkPink border-white">Add</button>
             </div>              
           </form>
         </div>

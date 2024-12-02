@@ -2,7 +2,9 @@
 
 from typing import List
 
-# import boto3
+import boto3
+from dateutil.utils import today
+
 from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from .schemas import (
@@ -57,6 +59,7 @@ def serialize_single_entry(entry):
         queue_ahead=queue_ahead,
         estimate_waiting_time=estimate_waiting
     )
+    print(entry_detail)
     return entry_detail
 
 def calculate_estimate_waiting_time(entry, entry_ahead):
@@ -111,6 +114,10 @@ class BusinessController:
             business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
             return {"error": f"Queue with name {data_dict['name']} already exist."}
+
+        if len(data_dict.get("prefix", "")) > 1:
+            return {"error": "The prefix must be a single character."}
+
         new_queue = Queue.objects.create(business=business, **data_dict)
         new_queue.save()
         return {"msg": f"Queue {new_queue.name} is successfully created."}
@@ -124,7 +131,7 @@ class BusinessController:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-        queue_list = Queue.objects.filter(business=business)
+        queue_list = Queue.objects.filter(business=business).order_by("id")
         return queue_list
 
     @http_post("/email-register", response=dict, auth=helpers.api_auth_user_or_guest)
@@ -255,26 +262,22 @@ class BusinessController:
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
-    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
-    def get_queue_detail(self, request, queue_id: int):
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=queue_id, business=business)
-        except Queue.DoesNotExist:
-            return {'error': 'This queue is not belong to your business.'}
-        return queue
+    @http_get("/last-entry", auth=helpers.api_auth_user_required)
+    def get_last_entry(self, request):
+        """Return last entry for each queue"""
+        queues = Queue.objects.filter(business__user=request.user).order_by("id")
+        date = datetime.today().date()
+        last_entry_for_each_queue = []
+        for queue in queues:
+            last_entry = queue.entry_set.filter(status="completed", time_in__date=date).order_by("time_out")
+            if last_entry:
+                last_entry = last_entry[last_entry.count()-1].name
+            else:
+                last_entry = "-"
+            last_entry_for_each_queue.append({"name": queue.name,
+                                              "last_entry": last_entry})
+        return last_entry_for_each_queue
 
-    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
-    def get_queue_detail(self, request, queue_id: int):
-        """
-        Get queue detail of a specified queue.
-        """
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=queue_id, business=business)
-        except Queue.DoesNotExist:
-            return JsonResponse({"msg": "Cannot edit this queue."}, status=404)
-        return queue
 
     @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):

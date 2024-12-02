@@ -1,4 +1,3 @@
-
 import json
 from datetime import time, datetime, timedelta
 import unittest
@@ -39,7 +38,6 @@ class ShowBusinessTestCase(BaseTestCase):
             "/api/business", headers={"Authorization": f"Bearer {token}"}
         )
         self.assertEqual(response.json(), [])
-        
 
 
     def test_get_entry_in_time_slot(self):
@@ -55,7 +53,7 @@ class ShowBusinessTestCase(BaseTestCase):
         Entry.objects.create(
             queue=self.queue,
             business=self.business,
-            time_in=make_aware(datetime(2024, 1, 1, 15, 0, 0)) + timedelta(weeks=1),  
+            time_in=make_aware(datetime(2024, 1, 1, 15, 0, 0)) + timedelta(weeks=1),
             status="waiting",
         )
         Entry.objects.create(
@@ -72,7 +70,7 @@ class ShowBusinessTestCase(BaseTestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()[3]["entry_count"], 1)
-    
+
     def test_get_entry_in_time_slot_no_business(self):
         """Test to retrieve the number of entries in a time slot."""
         User.objects.create_user(username="testuser2", password="test1234")
@@ -151,8 +149,7 @@ class BusinessQueueTestCase(BaseTestCase):
             {"msg": f'Queue {queue_data["name"]} is successfully created.'},
         )
         self.assertEqual(Queue.objects.count(), 2)
-        self.assertTrue(Queue.objects.filter(
-            name="New Queue", prefix="N").exists())
+        self.assertTrue(Queue.objects.filter(name="New Queue", prefix="N").exists())
 
         queue = Queue.objects.last()
         self.assertEqual(queue.name, "New Queue")
@@ -276,7 +273,7 @@ class BusinessRegister(BaseTestCase):
 
     def test_email_register(self):
         """Test the email registration endpoint."""
-        
+
         data_dict = {"email": "abc@gmail.com"}
 
         response = self.client.post(
@@ -291,7 +288,7 @@ class BusinessRegister(BaseTestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.all().last().email,data_dict["email"])
         self.assertEqual(User.objects.all().last().username,data_dict["email"])
-    
+
     def test_email_register_fail(self):
         """Test the email registration endpoint."""
         data_dict = {"email": ""}
@@ -413,7 +410,7 @@ class BusinessProfile(BaseTestCase):
         response = self.get_profile_image(token)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"msg": "You don't have business yet."})
-        
+
     def test_upload_profile_image_no_business(self):
         """Test to upload profile image for no business."""
         User.objects.create_user(
@@ -421,18 +418,18 @@ class BusinessProfile(BaseTestCase):
         token = self.login(username="testuser2", password="test1234")
         test_image = SimpleUploadedFile(
             name="test_image.jpg",
-            content=b"file_content_here",  
+            content=b"file_content_here",
             content_type="image/jpeg"
         )
         response = self.client.post(
-            "/api/business/profile", 
+            "/api/business/profile",
             {"file": test_image},
             format="multipart",
             HTTP_AUTHORIZATION=f"Bearer {token}"
         )
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"msg": "You don't have business yet."})
-        
+
     @patch('my_queue.models.Business.objects.get')
     @patch('my_queue.models.Business.image', new_callable=MagicMock)
     def test_upload_profile_image_success(self, mock_image, mock_get):
@@ -459,7 +456,7 @@ class BusinessProfile(BaseTestCase):
 
         # Perform the POST request to upload the image
         response = self.client.post(
-            "/api/business/profile",  
+            "/api/business/profile",
             {"file": test_image},
             format="multipart",
             HTTP_AUTHORIZATION=f"Bearer {token}"
