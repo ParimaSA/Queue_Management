@@ -90,13 +90,7 @@ describe('Add Entry and run queue', () => {
                     .find('button')
                     .first()
                     .click({ force: true })
-                    // .then(() => {
-
-                    // cy.get('button[name="complete"]')
-                    //     .click({ force: true })
-                    //     .should('not.exist');
-                    // });
-
+                    
                 cy.log(`Smallest Entry: C${smallestEntry}`);
                 } else {
                 cy.log('No valid entries found.');
