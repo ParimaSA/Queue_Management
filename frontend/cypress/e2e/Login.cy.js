@@ -6,7 +6,7 @@ describe('Business owner login', () => {
       cy.visit(baseURL);
     });
   
-    it('Login, add entry and run queue', () => {
+    it('Login and check elements', () => {
         // Login with incorrect username and password
         cy.login('CyTest1234', 'hackme1234');
         cy.get('div.Toastify__toast.Toastify__toast--error', { timeout: 10000 })

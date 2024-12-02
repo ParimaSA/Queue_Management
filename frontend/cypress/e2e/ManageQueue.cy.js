@@ -6,7 +6,7 @@ describe('Manage queue', () => {
       cy.visit(baseURL);
     });
   
-    it('Login, add entry and run queue', () => {    
+    it('Manage queue', () => {    
         // Login
         cy.login('CyTest', 'hackme11');
 
@@ -35,6 +35,7 @@ describe('Manage queue', () => {
         cy.get('.grow.font-light').eq(3).clear({ force: true }).type('N', { force: true });
         cy.wait(1000)
         cy.contains('button', 'Save').click();
+        cy.wait(1000)
         cy.get('.card-title').contains('Test1New').should('be.visible');
 
         

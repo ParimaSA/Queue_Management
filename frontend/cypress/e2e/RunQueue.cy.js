@@ -26,7 +26,6 @@ describe('Add Entry and run queue', () => {
   
         // Redirect to business page
         cy.url().should('include', '/business');
-        cy.wait(3000);
 
         // Add "Walk-in" entry and check if the queue ticket appear
         cy.get('.select-bordered').should('be.visible')
@@ -90,7 +89,7 @@ describe('Add Entry and run queue', () => {
                     .find('button')
                     .first()
                     .click({ force: true })
-                    
+
                 cy.log(`Smallest Entry: C${smallestEntry}`);
                 } else {
                 cy.log('No valid entries found.');

@@ -6,7 +6,7 @@ describe('Customer cancel queue entry', () => {
       cy.visit(baseURL);
     });
   
-    it('Login, add entry and run queue', () => {
+    it('Customer cancel queue entry', () => {
         // Login
         cy.login('CyTest', 'hackme11');
 
@@ -22,6 +22,7 @@ describe('Customer cancel queue entry', () => {
             .should('be.visible')
             .find('svg.size-6.text-black')
             .click({ force: true })
+        cy.wait(2000)
         
         // Add queue template
         cy.contains('button', 'Queue Template').click();
@@ -31,11 +32,12 @@ describe('Customer cancel queue entry', () => {
         cy.contains('button', 'Add Restaurant Template').click();
 
         // Add "Walk-in" entry and check if the queue ticket appear
-        cy.wait(2000)
+        cy.wait(3000)
         cy.get('.select-bordered').should('be.visible')
         cy.get('.select-bordered').select('Walk-in');
         cy.wait(1000);
         cy.contains('button', 'Add').click();
+        cy.wait(2000)
         cy.contains('.card-body p', 'Queue Name: Walk-in').should('be.visible');
         cy.wait(1000);
 

@@ -6,7 +6,7 @@ describe('Verify and edit profile', () => {
       cy.visit(baseURL);
     });
   
-    it('Login, add entry and run queue', () => {
+    it('Verify and edit profile page', () => {
         // Login
         cy.login('CyTest', 'hackme11');
 
