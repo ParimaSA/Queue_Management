@@ -4,9 +4,12 @@ on:
   push:
     branches:
       - main
+      - iteration8-test-front-mew
   pull_request:
     branches:
       - main
+      - iteration8-test-front-mew
+
 
 jobs:
   cypress-tests:
