@@ -76,9 +76,9 @@ const RunQueue: React.FC<RunQueueProps> = ({queue}) => {
       {entry.length > 0 ? (
         entry.map((e: Entry, index: number) => (
           <div className='flex justify-between' key={`${e.id}-${index}`}>
-            <h4 className='pt-4'>{e.name}</h4>
+            <h4 className='pt-4 text-black'>{e.name}</h4>
             <div className="dropdown dropdown-end" key={e.id}>
-              <div tabIndex={0} role="button" className="btn m-1">{e.status}</div>
+              <div tabIndex={0} role="button" className="btn m-1 bg-white text-black">{e.status}</div>
               <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-50 w-52 p-2 shadow">
                 <li><button onClick={() => handleCompleteClick((parseInt(e.id, 10)))}>complete</button></li>
                 <li><button onClick={() => handleCancelClick((parseInt(e.id, 10)))}>cancel</button></li>

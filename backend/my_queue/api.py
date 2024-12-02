@@ -59,6 +59,7 @@ def serialize_single_entry(entry):
         queue_ahead=queue_ahead,
         estimate_waiting_time=estimate_waiting
     )
+    print(entry_detail)
     return entry_detail
 
 def calculate_estimate_waiting_time(entry, entry_ahead):
@@ -82,10 +83,7 @@ class BusinessController:
     @http_get("", response=List[BusinessDataSchema] | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
-        try:
-            my_business = Business.objects.filter(user=request.user)
-        except Business.DoesNotExist:
-            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        my_business = Business.objects.filter(user=request.user)
         return my_business
 
     @http_post("/register", response=dict, auth=helpers.api_auth_user_or_guest)
@@ -235,7 +233,6 @@ class BusinessController:
             image_url = business.profile_image_url
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-
         return {"image": image_url}
 
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
@@ -281,14 +278,6 @@ class QueueController:
                                               "last_entry": last_entry})
         return last_entry_for_each_queue
 
-    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
-    def get_queue_detail(self, request, queue_id: int):
-        business = Business.objects.get(user=request.user)
-        try:
-            queue = Queue.objects.get(pk=queue_id, business=business)
-        except Queue.DoesNotExist:
-            return {'error': 'This queue is not belong to your business.'}
-        return queue
 
     @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):
