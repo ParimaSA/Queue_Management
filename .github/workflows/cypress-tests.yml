@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - iteration8-test-front-mew
+      - iteration8-test-front-new
   pull_request:
     branches:
       - main
-      - iteration8-test-front-mew
+      - iteration8-test-front-new
 
 
 jobs:
