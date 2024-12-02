@@ -28,6 +28,15 @@ describe('Add Entry and run queue', () => {
         cy.get('.Toastify__toast-container').contains('Queue Test1 is successfully created.').should('be.visible');
         cy.wait(1000)
         cy.get('.card-title').contains('Test1').should('be.visible');
+
+        // Edit queue
+        cy.get('button').find('svg.size-6.text-black').eq(3).click({ force: true });
+        cy.get('.grow.font-light').eq(2).clear({ force: true }).type('New', { force: true });
+        cy.get('.grow.font-light').eq(3).clear({ force: true }).type('N', { force: true });
+        cy.wait(1000)
+        cy.contains('button', 'Save').click();
+        cy.get('.card-title').contains('Test1New').should('be.visible');
+
         
         // Delete all queue
         cy.wait(2000)
