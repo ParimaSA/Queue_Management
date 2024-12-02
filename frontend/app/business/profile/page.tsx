@@ -359,7 +359,7 @@ const handleSubmit = async () => {
                         my_business.map(business => (
                           <div
                             key={business.id}
-                            className="text-xl flex-shrink-0 py-4 px-6 font-bold text-black whitespace-nowrap"
+                            className="text-xl text-center flex-shrink-0 py-4 px-6 font-bold text-black whitespace-nowrap"
                           >
                             {business.name}
                           </div>
