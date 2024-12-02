@@ -262,6 +262,18 @@ class BusinessController:
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
+    @http_get("/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
+    def get_queue_detail(self, request, queue_id: int):
+        """
+        Get queue detail of a specified queue.
+        """
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=queue_id, business=business)
+        except Queue.DoesNotExist:
+            return JsonResponse({"msg": "Cannot edit this queue."}, status=404)
+        return queue
+
     @http_get("/last-entry", auth=helpers.api_auth_user_required)
     def get_last_entry(self, request):
         """Return last entry for each queue"""
