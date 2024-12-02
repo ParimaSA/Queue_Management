@@ -463,11 +463,6 @@ const handleSubmit = async () => {
                   </div>
                 </div>
             </div>
-
-            {/* <input type="radio" name="my_tabs_2" role="tab" className="tab" aria-label="Queue" />
-            <div role="tabpanel" className="tab-content bg-base-100 border-base-300 rounded-box p-6 w-full h-full">
-              Tab content 3
-            </div> */}
           </div>
         </div>
         </div>
