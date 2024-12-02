@@ -1,6 +1,5 @@
 'use client'
 import React, { useState, useEffect, useRef } from 'react'
-import axios from 'axios';
 import { mutate } from 'swr';
 import QRCode from 'qrcode';
 import { toast } from "react-toastify";
