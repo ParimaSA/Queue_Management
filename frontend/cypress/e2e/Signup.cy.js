@@ -1,5 +1,5 @@
 describe('Signup', () => {
-    const baseURL = 'https://queue-management-taupe.vercel.app/';
+    const baseURL = 'https://queue-management-taupe.vercel.app/business/login';
     const uniqueUsername = 'CyTest' + Math.random().toString().slice(2, 12);
     const businessName = 'CyBusiness' + Math.random().toString().slice(2, 12);
   
@@ -9,8 +9,8 @@ describe('Signup', () => {
 
     it('Sign Up and Login Flow', () => {
         // Navigate to Sign-Up page
-        cy.contains('button', 'Start Now').click();
         cy.contains('a', 'Sign up').click();
+        cy.wait(1000)
     
         // Ensure the page is fully loaded
         cy.get('input[placeholder="Username"]').should('be.visible');
@@ -25,7 +25,7 @@ describe('Signup', () => {
         cy.contains('button', 'Sign up').click();
     
         // Verify redirection to login page
-        cy.url().should('include', `${baseURL}business/login`);
+        cy.url().should('include', `${baseURL}`);
     
         // Login with new credentials
         cy.login(uniqueUsername, 'hackme11')
