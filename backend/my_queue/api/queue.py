@@ -1,5 +1,5 @@
 """Api routes for queue."""
-
+from datetime import datetime
 from typing import List
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -17,18 +17,20 @@ from ninja_extra import api_controller, http_get, http_post, http_put, http_dele
 DEFAULT_PROFILE_IMAGE_NAME = "profiles/default.png"
 S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
 
+
 @api_controller("/queue")
 class QueueController:
     """Controller for managing queue-related endpoints."""
 
     @http_get("/last-entry", auth=helpers.api_auth_user_required)
     def get_last_entry(self, request):
-        """Return last entry for each queue"""
+        """Return last entry for each queue."""
         queues = Queue.objects.filter(business__user=request.user).order_by("id")
         date = datetime.today().date()
         last_entry_for_each_queue = []
         for queue in queues:
-            last_entry = queue.entry_set.filter(status="completed", time_in__date=date).order_by("time_out")
+            last_entry = queue.entry_set.filter(status="completed",
+                                                time_in__date=date).order_by("time_out")
             if last_entry:
                 last_entry = last_entry[last_entry.count()-1].name
             else:
@@ -37,8 +39,11 @@ class QueueController:
                                               "last_entry": last_entry})
         return last_entry_for_each_queue
 
-    @http_get("/detail/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
+    @http_get("/detail/{queue_id}",
+              response=QueueDetailSchema,
+              auth=helpers.api_auth_user_required)
     def get_queue_detail(self, request, queue_id: int):
+        """Return detail of a specified queue."""
         business = Business.objects.get(user=request.user)
         try:
             queue = Queue.objects.get(pk=queue_id, business=business)
@@ -48,14 +53,7 @@ class QueueController:
 
     @http_put("/edit/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):
-        """
-        Edit queue to the specified business.
-
-        Args:
-            request: The HTTP request object.
-            queue_id: The primary key of the queue.
-        Returns: message indicate whether the queue is successfully edit or not
-        """
+        """Edit queue to the specified business."""
         business = Business.objects.get(user=request.user)
         try:
             queue = Queue.objects.get(pk=queue_id, business=business)
@@ -84,7 +82,9 @@ class QueueController:
                 {"msg": "Can't delete another business's queue"}, status=404
             )
 
-    @http_post("/new-entry/{queue_id}", response=dict, auth=helpers.api_auth_user_required)
+    @http_post("/new-entry/{queue_id}",
+               response=dict,
+               auth=helpers.api_auth_user_required)
     def add_entry_to_queue(self, request, queue_id: int):
         """Adding new entry into the queue."""
         business = Business.objects.get(user=request.user)
@@ -95,7 +95,8 @@ class QueueController:
 
         waiting_entry = Entry.objects.filter(queue=queue, status="waiting")
         if waiting_entry.count() >= 15:
-            return {'error': 'There are 15 people waiting in this queue. Please clear the queue before adding new entry.'}
+            return {'error': 'There are 15 people waiting in this queue. '
+                             'Please clear the queue before adding new entry.'}
 
         new_entry = Entry.objects.create(
             business=business, queue=queue, status="waiting"

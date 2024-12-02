@@ -30,7 +30,9 @@ S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
 class BusinessController:
     """Controller for managing business-related endpoints."""
 
-    @http_get("", response=List[BusinessDataSchema] | None, auth=helpers.api_auth_user_required)
+    @http_get("",
+              response=List[BusinessDataSchema] | None,
+              auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
         my_business = Business.objects.filter(user=request.user)
@@ -92,14 +94,7 @@ class BusinessController:
 
     @http_put("/business_updated", auth=helpers.api_auth_user_required)
     def edit_business(self, request, edit_attrs: BusinessUpdatedSchema):
-        """
-        Edit deatils of the business.
-
-        Args:
-            request: The HTTP request object.
-            queue_id: The primary key of the business.
-        Returns: message indicate whether the business is successfully edit or not
-        """
+        """Edit details of the business."""
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
@@ -145,7 +140,7 @@ class BusinessController:
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
 
-        #Delete the old profile image if it exists
+        # Delete the old profile image if it exists
         if business.image and business.image.name != DEFAULT_PROFILE_IMAGE_NAME:
             # Delete from storage (handled by S3)
             business.image.delete(save=False)

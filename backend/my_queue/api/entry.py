@@ -2,11 +2,14 @@
 import helpers
 import math
 from ..models import Business, Entry
-from ..schemas import (EntryDetailSchema, EntryDetailCustomerSchema, CustomerQueueCreateSchema)
+from ..schemas import (EntryDetailSchema,
+                       EntryDetailCustomerSchema,
+                       CustomerQueueCreateSchema)
 from django.http import JsonResponse
 from django.utils import timezone
 from django.db.models import F, ExpressionWrapper, DurationField, Avg
 from ninja_extra import api_controller, http_get, http_post
+
 
 @api_controller("/entry")
 class EntryController:
@@ -14,15 +17,19 @@ class EntryController:
 
     @staticmethod
     def calculate_estimate_waiting_time(entry, entry_ahead):
+        """Calculate estimate waiting time for entry."""
         queue = entry.queue
-        entries = Entry.objects.filter(queue=queue, time_out__isnull=False, status="completed")
+        entries = Entry.objects.filter(queue=queue,
+                                       time_out__isnull=False,
+                                       status="completed")
         entries = entries.annotate(
             waiting_time=ExpressionWrapper(
                 F('time_out') - F('time_in'),
                 output_field=DurationField()
             )
         )
-        average_waiting_time = entries.aggregate(average_waiting_time=Avg('waiting_time'))['average_waiting_time']
+        average_waiting_time = entries.aggregate(average_waiting_time=Avg('waiting_time'))
+        average_waiting_time = average_waiting_time['average_waiting_time']
         if average_waiting_time is not None:
             return math.ceil(average_waiting_time.total_seconds() / 60) * entry_ahead
         return -1
@@ -68,16 +75,7 @@ class EntryController:
 
     @http_post("/{entry_id}/status/complete", auth=helpers.api_auth_user_required)
     def run_queue(self, request, entry_id: int):
-        """
-        Mark a specific entry as completed.
-
-        Args:
-            request: The HTTP request object.
-            pk: The primary key of the entry.
-
-        Returns:
-            A message indicating the status of the operation.
-        """
+        """Mark a specific entry as completed."""
         business = Business.objects.get(user=request.user)
         try:
             entry = Entry.objects.get(pk=entry_id, business=business)
