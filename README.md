@@ -2,6 +2,7 @@
 [![Unittest](https://github.com/ParimaSA/Queue_Management/actions/workflows/unittest.yml/badge.svg)](https://github.com/ParimaSA/Queue_Management/actions/workflows/unittest.yml)
 [![Run Flake8](https://github.com/ParimaSA/Queue_Management/actions/workflows/flake8.yml/badge.svg?branch=main)](https://github.com/ParimaSA/Queue_Management/actions/workflows/flake8.yml)
 [![codecov](https://codecov.io/github/ParimaSA/Queue_Management/graph/badge.svg?token=B0XYTZRM1R)](https://codecov.io/github/ParimaSA/Queue_Management)
+[![Cypress E2E Tests](https://github.com/ParimaSA/Queue_Management/actions/workflows/cypress-tests.yml/badge.svg)](https://github.com/ParimaSA/Queue_Management/actions/workflows/cypress-tests.yml)
 
 A web-based platform designed to streamline the process of managing queues at various venues, such as restaurants, hospitals, and government offices. This system helps customers avoid long waiting times by enabling them to track queues in real-time and receive notifications about their turn.
 
