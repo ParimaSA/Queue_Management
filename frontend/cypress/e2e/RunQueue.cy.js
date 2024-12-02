@@ -11,7 +11,7 @@ describe('Add Entry and run queue', () => {
         cy.get('body > main > div > div > div > a > button').click();
         cy.wait(1000);
 
-        cy.get('input[name="username"]').type('CpTest');
+        cy.get('input[name="username"]').type('CyTest');
         cy.wait(1000);
 
         cy.get('input[name="password"]').type('hackme11');
@@ -52,7 +52,7 @@ describe('Add Entry and run queue', () => {
                 cy.visit(ticket);
             });
         cy.wait(2000);
-        cy.contains('h3.text-yellow-900', 'CpRestaurant').should('be.visible');
+        cy.contains('h3.text-yellow-900', 'CyRestaurant').should('be.visible');
 
         // Back to business page
         cy.visit(`${baseURL}/business`);
@@ -107,7 +107,7 @@ describe('Add Entry and run queue', () => {
         cy.wrap(null).then(() => {
             cy.visit(ticket);
         });
-        cy.contains('h3.text-yellow-900', 'CpRestaurant').should('be.visible');
+        cy.contains('h3.text-yellow-900', 'CyRestaurant').should('be.visible');
           
   
     });   

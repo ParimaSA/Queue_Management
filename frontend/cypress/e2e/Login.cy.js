@@ -8,14 +8,14 @@ describe('Add Entry and run queue', () => {
   
     it('Login, add entry and run queue', () => {
         // Login with incorrect username and password
-        cy.login('CpTest1234', 'hackme1234');
+        cy.login('CyTest1234', 'hackme1234');
         cy.get('div.Toastify__toast.Toastify__toast--error', { timeout: 10000 })
             .should('be.visible')
             .and('contain.text', 'Login failed');
 
         
         // Login with correct username and password
-        cy.login('CpTest', 'hackme11');
+        cy.login('CyTest', 'hackme11');
 
         cy.url().should('include', '/business');
 
