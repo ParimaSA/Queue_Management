@@ -15,6 +15,8 @@ class BusinessSchema(ModelSchema):
 
 
 class BusinessDataSchema(Schema):
+    """Schema for detail of the business."""
+
     id: int
     name: str
     open_time: time
@@ -22,6 +24,8 @@ class BusinessDataSchema(Schema):
 
 
 class BusinessRegisterSchema(Schema):
+    """Schema for registering with username and password."""
+
     username: str
     password1: str
     password2: str
@@ -29,12 +33,16 @@ class BusinessRegisterSchema(Schema):
 
 
 class BusinessUpdatedSchema(Schema):
+    """Schema for updating business information."""
+
     name: str
     open_time: time
     close_time: time
 
-      
+
 class EmailBusinessRegisterSchema(Schema):
+    """Schema for registering with email."""
+
     email: str
 
 
@@ -68,7 +76,7 @@ class EntryDetailCustomerSchema(Schema):
     queue_ahead: int
     estimate_waiting_time: int
 
-      
+
 class EntryDetailSchema(Schema):
     """Schema for detailed entry information."""
 

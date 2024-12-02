@@ -1,9 +1,6 @@
 """Provide models using in business app."""
 
-import os
 from django.conf import settings
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -12,10 +9,10 @@ from django.forms import ModelForm
 
 S3_BUCKET_NAME = settings.AWS_STORAGE_BUCKET_NAME
 
+
 def get_default_profile_image():
     """Return the default profile image URL."""
     return f'https://{settings.AWS_S3_CUSTOM_DOMAIN}/profiles/default.png'
-
 
 
 class Business(models.Model):
@@ -26,7 +23,7 @@ class Business(models.Model):
     open_time = models.TimeField(default="06:00")
     close_time = models.TimeField(default="23:59")
     image = models.ImageField(
-        blank=True, 
+        blank=True,
         default='profiles/default.png',  # Default URL will be returned by the function
         upload_to="profiles/"  # S3 will store the image under the 'profiles/' directory
     )

@@ -1,6 +1,4 @@
-import json
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, time
 from django.contrib.auth.models import User
 from django.utils.timezone import make_aware
 from .base import BaseTestCase
@@ -12,10 +10,13 @@ class Analytic(BaseTestCase):
     def setUp(self):
         """Create setup data for tests."""
 
-        User.objects.create_user(username="owner1", password="123")
+        owner1 = User.objects.create_user(username="owner1", password="123")
 
         self.business = Business.objects.create(
-            user=User.objects.get(username="owner1"), name="Teenoi")
+            user=owner1,
+            name="Teenoi",
+            open_time=time(6, 0),
+            close_time=time(18,0))
 
         queue_types = ["Big", "Small"]
 
@@ -82,6 +83,8 @@ class Analytic(BaseTestCase):
         )
         data = response.json()
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(data), (18-6)/2)
+        self.assertEqual(data[0]["start_time"], 6)
         self.assertEqual(data[1]["start_time"], 8)
         my_entry = Entry.objects.filter(business__user__username="owner1", time_out__isnull=False, status="completed")
         avg_waiting_mins = self.calculate_average_waiting_time(my_entry)

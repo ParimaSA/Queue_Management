@@ -40,50 +40,6 @@ class ShowBusinessTestCase(BaseTestCase):
         self.assertEqual(response.json(), [])
 
 
-    def test_get_entry_in_time_slot(self):
-        """Test to retrieve the number of entries in a time slot."""
-        token = self.login(username="testuser", password="test1234")
-        base_time = make_aware(datetime(2024, 1, 1, 13, 0, 0))  # Ensure timezone-aware datetime
-        Entry.objects.create(
-            queue=self.queue,
-            business=self.business,
-            time_in=base_time,
-            status="waiting",
-        )
-        Entry.objects.create(
-            queue=self.queue,
-            business=self.business,
-            time_in=make_aware(datetime(2024, 1, 1, 15, 0, 0)) + timedelta(weeks=1),
-            status="waiting",
-        )
-        Entry.objects.create(
-            queue=self.queue,
-            business=self.business,
-            time_in=base_time + timedelta(weeks=1),  # One week later
-            status="waiting",
-        )
-
-        response = self.client.get(
-            "/api/business/entry_in_time_slot",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()[3]["entry_count"], 1)
-
-    def test_get_entry_in_time_slot_no_business(self):
-        """Test to retrieve the number of entries in a time slot."""
-        User.objects.create_user(username="testuser2", password="test1234")
-        token = self.login(username="testuser2", password="test1234")
-        response = self.client.get(
-            "/api/business/entry_in_time_slot",
-            headers={"Authorization": f"Bearer {token}"}
-        )
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {"msg": "You don't have business yet."})
-
-
-
 class BusinessQueueTestCase(BaseTestCase):
     """Test case for queue related api routes."""
 
