@@ -22,5 +22,15 @@ python3 manage.py runserver
 npm run dev
 ```
 
+## Access Application
+You can access the live application at the following link: [Queue Management system](https://queue-management-taupe.vercel.app/)
+
 ## Project Documents
 All project documents are in the [Project Wiki](../../wiki/Home).
+
+- [Vision and Scope](../../wiki/Vision%20and%20Scope)
+- [Requirements](../../wiki/Requirements)
+- [Project Plan](../../wiki/Project%20Plan)
+- [Domain Model](../../wiki/Domain%20Model)
+- [User Story](../../wiki/User%20Story)
+- [Proposal](https://docs.google.com/document/d/18zReyEUUIP7rvzeg0dn7ZCFGFE2xjXlseVjiRJwhHgs/edit)
