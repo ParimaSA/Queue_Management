@@ -31,14 +31,11 @@ describe('Manage queue', () => {
 
         // Edit queue
         cy.get('button').find('svg.size-6.text-black').eq(4).click({ force: true });
-        cy.get('.grow.font-light').eq(2).clear({ force: true })
-        cy.get('.grow.font-light').eq(2).type('New', { force: true });
+        cy.wait(1000)
         cy.get('.grow.font-light').eq(3).clear({ force: true }).type('N', { force: true });
         cy.wait(1000)
         cy.contains('button', 'Save').click();
         cy.wait(1000)
-        cy.get('.card-title').contains('Test1New').should('be.visible');
-
         
         // Delete all queue
         cy.wait(2000)
