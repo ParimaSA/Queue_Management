@@ -8,6 +8,7 @@ describe('Add Entry and run queue', () => {
   
     it('Login, add entry and run queue', () => {
         // Login
+        cy.wait(2000)
         cy.get('body > main > div > div > div > a > button').click();
         cy.wait(1000);
 
