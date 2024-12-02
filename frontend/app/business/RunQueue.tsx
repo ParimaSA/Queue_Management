@@ -87,7 +87,7 @@ const RunQueue: React.FC<RunQueueProps> = ({queue}) => {
           </div>
         ))
       ) : (
-        <h4 className="card-body">No entries found</h4>
+        <h4 className="card-body text-black">No entries found</h4>
       )}
     </>
   )
