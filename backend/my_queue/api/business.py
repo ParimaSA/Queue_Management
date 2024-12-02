@@ -61,7 +61,7 @@ class BusinessController:
         data_dict = data.dict()
         business = Business.objects.get(user=request.user)
         if business.queue_set.all().count() >= 16:
-            return {"error": f"The maximum number of queue you can create is 16."}
+            return {"error": "The maximum number of queue you can create is 16."}
         same_queue_name = Queue.objects.filter(
             business=business, name=data_dict["name"])
         if same_queue_name.count() > 0:
