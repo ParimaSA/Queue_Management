@@ -278,8 +278,16 @@ class QueueController:
                                               "last_entry": last_entry})
         return last_entry_for_each_queue
 
+    @http_get("/detail/{queue_id}", response=QueueDetailSchema, auth=helpers.api_auth_user_required)
+    def get_queue_detail(self, request, queue_id: int):
+        business = Business.objects.get(user=request.user)
+        try:
+            queue = Queue.objects.get(pk=queue_id, business=business)
+        except Queue.DoesNotExist:
+            return {'error': 'This queue is not belong to your business.'}
+        return queue
 
-    @http_put("/{queue_id}", auth=helpers.api_auth_user_required)
+    @http_put("/edit/{queue_id}", auth=helpers.api_auth_user_required)
     def edit_queue(self, request, queue_id: int, edit_attrs: EditIn):
         """
         Edit queue to the specified business.
@@ -305,7 +313,7 @@ class QueueController:
             status=200,
         )
 
-    @http_delete("/{queue_id}", auth=helpers.api_auth_user_required)
+    @http_delete("/delete/{queue_id}", auth=helpers.api_auth_user_required)
     def delete_queue(self, request, queue_id: int):
         """Delete queue to the specific business."""
         business = Business.objects.get(user=request.user)
