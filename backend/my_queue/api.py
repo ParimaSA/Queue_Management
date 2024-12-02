@@ -2,7 +2,7 @@
 
 from typing import List
 
-import boto3
+# import boto3
 from .forms import SignUpForm
 from .models import Entry, Business, Queue
 from .schemas import (
@@ -57,7 +57,6 @@ def serialize_single_entry(entry):
         queue_ahead=queue_ahead,
         estimate_waiting_time=estimate_waiting
     )
-    print(entry_detail)
     return entry_detail
 
 def calculate_estimate_waiting_time(entry, entry_ahead):
@@ -81,10 +80,7 @@ class BusinessController:
     @http_get("", response=List[BusinessDataSchema] | None, auth=helpers.api_auth_user_required)
     def my_business(self, request):
         """Return information of the business."""
-        try:
-            my_business = Business.objects.filter(user=request.user)
-        except Business.DoesNotExist:
-            return JsonResponse({"msg": "You don't have business yet."}, status=404)
+        my_business = Business.objects.filter(user=request.user)
         return my_business
 
     @http_post("/register", response=dict, auth=helpers.api_auth_user_or_guest)
@@ -230,14 +226,12 @@ class BusinessController:
             image_url = business.profile_image_url
         except Business.DoesNotExist:
             return JsonResponse({"msg": "You don't have business yet."}, status=404)
-
         return {"image": image_url}
 
     @http_post("/profile", response=dict, auth=helpers.api_auth_user_required)
     def upload_profile_image(self, request, file: UploadedFile = File(...)):
         """Upload profile image for business."""
         file = request.FILES['file']
-        print("file", file, file.size)
         try:
             business = Business.objects.get(user=request.user)
         except Business.DoesNotExist:
