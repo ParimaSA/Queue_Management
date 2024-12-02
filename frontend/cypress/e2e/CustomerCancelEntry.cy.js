@@ -17,12 +17,26 @@ describe('Customer cancel queue entry', () => {
         cy.url().should('include', '/business');
         cy.wait(3000);
 
-        // Add "Reservation" entry and check if the queue ticket appear
+        // Delete all queue
+        cy.get('button.btn.bg-lightPurple1.hover\\:bg-purple.rounded-full')
+            .should('be.visible')
+            .find('svg.size-6.text-black')
+            .click({ force: true })
+        
+        // Add queue template
+        cy.contains('button', 'Queue Template').click();
+        cy.contains('button', 'Restaurant').click();
+
+        cy.get('#modal_template > div').scrollTo('bottom');
+        cy.contains('button', 'Add Restaurant Template').click();
+
+        // Add "Walk-in" entry and check if the queue ticket appear
+        cy.wait(2000)
         cy.get('.select-bordered').should('be.visible')
-        cy.get('.select-bordered').select('Reservation');
+        cy.get('.select-bordered').select('Walk-in');
         cy.wait(1000);
         cy.contains('button', 'Add').click();
-        cy.contains('.card-body p', 'Queue Name: Reservation').should('be.visible');
+        cy.contains('.card-body p', 'Queue Name: Walk-in').should('be.visible');
         cy.wait(1000);
 
         // Redirect to customer queue ticket
