@@ -22,8 +22,9 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
   const [QueueId, setQueueId] = useState(-1);
   const [editedQueue, setEditedQueue] = useState('');
   const [editedAlphabet, setEditedAlphabet] = useState('');
-  const [isExplanation, setIsExplanation] = useState(false)
-  const [isPrefix, setIsPrefix] = useState(false)
+  const [isExplanation, setIsExplanation] = useState(false);
+  const [isPrefix, setIsPrefix] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
 
   useEffect(() => {
@@ -37,6 +38,14 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
 
   const handleAlphabetChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditedAlphabet(event.target.value);
+    setErrorMessage('')
+    const newPrefix = event.target.value
+    if (newPrefix && !/^[a-zA-Z]$/.test(newPrefix)){
+      setErrorMessage("Prefix must be an alphabetic character.")
+    }
+    if (newPrefix && newPrefix.length > 1){
+      setErrorMessage("Prefix can be only one character.")
+    }
   }
 
   const handleAddClick = () => {
@@ -145,6 +154,7 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
   const handlePrefixToggle = ()=> {
     setIsPrefix(!isPrefix)
     setEditedAlphabet('')
+    setErrorMessage('')
   }
 
   const handleExplanation = () => {
@@ -172,21 +182,20 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
             <br></br>
             <div className="form-control flex space-x-2">
               <label className="label cursor-pointer">
-                <p className='text-sm'>Set Prefix</p>
-                <input
-                  type="checkbox"
-                  className="toggle toggle-success ml-0"
-                  checked={isPrefix}
-                  onChange={handlePrefixToggle}/>
-                <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                <div className='flex 1'>
+                  <p className='text-sm'>Set Prefix</p>
+                  { errorMessage && (<p className='text-sm text-red-500 ml-2'>   ({ errorMessage })</p>)}
+                </div>
+                <div className='flex items-center'>  
+                  <input
+                    type="checkbox"
+                    className="toggle toggle-success ml-0"
+                    checked={isPrefix}
+                    onChange={handlePrefixToggle}/>
+                  <button type="button" className="w-10 h-12 mr-0" onClick={handleExplanation}><HelpOutlineIcon style={{color: 'gray'}}/></button>
+                </div>  
               </label>
             </div>
-            {isExplanation && (
-              <div className="w-full bg-yellow-200 p-1">
-                <p className='text-sm font-normal'> If you set a <span className="font-bold">prefix</span> (e.g., A), entries will be numbered like <span className="font-bold">A1, A2, A3,</span> etc.</p>
-                <p className='text-sm font-normal'> If you <span className="font-bold">don’t set a prefix</span>, entries will be numbered as <span className="font-bold">1, 2, 3,</span> etc.</p>
-              </div>
-            )}
             { isPrefix && (
               <label className="input input-bordered flex items-center gap-2">
                 Prefix
@@ -203,7 +212,11 @@ const EditQueue: React.FC<EditQueueProps> = ({queue}) => {
             <br></br>
             <form onSubmit={(e) => { e.preventDefault() }}>
                 <div className='flex space-x-3'>
-                    <button type="submit" className='btn bg-hotPink border-white hover:bg-darkPink' onClick={handleAddClick}>Save</button>
+                <div className='form-control flex space-x-2'>
+                  <button type="submit" disabled={!!errorMessage || (isPrefix && !editedAlphabet)} className="btn btn-primary bg-hotPink hover:bg-darkPink border-white" onClick={handleAddClick}>
+                    Save
+                  </button>
+                </div> 
                     <button type="button" className='btn' onClick={() => handleDeleteClick(QueueId)}>Delete</button>
                 </div>
             </form>

@@ -54,7 +54,7 @@ const BoardPage = () => {
           </div>
         ) : boardData?.length ? (
           <div className="mt-10">
-            <h1 className="mt-10 font-bold text-4xl">Queue Board</h1>
+            <h1 className="mt-10 font-bold text-4xl text-black">Queue Board</h1>
             <div className="ml-10 mr-10 mt-20">
               <QueueBox queues={boardData}/>
             </div>
