@@ -1,4 +1,5 @@
 from .business import BusinessController
+from .public import PublicController
 from .queue import QueueController
 from .entry import EntryController
 from .analytic import AnalyticController
@@ -8,4 +9,5 @@ __all__ = [
     BusinessController,
     EntryController,
     QueueController,
+    PublicController
 ]
