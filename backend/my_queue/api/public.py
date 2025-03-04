@@ -1,6 +1,6 @@
 """Api routes for public."""
-import helpers
 from ninja_extra import api_controller, http_get
+
 
 @api_controller("/public")
 class PublicController:
@@ -8,5 +8,5 @@ class PublicController:
 
     @http_get("/ping")
     def ping(self, request):
-        """API for keeping the backend alive."""
+        """Keep the backend alive."""
         return {"message": "Server is alive"}

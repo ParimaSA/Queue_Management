@@ -6,6 +6,6 @@ class PublicAPITestCase(BaseTestCase):
 
     def test_ping_endpoint(self):
         """Test that the ping endpoint returns a success response."""
-        response = self.client.get("/public/ping", {"entry_id": 1})
+        response = self.client.get("/public/ping")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "Server is alive"})
